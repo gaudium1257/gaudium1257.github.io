@@ -1,0 +1,58 @@
+name: deploy
+
+# 리포지터리 전체가 곧 공개 사이트다 (docs/RELIABILITY.md).
+# 관리자 모드에서 게시한 콘텐츠 커밋도 이 파이프라인을 탄다.
+#
+# 사전 설정 필요: Settings → Pages → Source: GitHub Actions
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 콘텐츠를 연달아 게시해도 최신 것만 배포되게 한다
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install
+        run: npm ci || npm install
+
+      # verify 가 통과하지 못하면 배포하지 않는다 — 유일한 차단 게이트
+      - name: Verify
+        run: npm run verify
+
+      - name: Build
+        run: npm run build
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

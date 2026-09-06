@@ -1,0 +1,10 @@
+{
+  "id": "sample-review",
+  "title": "정적 사이트에서 인증을 어떻게 할 것인가",
+  "publishedOn": "2026-09-06",
+  "category": "review",
+  "summary": "클라이언트가 판정하는 인증은 인증이 아니다. 그래서 GitHub에 판정을 위임했다.",
+  "body": "브라우저 번들에 넣은 비밀번호는 비밀이 아니다.\n`if (isAdmin)` 은 devtools로 우회된다.\n\n그래서 이 사이트는 **자체 인증을 만들지 않는다.**\n토큰으로 GitHub에 권한을 물어보고, 쓰기가 실제로 성공하는지로 관리자 여부가 정해진다.",
+  "projectId": "sample-portfolio-site",
+  "visibility": "public"
+}

@@ -1,0 +1,9 @@
+{
+  "name": "가우디움",
+  "headline": "문제를 정의하고 끝까지 만들어 내는 개발자",
+  "affiliation": "",
+  "summary": "여기에 자기소개를 적습니다. 관리자 모드에서 편집할 수 있습니다.",
+  "links": [
+    { "label": "GitHub", "url": "https://github.com/gaudium1257" }
+  ]
+}
