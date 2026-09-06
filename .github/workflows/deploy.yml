@@ -1,0 +1,67 @@
+name: deploy
+
+# viewer 만 배포한다. admin 은 로컬 전용이라 빌드 대상이 아니다 (ADR-0003).
+#
+# 사전 설정 필요: Settings → Pages → Source: GitHub Actions
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 콘텐츠를 연달아 게시해도 최신 것만 배포되게 한다
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install
+        run: npm ci || npm install
+
+      # verify 가 통과하지 못하면 배포하지 않는다 — 유일한 차단 게이트
+      - name: Verify
+        run: npm run verify
+
+      # viewer 만 빌드된다 (루트 build 스크립트가 viewer 워크스페이스를 가리킨다)
+      - name: Build viewer
+        run: npm run build
+
+      # admin 코드가 공개 산출물에 섞이지 않았는지 확인한다 (INV-8)
+      - name: Assert admin is not in the public bundle
+        run: |
+          if grep -rl "content-api-plugin\|/api/content" viewer/dist; then
+            echo "::error::admin 쓰기 경로가 공개 번들에 섞였다 (INV-8)"
+            exit 1
+          fi
+          echo "공개 번들에 admin 코드 없음 ✓"
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: viewer/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

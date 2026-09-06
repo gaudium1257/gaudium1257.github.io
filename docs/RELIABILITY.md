@@ -19,8 +19,15 @@ admin 은 CI 빌드 대상이 아니다. 공개 경로에 올리려면 [SECURITY
 ## 파이프라인
 
 ```
-push → CI: npm run verify → viewer 빌드 → Pages 배포
+push(main) → verify → viewer 빌드 → 공개 번들 검사(INV-8) → Pages 배포
 ```
+
+워크플로는 두 개다:
+- `.github/workflows/verify.yml` — 모든 브랜치·PR 에서 검증만
+- `.github/workflows/deploy.yml` — main 에서만 빌드·배포
+
+**admin 은 빌드 대상이 아니다.** 배포 단계에 공개 번들이 admin 쓰기 경로를
+포함하지 않는지 확인하는 검사가 들어 있다 (INV-8).
 
 `verify` 가 실패하면 배포하지 않는다. **이것이 유일한 차단 게이트다.**
 
