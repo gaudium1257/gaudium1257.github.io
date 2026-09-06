@@ -11,6 +11,7 @@ import {
   ProjectsPage,
   usePortfolioContent,
 } from '@viewer/domains/portfolio';
+import { SHELL } from './layout';
 import { SiteHeader } from './SiteHeader';
 import { NotFoundPage } from './NotFoundPage';
 
@@ -33,9 +34,9 @@ function Shell() {
   const { searchIndex } = usePortfolioContent();
 
   return (
-    <div className="min-h-dvh">
+    <div className="hero-surface min-h-dvh">
       <SiteHeader searchIndex={searchIndex} />
-      <main className="mx-auto max-w-4xl px-5 py-10 sm:px-8">
+      <main className={`${SHELL} py-10 sm:py-14`}>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<AboutPage />} />

@@ -4,9 +4,9 @@ import { Badge } from '@portfolio/ui';
 /** 페이지 제목 + 설명. 다섯 페이지가 같은 리듬을 갖게 한다. */
 export function PageHeading({ title, description }: { title: string; description?: string }) {
   return (
-    <header className="space-y-1">
-      <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
-      {description ? <p className="text-sm text-muted-foreground">{description}</p> : null}
+    <header className="space-y-2 border-b border-border pb-5">
+      <h1 className="text-3xl font-semibold tracking-tight">{title}</h1>
+      {description ? <p className="text-muted-foreground">{description}</p> : null}
     </header>
   );
 }
@@ -15,8 +15,8 @@ export function PageHeading({ title, description }: { title: string; description
 export function NotFoundNotice({ message }: { message: string }) {
   return (
     <div className="space-y-4">
-      <p className="text-sm text-muted-foreground">{message}</p>
-      <Link to="/" className="text-sm underline underline-offset-4">
+      <p className="text-muted-foreground">{message}</p>
+      <Link to="/" className="text-sm underline underline-offset-4 hover:text-brand">
         홈으로
       </Link>
     </div>
@@ -29,7 +29,9 @@ export function TagList({ tags }: { tags: string[] }) {
     <ul className="flex flex-wrap gap-1.5">
       {tags.map((tag) => (
         <li key={tag}>
-          <Badge variant="secondary">{tag}</Badge>
+          <Badge variant="secondary" className="font-normal">
+            {tag}
+          </Badge>
         </li>
       ))}
     </ul>
@@ -38,7 +40,10 @@ export function TagList({ tags }: { tags: string[] }) {
 
 export function BackLink() {
   return (
-    <Link to="/" className="inline-block text-sm underline underline-offset-4">
+    <Link
+      to="/"
+      className="inline-block text-sm text-muted-foreground underline underline-offset-4 transition-colors hover:text-brand"
+    >
       ← 홈으로
     </Link>
   );

@@ -13,9 +13,9 @@ export function ProjectDetailPage() {
   if (!project) return <NotFoundNotice message="찾을 수 없는 프로젝트입니다." />;
 
   return (
-    <article className="space-y-6">
+    <article className="max-w-3xl space-y-6">
       <header className="space-y-2">
-        <h1 className="text-2xl font-semibold tracking-tight">{project.title}</h1>
+        <h1 className="text-3xl font-semibold tracking-tight">{project.title}</h1>
         <p className="text-sm text-muted-foreground">
           {formatPeriod(project.startedOn, project.endedOn)}
           {project.role ? ` · ${project.role}` : ''}

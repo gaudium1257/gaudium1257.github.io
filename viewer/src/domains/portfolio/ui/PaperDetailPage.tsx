@@ -13,9 +13,9 @@ export function PaperDetailPage() {
   if (!paper) return <NotFoundNotice message="찾을 수 없는 논문 리뷰입니다." />;
 
   return (
-    <article className="space-y-6">
+    <article className="max-w-3xl space-y-6">
       <header className="space-y-2">
-        <h1 className="text-2xl font-semibold tracking-tight">{paper.title}</h1>
+        <h1 className="text-3xl font-semibold tracking-tight">{paper.title}</h1>
         <p className="text-sm text-muted-foreground">
           {[paper.authors.join(', '), paper.venue, paper.year].filter(Boolean).join(' · ')}
         </p>

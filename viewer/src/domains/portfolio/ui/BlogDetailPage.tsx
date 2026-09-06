@@ -13,9 +13,9 @@ export function BlogDetailPage() {
   if (!post) return <NotFoundNotice message="찾을 수 없는 글입니다." />;
 
   return (
-    <article className="space-y-6">
+    <article className="max-w-3xl space-y-6">
       <header className="space-y-2">
-        <h1 className="text-2xl font-semibold tracking-tight">{post.title}</h1>
+        <h1 className="text-3xl font-semibold tracking-tight">{post.title}</h1>
         <time className="text-sm text-muted-foreground">{formatDate(post.publishedOn)}</time>
       </header>
 
