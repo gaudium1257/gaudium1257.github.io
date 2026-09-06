@@ -5,7 +5,8 @@ import reactRefresh from 'eslint-plugin-react-refresh';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  { ignores: ['dist', 'node_modules', 'coverage'] },
+  // .vite 는 개발 서버가 만드는 의존성 캐시다. 소스가 아니므로 검사하지 않는다
+  { ignores: ['dist', 'node_modules', 'coverage', '.vite', 'playwright-report'] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ['**/*.{ts,tsx}'],

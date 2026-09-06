@@ -12,3 +12,4 @@ src/shared/ui/components/ui
 
 # 콘텐츠는 관리자 모드가 쓰는 데이터다 (ADR-0003)
 content
+.vite
