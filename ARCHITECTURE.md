@@ -18,7 +18,12 @@ gaudium1257.github.io/
 │   └── src/                 # viewer 와 동일한 내부 구조
 ├── shared/
 │   ├── content/             # ★ 콘텐츠 타입 + Zod 스키마 (단일 진실 원천)
-│   └── ui/                  # shadcn 프리미티브 + 공용 컴포넌트
+│   ├── portfolio/           # ★ 표시 레이어 — 두 앱이 같은 화면을 쓴다 (ADR-0005)
+│   │   ├── config/          #   표시 상수
+│   │   ├── service/         #   정렬·필터·검색 (순수)
+│   │   ├── ui/              #   히어로·목록·카드·페이지
+│   │   └── shell/           #   배너·검색·테마·라우트 (조립부)
+│   └── ui/                  # shadcn 프리미티브
 ├── content/                 # 콘텐츠 데이터 (JSON)
 ├── docs/                    # 기록 시스템 (system of record)
 ├── tools/                   # 커스텀 린터, 스크립트
@@ -121,7 +126,8 @@ types → config → data → service → state → ui
 
 | 앱 | 도메인 | 책임 | 품질 등급 |
 |---|---|---|---|
-| viewer | `portfolio` | 콘텐츠 로드·파싱·표시, 검색 인덱스 | B |
-| admin | `editor` | 목록·편집·검증·저장 | B |
+| shared | `portfolio` | 표시 레이어 (두 앱 공용) | B |
+| viewer | `portfolio` | 빌드타임 콘텐츠 로드·파싱 | B |
+| admin | `editor` | API 로드·편집·검증·저장 | A |
 
 도메인을 추가하면 **이 표와 [docs/QUALITY_SCORE.md](docs/QUALITY_SCORE.md)를 함께 갱신한다** (INV-10).

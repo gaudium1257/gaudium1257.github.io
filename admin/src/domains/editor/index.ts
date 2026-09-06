@@ -1,2 +1,2 @@
 /** 편집 도메인의 공개 표면. */
-export { EditorPage } from './ui/EditorPage';
+export { AdminApp } from './ui/AdminApp';

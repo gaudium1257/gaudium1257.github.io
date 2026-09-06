@@ -24,7 +24,8 @@
       "@portfolio/ui": ["shared/ui/index.ts"],
       "@ui/*": ["shared/ui/*"],
       "@viewer/*": ["viewer/src/*"],
-      "@admin/*": ["admin/src/*"]
+      "@admin/*": ["admin/src/*"],
+      "@portfolio/portfolio": ["shared/portfolio/index.ts"]
     },
     "allowImportingTsExtensions": true
   },

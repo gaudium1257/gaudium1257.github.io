@@ -18,6 +18,7 @@ export default defineConfig({
       '@ui': resolve(repoRoot, 'shared/ui'),
       '@portfolio/content': resolve(repoRoot, 'shared/content/index.ts'),
       '@portfolio/ui': resolve(repoRoot, 'shared/ui/index.ts'),
+      '@portfolio/portfolio': resolve(repoRoot, 'shared/portfolio/index.ts'),
     },
   },
   server: {

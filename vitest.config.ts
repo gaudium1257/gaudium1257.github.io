@@ -7,6 +7,7 @@ export default defineConfig({
     alias: {
       '@portfolio/content': resolve(import.meta.dirname, 'shared/content/index.ts'),
       '@portfolio/ui': resolve(import.meta.dirname, 'shared/ui/index.ts'),
+      '@portfolio/portfolio': resolve(import.meta.dirname, 'shared/portfolio/index.ts'),
       '@viewer': resolve(import.meta.dirname, 'viewer/src'),
       '@admin': resolve(import.meta.dirname, 'admin/src'),
     },

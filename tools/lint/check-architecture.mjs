@@ -98,7 +98,12 @@ for (const file of files) {
   }
 
   // ---- INV-1 / INV-2: 레이어와 도메인 경계
-  const m = posix.match(/(?:^|\/)domains\/([^/]+)\/([^/]+)\//);
+  //
+  // 공유 패키지(shared/<pkg>/<layer>/)에도 같은 레이어 규칙을 적용한다 (ADR-0005).
+  // 공유로 옮겼다고 레이어 규율이 느슨해지면 안 된다.
+  const m =
+    posix.match(/(?:^|\/)domains\/([^/]+)\/([^/]+)\//) ??
+    posix.match(/^shared\/([^/]+)\/([^/]+)\//);
   const imports = [...src.matchAll(/(?:from|import)\s*\(?\s*["']([^"']+)["']/g)].map((x) => x[1]);
 
   if (m && LAYERS.includes(m[2])) {
@@ -117,7 +122,9 @@ for (const file of files) {
         );
         continue;
       }
-      const up = abs.match(/(?:^|\/)domains\/[^/]+\/(types|config|data|service|state|ui)(?:\/|$)/);
+      const up = abs.match(
+        /(?:^|\/)(?:domains|shared)\/[^/]+\/(types|config|data|service|state|ui)(?:\/|$)/,
+      );
       if (up && LAYERS.indexOf(up[1]) > li) {
         errors.push(
           `[INV-1] ${posix} (레이어 '${layer}') → 상위 레이어 '${up[1]}' import: ${spec}\n` +

@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { ContentKind } from '@portfolio/content';
-import type { ContentEntry } from '../types';
-import { ContentApiError, listEntries, readEntry, writeEntry } from '../data/content-api';
+import { ContentApiError, readEntry, writeEntry } from '../data/content-api';
 import { templateFor, validateContent } from '../service/validate';
 
 export type SaveState =
@@ -11,28 +10,10 @@ export type SaveState =
   | { status: 'error'; message: string }
   | { status: 'saved'; path: string };
 
-/** 목록 (스펙 E-1) */
-export function useEntryList(kind: ContentKind) {
-  const [entries, setEntries] = useState<ContentEntry[]>([]);
-  const [error, setError] = useState<string | null>(null);
-
-  const refresh = useCallback(async () => {
-    setError(null);
-    try {
-      setEntries(await listEntries(kind));
-    } catch (e) {
-      setError(e instanceof ContentApiError ? e.message : '목록을 불러오지 못했습니다.');
-    }
-  }, [kind]);
-
-  useEffect(() => {
-    void refresh();
-  }, [refresh]);
-
-  return { entries, error, refresh };
-}
-
-/** 편집 초안 — 불러오기·검증·저장 순서를 담당한다. ui 는 렌더만 한다 (INV-1, GR-6). */
+/**
+ * 편집 초안 — 불러오기·검증·저장 순서를 담당한다.
+ * ui 는 이 훅이 주는 값을 렌더만 한다 (INV-1, GR-6).
+ */
 export function useDraft(kind: ContentKind, id: string) {
   const [text, setText] = useState('');
   const [state, setState] = useState<SaveState>({ status: 'idle' });
@@ -64,9 +45,9 @@ export function useDraft(kind: ContentKind, id: string) {
       setState({ status: 'invalid', issues: result.issues });
       return null;
     }
-    const parsed: unknown = JSON.parse(result.json);
-    const targetId =
-      kind === 'profile' ? 'profile' : String((parsed as Record<string, unknown>).id ?? '');
+
+    const parsed = JSON.parse(result.json) as Record<string, unknown>;
+    const targetId = kind === 'profile' ? 'profile' : String(parsed.id ?? '');
     if (!targetId) {
       setState({ status: 'invalid', issues: ['id 가 비어 있습니다.'] });
       return null;

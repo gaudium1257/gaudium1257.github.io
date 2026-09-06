@@ -9,6 +9,7 @@
 | [0002](0002-layered-architecture.md) | 도메인 슬라이스 + 6레이어 아키텍처 | ACCEPTED |
 | [0003](0003-content-store.md) | 콘텐츠 저장 방식과 게시 경로 | ACCEPTED |
 | [0004](0004-navigation-shell.md) | 내비게이션 셸: 검색·테마 | ACCEPTED |
+| [0005](0005-shared-presentation.md) | 표시 레이어를 두 앱이 공유 | ACCEPTED |
 
 상태값: `OPEN`(미결정) · `ACCEPTED` · `SUPERSEDED by NNNN` · `REJECTED`
 

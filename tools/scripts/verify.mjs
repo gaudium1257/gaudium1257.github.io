@@ -42,6 +42,13 @@ const steps = [
     guards: 'INV-10, 11, CB-2',
   },
   {
+    name: 'build',
+    command: 'npm run --silent build',
+    skip: !hasSource || !hasDeps,
+    why: !hasDeps ? 'node_modules 없음' : '빌드할 소스 없음',
+    guards: '실제로 번들이 되는가',
+  },
+  {
     name: 'test',
     command: 'npm run --silent test',
     skip: !hasSource || !hasDeps,

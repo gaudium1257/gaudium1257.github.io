@@ -11,11 +11,8 @@ import type { ContentKind } from '@portfolio/content';
 const listResponseSchema = z.object({
   items: z.array(z.object({ id: z.string(), title: z.string() })),
 });
-
-const readResponseSchema = z.object({ json: z.string() });
-
+const readResponseSchema = z.object({ json: z.string().nullable() });
 const writeResponseSchema = z.object({ ok: z.literal(true), path: z.string() });
-
 const errorResponseSchema = z.object({ error: z.string(), issues: z.array(z.string()).optional() });
 
 export class ContentApiError extends Error {
@@ -37,7 +34,6 @@ async function request(url: string, init?: RequestInit): Promise<unknown> {
   }
 
   const body: unknown = await response.json().catch(() => null);
-
   if (!response.ok) {
     const parsed = errorResponseSchema.safeParse(body);
     if (parsed.success) throw new ContentApiError(parsed.data.error, parsed.data.issues ?? []);
@@ -55,8 +51,7 @@ export async function readEntry(kind: ContentKind, id: string): Promise<string |
   const raw = await request(
     `${CONTENT_API}?kind=${encodeURIComponent(kind)}&id=${encodeURIComponent(id)}`,
   );
-  const parsed = readResponseSchema.safeParse(raw);
-  return parsed.success ? parsed.data.json : null;
+  return readResponseSchema.parse(raw).json;
 }
 
 export async function writeEntry(kind: ContentKind, id: string, json: string): Promise<string> {
@@ -66,4 +61,31 @@ export async function writeEntry(kind: ContentKind, id: string, json: string): P
     body: JSON.stringify({ kind, id, json }),
   });
   return writeResponseSchema.parse(raw).path;
+}
+
+interface ParserLike<T> {
+  safeParse: (value: unknown) => { success: boolean; data?: T };
+}
+
+/**
+ * 한 종류를 통째로 읽어 스키마로 파싱한다 (INV-3).
+ * 깨진 항목은 화면 전체를 죽이지 않고 건너뛴다 — 편집 도구는 나머지를 계속 보여줘야 한다.
+ */
+export async function loadAll<T>(kind: ContentKind, schema: ParserLike<T>): Promise<T[]> {
+  const ids = kind === 'profile' ? ['profile'] : (await listEntries(kind)).map((entry) => entry.id);
+  const texts = await Promise.all(ids.map((id) => readEntry(kind, id)));
+
+  const items: T[] = [];
+  for (const text of texts) {
+    if (!text) continue;
+    let raw: unknown;
+    try {
+      raw = JSON.parse(text);
+    } catch {
+      continue;
+    }
+    const result = schema.safeParse(raw);
+    if (result.success && result.data) items.push(result.data);
+  }
+  return items;
 }

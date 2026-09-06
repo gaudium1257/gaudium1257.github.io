@@ -1,0 +1,11 @@
+{
+  "name": "@portfolio/portfolio",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./index.ts",
+  "exports": {
+    ".": "./index.ts",
+    "./theme.css": "./theme.css"
+  }
+}
