@@ -1,9 +1,8 @@
 #!/usr/bin/env node
 /**
- * 아키텍처 린터 — INV-1, INV-2, INV-4, INV-5, INV-8, INV-11 을 강제한다.
+ * 아키텍처 린터 — INV-1, INV-2, INV-4, INV-5, INV-8, INV-9 를 강제한다.
  * 이것이 권위 있는 검사다. .claude/hooks/post-edit-check.mjs 는 같은 규칙의 빠른 미리보기다.
- * 규칙 원문: ARCHITECTURE.md
- * 근거: docs/design-docs/adr/0002-layered-architecture.md, .../0004-single-app-admin-mode.md
+ * 규칙 원문: ARCHITECTURE.md · 근거: docs/design-docs/adr/0002-layered-architecture.md
  */
 import { readFileSync, readdirSync, existsSync, statSync } from 'node:fs';
 import { join, dirname, sep } from 'node:path';
@@ -11,10 +10,10 @@ import { join, dirname, sep } from 'node:path';
 const LAYERS = ['types', 'config', 'data', 'service', 'state', 'ui'];
 const MAX_FILE_LINES = 400;
 const MAX_FN_LINES = 60;
-const ROOTS = ['src'];
+const ROOTS = ['viewer/src', 'admin/src', 'shared'];
 
-/** 쓰기 경로가 존재해도 되는 유일한 도메인 (INV-11) */
-const ADMIN_DOMAIN = 'src/domains/admin/';
+/** 콘텐츠 스키마가 존재해도 되는 유일한 위치 (INV-9) */
+const SCHEMA_HOME = 'shared/content/';
 
 const toPosix = (p) => p.split(sep).join('/');
 const errors = [];
@@ -46,6 +45,7 @@ for (const file of files) {
   const src = readFileSync(file, 'utf8');
   const lines = src.split('\n');
   const isGenerated = /\/components\/ui\//.test(posix);
+  const isTest = /\.test\.tsx?$/.test(posix);
 
   // ---- INV-5: 파일 예산
   if (!isGenerated && !posix.endsWith('.d.ts') && lines.length > MAX_FILE_LINES) {
@@ -61,13 +61,13 @@ for (const file of files) {
       if (/@ts-ignore/.test(l)) {
         errors.push(
           `[INV-4] ${posix}:${i + 1} @ts-ignore 금지.\n` +
-            `  고치는 법: 타입을 실제로 맞춰라. 불가피하면 @ts-expect-error + 사유 + tech-debt-tracker 등록.`,
+            `  고치는 법: 타입을 맞춰라. 불가피하면 @ts-expect-error + 사유 + tech-debt-tracker 등록.`,
         );
       }
       if (/eslint-disable/.test(l)) {
         errors.push(
           `[INV-4] ${posix}:${i + 1} eslint-disable 금지.\n` +
-            `  고치는 법: 규칙을 만족시키거나, 규칙 자체가 틀렸다면 ADR 로 제안하라.`,
+            `  고치는 법: 규칙을 만족시키거나, 규칙이 틀렸다면 ADR 로 제안하라.`,
         );
       }
       if (/(:|<|\bas\s+)\s*any\b/.test(l) && !/^\s*(\/\/|\*)/.test(l)) {
@@ -77,6 +77,24 @@ for (const file of files) {
         );
       }
     });
+  }
+
+  // ---- INV-9: 콘텐츠 스키마는 shared/content 에만
+  //
+  // data/ 레이어는 예외다. 거기서의 스키마는 콘텐츠 모델이 아니라 HTTP 응답 같은
+  // '전송 형태'를 경계에서 파싱하는 것이고, 그건 INV-3 이 요구하는 일이다.
+  // 이걸 막으면 오히려 `as` 캐스팅을 유도해 더 나빠진다.
+  const isBoundary = /(?:^|\/)data\//.test(posix);
+  if (!posix.startsWith(SCHEMA_HOME) && !isGenerated && !isTest && !isBoundary) {
+    const schema = src.match(/\bz\.object\s*\(|\bz\.enum\s*\(|\bz\.discriminatedUnion\s*\(/);
+    if (schema) {
+      errors.push(
+        `[INV-9] ${posix}: 스키마를 정의한다 ("${schema[0]}").\n` +
+          `  콘텐츠 타입과 Zod 스키마는 ${SCHEMA_HOME} 에만 존재한다.\n` +
+          `  두 앱 구조에서 가장 큰 위험은 스키마가 갈라지는 것이다 — 에이전트는 한쪽만 보고 고친다.\n` +
+          `  고치는 법: ${SCHEMA_HOME} 에 정의하고 여기서는 import 만 하라. 근거: ARCHITECTURE.md §2`,
+      );
+    }
   }
 
   // ---- INV-1 / INV-2: 레이어와 도메인 경계
@@ -104,7 +122,7 @@ for (const file of files) {
         errors.push(
           `[INV-1] ${posix} (레이어 '${layer}') → 상위 레이어 '${up[1]}' import: ${spec}\n` +
             `  의존 방향은 ${LAYERS.join(' → ')} 한 방향뿐이다.\n` +
-            `  고치는 법: 로직을 아래 레이어로 내리거나 의존을 인자로 주입하라. 근거: ARCHITECTURE.md §2`,
+            `  고치는 법: 로직을 아래로 내리거나 의존을 인자로 주입하라. 근거: ARCHITECTURE.md §3`,
         );
       }
       if (/(^|\/)shared\/ui(\/|$)/.test(spec) && layer !== 'ui') {
@@ -116,10 +134,10 @@ for (const file of files) {
     }
 
     // 레이어별 금지 사항
-    if (layer === 'ui' && /\bawait\s+fetch\(|\.safeParse\(|\bz\.object\(/.test(src)) {
+    if (layer === 'ui' && /\bawait\s+fetch\(|\.safeParse\(|import\.meta\.glob/.test(src)) {
       errors.push(
-        `[INV-1] ${posix}: ui 레이어에서 페칭/스키마 파싱을 한다.\n` +
-          `  고치는 법: 데이터 접근은 data/, 파싱은 경계에서. ui 는 state 훅으로 값을 받는다.`,
+        `[INV-1] ${posix}: ui 레이어에서 데이터 로딩/파싱을 한다.\n` +
+          `  고치는 법: 로딩은 data/, 파싱은 경계에서. ui 는 state 훅으로 값을 받는다.`,
       );
     }
     if ((layer === 'service' || layer === 'data') && /from\s+["']react["']/.test(src)) {
@@ -131,13 +149,13 @@ for (const file of files) {
     if (layer === 'types' && imports.some((s) => s.startsWith('.'))) {
       errors.push(
         `[INV-1] ${posix}: types 레이어는 내부 모듈을 import 하지 않는다.\n` +
-          `  고치는 법: 타입 정의만 남기고 나머지는 아래 레이어로 옮겨라.`,
+          `  고치는 법: 타입만 남기고 나머지는 아래 레이어로 옮겨라 (스키마는 shared/content).`,
       );
     }
   }
 
-  // ---- app/ 은 아무도 import 하지 않는다 (엔트리 포인트는 예외 — 앱을 부트스트랩해야 한다)
-  const isEntry = posix === 'src/main.tsx';
+  // ---- app/ 은 아무도 import 하지 않는다 (엔트리 포인트는 예외)
+  const isEntry = /(?:^|\/)src\/main\.tsx$/.test(posix);
   if (!isEntry && !/(?:^|\/)app\//.test(posix)) {
     for (const spec of imports) {
       if (/(?:^|\/)app\//.test(spec)) {
@@ -149,24 +167,31 @@ for (const file of files) {
     }
   }
 
-  // ---- INV-11: 쓰기 경로는 admin 도메인 안에만 존재한다
-  if (!posix.startsWith(ADMIN_DOMAIN)) {
-    if (/\bapi\.github\.com\b|@octokit\//.test(src)) {
+  // ---- INV-8: viewer 는 읽기 전용
+  if (posix.startsWith('viewer/')) {
+    const write = src.match(
+      /method:\s*["'](POST|PUT|PATCH|DELETE)["']|\bapi\.github\.com\b|@octokit\//i,
+    );
+    if (write) {
       errors.push(
-        `[INV-11] ${posix}: admin 도메인 밖에서 GitHub API 를 사용한다.\n` +
-          `  콘텐츠는 빌드 타임에 content/ 에서 읽는다 — 공개 화면은 GitHub API 가 필요 없다.\n` +
-          `  고치는 법: 이 코드를 ${ADMIN_DOMAIN} 로 옮겨라. 근거: ADR-0004, CLAUDE.md INV-11`,
-      );
-    }
-    if (/method:\s*["'](POST|PUT|PATCH|DELETE)["']/i.test(src)) {
-      errors.push(
-        `[INV-11] ${posix}: admin 도메인 밖에 쓰기 요청이 있다.\n` +
-          `  고치는 법: 모든 쓰기는 ${ADMIN_DOMAIN} 안에서만. 근거: CLAUDE.md INV-11`,
+        `[INV-8] ${posix}: viewer 에 쓰기 경로가 있다 ("${write[0]}").\n` +
+          `  viewer 는 빌드 타임에 content/ 를 읽을 뿐이다.\n` +
+          `  고치는 법: admin/ 으로 옮겨라. 근거: CLAUDE.md INV-8, ARCHITECTURE.md §4`,
       );
     }
   }
 
-  // ---- 공급망: shadcn CLI 가 잘못 생성하는 무관한 'cn' 패키지 (docs/SECURITY.md §7)
+  // ---- 파일시스템 접근은 개발 서버 미들웨어의 책임이다 (ADR-0003, docs/SECURITY.md)
+  if (/from\s+["'](?:node:)?fs(?:\/promises)?["']/.test(src)) {
+    errors.push(
+      `[ADR-0003] ${posix}: 앱 소스가 파일시스템을 직접 만진다.\n` +
+        `  파일 접근은 admin 개발 서버 미들웨어(vite.config)의 책임이다.\n` +
+        `  앱 코드에 넣으면 브라우저에서 깨지고, 빌드 산출물에 새어 들어갈 수 있다.\n` +
+        `  고치는 법: 미들웨어에 두고 앱은 HTTP 로 호출하라. 근거: docs/design-docs/adr/0003-content-store.md`,
+    );
+  }
+
+  // ---- 공급망: shadcn CLI 가 잘못 생성하는 무관한 'cn' 패키지 (docs/SECURITY.md)
   if (/from\s+["']cn["']/.test(src)) {
     errors.push(
       `[공급망] ${posix}: 무관한 npm 패키지 'cn' 을 import 한다.\n` +
@@ -175,37 +200,23 @@ for (const file of files) {
     );
   }
 
-  // ---- INV-8: 공개 번들에 비밀은 없다
-  const secretLiterals = [
-    [/\bgh[pousr]_[A-Za-z0-9]{16,}/, 'GitHub 토큰'],
-    [/-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----/, '개인 키'],
-    [
-      /\b(api[_-]?key|secret|password|passwd|token)\s*[:=]\s*["'][^"'\s]{12,}["']/i,
-      '하드코딩된 자격 증명',
-    ],
-  ];
-  for (const [re, label] of secretLiterals) {
-    if (re.test(src)) {
+  // ---- DESIGN: 하드코딩된 색은 다크 모드를 깨뜨린다
+  if (!isGenerated && !isTest) {
+    const hardColor = src.match(/#[0-9a-fA-F]{3,8}\b|\brgba?\([^)]*\)/);
+    if (hardColor) {
       errors.push(
-        `[INV-8] ${posix}: ${label} 로 보이는 값이 소스에 있다.\n` +
-          `  이 사이트는 전부 공개된다. 번들에 넣은 비밀은 비밀이 아니다.\n` +
-          `  고치는 법: 자격 증명은 사용자가 런타임에 입력하게 하라. 근거: docs/SECURITY.md §3`,
+        `[DESIGN] ${posix}: 하드코딩된 색 ${hardColor[0]}\n` +
+          `  테마 토글은 토큰만 바꾼다. 하드코딩된 색은 다크 모드에서 그대로 남아 깨진다.\n` +
+          `  고치는 법: 테마 토큰으로 표현하라. 근거: docs/DESIGN.md`,
       );
     }
   }
-  const viteSecret = src.match(/import\.meta\.env\.(VITE_\w*(?:TOKEN|SECRET|KEY|PASSWORD)\w*)/i);
-  if (viteSecret) {
-    errors.push(
-      `[INV-8] ${posix}: ${viteSecret[1]} — VITE_ 환경변수는 번들에 그대로 박힌다.\n` +
-        `  고치는 법: 비밀을 환경변수로 옮겨도 공개된다. 런타임 입력으로 바꿔라. 근거: docs/SECURITY.md §3`,
-    );
-  }
 
-  // ---- INV-5: 함수 길이 (러프 추정 — 중괄호 깊이)
+  // ---- INV-5: 함수 길이 (중괄호 깊이로 추정)
   if (!isGenerated) {
-    let depth = 0,
-      start = -1,
-      name = '';
+    let depth = 0;
+    let start = -1;
+    let name = '';
     lines.forEach((l, i) => {
       const fn = l.match(/(?:function\s+(\w+)|(?:const|let)\s+(\w+)\s*=\s*(?:async\s*)?\()/);
       if (fn && depth === 0) {

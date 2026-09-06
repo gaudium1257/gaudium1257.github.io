@@ -1,41 +1,63 @@
 # ARCHITECTURE.md
 
 시스템의 최상위 지도. **무엇이 무엇에 의존해도 되는가**를 정의한다.
-여기 적힌 규칙은 `npm run lint:arch`로 기계적으로 강제된다 (INV-1, INV-2, INV-8, INV-11).
+여기 적힌 규칙은 `npm run lint:arch`로 기계적으로 강제된다 (INV-1, 2, 8, 9).
 
 ---
 
-## 1. 레이아웃
-
-리포지터리 전체가 하나의 앱이고, 그 빌드 결과가 곧 공개 사이트다.
+## 1. 워크스페이스 레이아웃
 
 ```
 gaudium1257.github.io/
-├── src/
-│   ├── app/                    # 진입점, 라우터, 프로바이더 조립
-│   ├── domains/
-│   │   ├── portfolio/          # 공개 열람 (프로젝트·경력·글 표시)
-│   │   └── admin/              # 관리자 모드: 인증 게이트 + 편집 + 커밋
-│   └── shared/
-│       ├── content/            # 콘텐츠 타입 + Zod 스키마 (단일 진실 원천)
-│       ├── ui/                 # shadcn 프리미티브 + 공용 컴포넌트
-│       ├── providers/          # 세션·라우팅·테마·저장소 어댑터
-│       └── lib/                # 공용 유틸
-├── content/                    # 포트폴리오 데이터 (JSON) — 커밋되고 배포된다
-│   └── assets/                 # 이미지·첨부
-├── public/                     # 정적 파일
-├── docs/                       # 기록 시스템 (system of record)
-├── tools/                      # 커스텀 린터, 스크립트
-└── .claude/                    # 하네스: 스킬 + 훅
+├── viewer/                  # 공개 포트폴리오 사이트 (읽기 전용)
+│   └── src/
+│       ├── app/             # 진입점, 라우터, 프로바이더 조립
+│       ├── domains/<도메인>/
+│       └── shared/          # viewer 안에서만 쓰는 것
+├── admin/                   # 편집 도구 (본인 전용)
+│   └── src/                 # viewer 와 동일한 내부 구조
+├── shared/
+│   ├── content/             # ★ 콘텐츠 타입 + Zod 스키마 (단일 진실 원천)
+│   └── ui/                  # shadcn 프리미티브 + 공용 컴포넌트
+├── content/                 # 콘텐츠 데이터 (JSON)
+├── docs/                    # 기록 시스템 (system of record)
+├── tools/                   # 커스텀 린터, 스크립트
+└── .claude/                 # 하네스: 스킬 + 훅
 ```
-
-**스키마와 데이터를 분리한다.**
-`src/shared/content/`는 **스키마**(타입 + Zod), `content/`는 **데이터**(JSON).
-읽기와 쓰기 양쪽이 같은 스키마를 통과한다. → [ADR-0003](docs/design-docs/adr/0003-content-store.md)
 
 ---
 
-## 2. 레이어 (INV-1)
+## 2. 두 앱 구조에서 가장 큰 위험: 스키마 분기 (INV-9)
+
+앱이 둘이면 **같은 개념을 두 번 정의하려는 힘**이 항상 작용한다.
+viewer 가 `Project` 타입을 만들고, admin 이 또 만들고, 한쪽만 바뀌면 조용히 깨진다.
+에이전트는 한쪽만 보고 고치기 때문에 이 사고는 **반드시** 일어난다.
+
+그래서 규칙은 단순하다:
+
+> **콘텐츠 타입과 Zod 스키마는 `shared/content/` 에만 존재한다.**
+> `viewer/` 와 `admin/` 은 정의하지 않고 **가져다 쓰기만** 한다.
+
+`lint:arch` 가 `shared/content` 밖의 스키마 정의를 잡는다.
+
+**구분해야 할 것**: 금지 대상은 *콘텐츠 모델* 이다.
+`data/` 레이어에서 HTTP 응답 같은 *전송 형태* 를 파싱하는 스키마는 오히려 INV-3 이 요구한다.
+둘을 섞지 마라 — 콘텐츠 타입은 위에서 가져오고, 전송 형태만 경계에서 만든다.
+읽기(viewer)와 쓰기(admin)가 **같은 스키마를 통과**하므로 한쪽만 맞는 데이터가 생길 수 없다.
+
+```
+              shared/content/  (타입 + 스키마: 단일 진실 원천)
+                   │                     │
+        ┌──────────┘                     └──────────┐
+        ▼ 읽기·파싱                                  ▼ 쓰기 전 검증
+   viewer (공개)                                admin (본인)
+        ▲                                            │
+        └──────────── content/*.json ◀───────────────┘
+```
+
+---
+
+## 3. 레이어 (INV-1)
 
 각 도메인 슬라이스는 아래 6개 레이어로 나뉜다. 의존성은 **한 방향으로만** 흐른다.
 
@@ -48,23 +70,23 @@ types → config → data → service → state → ui
 
 | 레이어 | 폴더 | 하는 일 | 하면 안 되는 일 |
 |---|---|---|---|
-| `types` | `types/` | 도메인 타입, Zod 스키마 | 무엇도 import 하지 않음 (외부 라이브러리 제외) |
+| `types` | `types/` | 도메인 타입 (스키마는 `shared/content` 에서 가져온다) | 내부 모듈 import |
 | `config` | `config/` | 상수, 기본값, 기능 플래그 값 | 로직·I/O |
-| `data` | `data/` | 저장소 접근(콘텐츠 로드, GitHub API), **경계 파싱** | React, 비즈니스 규칙 |
+| `data` | `data/` | 저장소 접근, **경계 파싱** | React, 비즈니스 규칙 |
 | `service` | `service/` | 비즈니스 규칙, 순수 변환 | React, 직접 I/O |
 | `state` | `state/` | 훅, 쿼리, 스토어 — 런타임 상태 | JSX 렌더링 |
 | `ui` | `ui/` | 컴포넌트, 화면 | fetch, 스키마 파싱 |
-| `providers` | `src/shared/providers/` | 세션·라우팅·테마·쿼리 클라이언트 | 도메인 지식 |
+| `providers` | `<앱>/src/shared/providers/` | 라우팅·테마·검색 인덱스 | 도메인 지식 |
 
 **허용된 엣지는 이게 전부다.** 나머지는 전부 위반이다:
 
 - 같은 레이어 내부 import: 허용
 - 아래 레이어 import: 허용 (예: `ui → state`, `service → types`)
 - 위 레이어 import: **금지**
-- 다른 도메인 import: **금지** (INV-2) — 필요하면 `src/shared/`로 승격
-- `src/shared/` import: 모든 레이어에서 허용 (단 `shared/ui`는 `ui` 레이어에서만)
+- 다른 도메인 import: **금지** (INV-2) — 필요하면 `shared/`로 승격
+- 최상위 `shared/` import: 모든 레이어에서 허용 (단 `shared/ui`는 `ui` 레이어에서만)
 - `app/`은 모든 것을 조립할 수 있다. 반대로 누구도 `app/`을 import 하지 않는다
-  — 유일한 예외는 엔트리 포인트 `src/main.tsx` 다 (앱을 부트스트랩해야 하므로)
+  — 유일한 예외는 엔트리 포인트 `main.tsx` 다
 
 ### 왜 이렇게까지 하는가
 
@@ -74,49 +96,32 @@ types → config → data → service → state → ui
 
 ---
 
-## 3. 두 모드와 쓰기 경계 (INV-11)
+## 4. viewer 는 읽기 전용 (INV-8)
 
-```
-                 ┌──────────────── 하나의 앱 ────────────────┐
-                 │                                          │
-  방문자 ───────▶│  domains/portfolio/   (읽기 전용)         │
-                 │        ▲                                 │
-                 │        │ 빌드 타임 import + Zod 파싱      │
-                 │   content/*.json  ◀──────┐               │
-                 │                          │ 커밋           │
-  본인 ─────────▶│  domains/admin/ ─────────┘               │
-   (GitHub 토큰) │   ① 토큰으로 권한 확인 → GitHub 이 판정   │
-                 │   ② 편집 → 스키마 검증 → Contents API     │
-                 └──────────────────────────────────────────┘
-                                    │
-                        커밋 → Actions 빌드 → Pages 배포(~1분)
-```
+`viewer/` 에는 콘텐츠를 바꾸는 코드가 존재하지 않는다.
+쓰기 요청·자격 증명 취급은 전부 `admin/` 안에만 있다.
 
-**쓰기 경로는 `domains/admin/` 안에만 존재한다.** 다른 어떤 도메인도 콘텐츠를 변경하는
-GitHub API 를 호출할 수 없다 (`lint:arch`가 강제).
-
-**관리자 UI 가 번들에 있다는 사실은 비밀이 아니다.** 숨기는 것에 의존하지 않는다.
-실제 권한은 GitHub 이 토큰으로 판정하고, 토큰은 빌드에 존재하지 않는다 (INV-8).
-근거와 위협 모델 → [ADR-0004](docs/design-docs/adr/0004-single-app-admin-mode.md), [docs/SECURITY.md](docs/SECURITY.md)
+이 분리가 주는 것: 공개 번들에 편집 코드와 그 의존성이 섞이지 않는다.
+공개 사이트가 작고 빠르며, 실수로 공개 경로에 쓰기가 생기면 린터가 막는다.
 
 ---
 
-## 4. 새 코드를 어디에 놓을지 판단하는 법
+## 5. 새 코드를 어디에 놓을지 판단하는 법
 
-1. 콘텐츠를 **변경**하는 코드인가? → `src/domains/admin/` (INV-11). 예외 없다
-2. 특정 도메인에만 쓰이나? → `src/domains/<domain>/<layer>/`
-3. 두 모드가 모두 쓰나? → `src/shared/`
-4. 포트폴리오 개념 자체인가 (프로젝트, 경력, 태그...)? → `src/shared/content/`
-5. 화면에 보이는 순수 프리미티브인가? → `src/shared/ui/`
+1. 콘텐츠 타입·스키마인가? → `shared/content/` (INV-9). **예외 없다**
+2. 콘텐츠를 **변경**하는 코드인가? → `admin/` (INV-8)
+3. 두 앱이 함께 쓰는 화면 프리미티브인가? → `shared/ui/`
+4. 한 앱의 특정 도메인에만 쓰이나? → `<앱>/src/domains/<도메인>/<레이어>/`
+5. 한 앱 안에서 여러 도메인이 쓰나? → `<앱>/src/shared/`
 6. 위 어디에도 안 맞나? → 새 도메인을 만들 시점이다. `/new-slice` 사용
 
 ---
 
-## 5. 도메인 목록
+## 6. 도메인 목록
 
-| 도메인 | 책임 | 품질 등급 |
-|---|---|---|
-| `portfolio` | 콘텐츠 열람 — 빌드타임 로드·파싱·표시 | B |
-| `admin` | 인증 게이트 + 편집 + 커밋 (**보안 경계**) | B |
+| 앱 | 도메인 | 책임 | 품질 등급 |
+|---|---|---|---|
+| viewer | `portfolio` | 콘텐츠 로드·파싱·표시, 검색 인덱스 | B |
+| admin | `editor` | 목록·편집·검증·저장 | B |
 
-도메인을 추가하면 **이 표와 [docs/QUALITY_SCORE.md](docs/QUALITY_SCORE.md)를 함께 갱신한다** (INV-9).
+도메인을 추가하면 **이 표와 [docs/QUALITY_SCORE.md](docs/QUALITY_SCORE.md)를 함께 갱신한다** (INV-10).

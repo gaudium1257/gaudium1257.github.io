@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 /**
- * 문서 린터 — INV-9, INV-10, CB-2 를 기계적으로 강제한다.
+ * 문서 린터 — INV-10, INV-11, CB-2 를 기계적으로 강제한다.
  * 에러 메시지에는 반드시 '고치는 법'을 함께 넣는다 (CB-3).
  */
 import { readFileSync, readdirSync, existsSync, statSync } from 'node:fs';
-import { join, dirname, resolve, relative, sep } from 'node:path';
+import { join, dirname, resolve, sep } from 'node:path';
 
 const errors = [];
 const warnings = [];
@@ -27,14 +27,12 @@ const mdFiles = [...walk('docs'), ...['CLAUDE.md', 'ARCHITECTURE.md'].filter(exi
 // ---------------------------------------------------------------- 1. 링크 무결성
 const LINK = /\[([^\]]*)\]\(([^)\s]+)\)/g;
 for (const file of mdFiles) {
-  const body = read(file);
-  for (const m of body.matchAll(LINK)) {
+  for (const m of read(file).matchAll(LINK)) {
     const target = m[2];
     if (/^(https?:|mailto:|#)/.test(target)) continue;
     const clean = target.split('#')[0];
     if (!clean) continue;
-    const resolved = resolve(dirname(file), clean);
-    if (!existsSync(resolved)) {
+    if (!existsSync(resolve(dirname(file), clean))) {
       errors.push(
         `[링크 깨짐] ${toPosix(file)} → "${target}"\n` +
           `  고치는 법: 경로를 고치거나, 대상 문서를 만들거나, 링크를 지워라. ` +
@@ -64,7 +62,7 @@ function checkIndex(indexPath, dir, { recursive = false, ignore = [] } = {}) {
   }
 }
 
-checkIndex('docs/design-docs/index.md', 'docs/design-docs', { ignore: [] });
+checkIndex('docs/design-docs/index.md', 'docs/design-docs');
 checkIndex('docs/design-docs/adr/index.md', 'docs/design-docs/adr', {
   ignore: ['0000-template.md'],
 });
@@ -88,24 +86,23 @@ if (existsSync('CLAUDE.md')) {
   }
 }
 
-// ---------------------------------------------------------------- 4. 생성 문서 표식 (INV-9)
+// ---------------------------------------------------------------- 4. 생성 문서 표식 (INV-10)
 for (const f of walk('docs/generated')) {
   if (f.endsWith('README.md')) continue;
   if (!read(f).includes('GENERATED FILE')) {
     errors.push(
-      `[INV-9] ${toPosix(f)} 첫 줄에 생성물 표식이 없다.\n` +
+      `[INV-10] ${toPosix(f)} 첫 줄에 생성물 표식이 없다.\n` +
         `  고치는 법: 파일 맨 위에 다음을 넣어라:\n` +
         `  <!-- GENERATED FILE — do not edit. Run: npm run docs:generate -->`,
     );
   }
 }
 
-// ---------------------------------------------------------------- 5. 실행 계획 상태 정합
+// ---------------------------------------------------------------- 5. 실행 계획 형식·상태
 for (const f of walk('docs/exec-plans/active')) {
   const body = read(f);
   const boxes = body.match(/- \[[ x]\]/gi) || [];
-  const doneAll = boxes.length > 0 && boxes.every((b) => /x/i.test(b));
-  if (doneAll) {
+  if (boxes.length > 0 && boxes.every((b) => /x/i.test(b))) {
     warnings.push(
       `${toPosix(f)} 의 완료 조건이 모두 체크됐다. ` +
         `잔여 작업을 tech-debt-tracker 로 옮기고 completed/ 로 이동하라 (/exec-plan).`,
@@ -130,8 +127,9 @@ for (const f of walk('docs/references')) {
     );
   } else {
     const age = (Date.now() - new Date(`${m[1]}-${m[2]}-${m[3]}`).getTime()) / 86400000;
-    if (age > 180)
+    if (age > 180) {
       warnings.push(`${toPosix(f)} 확인일이 ${Math.round(age)}일 지났다. /doc-gardening 대상.`);
+    }
   }
 }
 

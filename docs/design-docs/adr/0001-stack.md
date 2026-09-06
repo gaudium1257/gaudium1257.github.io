@@ -1,45 +1,46 @@
-# ADR-0001: 기술 스택과 워크스페이스 구성
+# ADR-0001: 기술 스택과 두 앱 워크스페이스
 
-- **상태**: **SUPERSEDED by [ADR-0004](0004-single-app-admin-mode.md)** (2026-09-06)
+- **상태**: ACCEPTED
 - **날짜**: 2026-09-06
-- **관련**: [ARCHITECTURE.md](../../../ARCHITECTURE.md)
+- **관련**: [ARCHITECTURE.md](../../../ARCHITECTURE.md), [ADR-0002](0002-layered-architecture.md)
 
-> **이 결정의 절반은 폐기되었다.**
-> 워크스페이스 분리(viewer/admin 별도 앱)는 [ADR-0004](0004-single-app-admin-mode.md) 로 대체됐다.
-> **기술 스택 선택은 그대로 유효하다** — 아래 '결정' 절의 스택 부분만 읽어라.
+## 맥락
 
-## 맥락 (당시)
+포트폴리오를 보여주는 공개 사이트(viewer)와, 본인만 쓰는 편집 도구(admin)를 만든다.
+호스팅은 GitHub Pages(정적)다. 요구 스택은 React + TypeScript + shadcn.
 
-포트폴리오를 보여주는 공개 사이트와 편집 도구를 만든다. 호스팅은 GitHub Pages(정적)다.
-요구 스택은 React + TypeScript + shadcn.
+두 앱은 **같은 콘텐츠 모델**을 다룬다. 이것이 이 결정의 핵심 제약이다.
+
+## 검토한 선택지
+
+| 선택지 | 장점 | 단점 |
+|---|---|---|
+| 앱 두 개를 독립 저장소로 | 배포 단순 | 스키마 중복 → 드리프트. 에이전트가 한쪽만 보고 고침 |
+| 한 앱 안에서 라우트로 분리 | 가장 단순 | 공개 번들에 편집 코드 포함. 읽기 전용 보장 불가 |
+| **npm workspaces 모노레포 (채택)** | 스키마 단일 원천, 한 번에 검증, 번들 분리 | 루트 설정이 약간 늘어남 |
 
 ## 결정
 
-### 여전히 유효한 것 — 기술 스택
+**npm workspaces 모노레포**: `viewer`, `admin`, `shared/*`.
 
-빌드는 **Vite**, 언어는 **TypeScript strict**, UI 는 **Tailwind v4 + shadcn/ui**,
-경계 검증은 **Zod**, 테스트는 **Vitest + Testing Library**, 라우팅은 **React Router**,
-마크다운 렌더는 **react-markdown**(raw HTML 을 렌더하지 않아 XSS 경로가 닫힌다).
-아키텍처 강제는 **ESLint(flat config) + 자체 린터(`tools/lint/`)**.
+- 빌드 **Vite** · 언어 **TypeScript strict** · UI **Tailwind + shadcn/ui** · 검증 **Zod**
+- 라우팅 **React Router** · 테스트 **Vitest + Testing Library**
+- 아키텍처 강제 **ESLint(flat config) + 자체 린터(`tools/lint/`)**
 
-> **TanStack Query 는 도입하지 않는다** (2026-09-06, EP-0001 결정 로그).
-> 콘텐츠는 빌드타임 상수라 캐싱할 서버 상태가 없고, 관리자 호출은 일회성 명령 3개뿐이다.
-> 캐싱·무효화의 이득이 없어 의존성만 늘린다 (CB-7).
->
-> **Playwright(E2E)는 아직 도입하지 않았다** — TD-006 으로 등록되어 있다.
+패키지 매니저는 **npm**: 개발 환경에 이미 있고, GitHub Actions 기본 지원이며,
+워크스페이스만 있으면 충분해 pnpm 의 이점이 크지 않다 (CB-7).
 
-패키지 매니저는 **npm**. 개발 환경에 이미 있고 GitHub Actions 기본 지원이다.
-
-shadcn 은 라이브러리가 아니라 **코드 생성기**다. 생성물은 손대지 않는다 (INV-6).
-
-### 폐기된 것 — 워크스페이스 분리
-
-~~npm workspaces 모노레포: `viewer`, `admin`, `shared/*`~~
-
-**폐기 이유**: 관리 기능을 별도 앱이 아니라 **공개 사이트 안의 인증된 모드**로 제공하기로 했다.
-앱이 하나이므로 워크스페이스가 필요 없고, 오히려 스키마·라우팅·컴포넌트를 갈라놓는 비용만 남는다.
-→ [ADR-0004](0004-single-app-admin-mode.md)
+**상태 관리 라이브러리는 처음부터 넣지 않는다.** 필요해지면 그때 ADR 을 쓴다.
+검색·테마는 프로바이더와 URL 로 충분하다 ([ADR-0004](0004-navigation-shell.md)).
 
 ## 결과
 
-스택 결정은 ADR-0004 아래에서 그대로 이어진다. 구조만 단일 앱으로 바뀐다.
+- 좋아지는 것: 콘텐츠 스키마를 한 곳에서 고치면 두 앱이 같이 검증된다.
+  `npm run verify` 하나로 전부 검사된다. 공개 번들에 편집 코드가 섞이지 않는다
+- 나빠지는 것: 워크스페이스 간 순환 참조 위험 → `lint:arch`로 차단한다
+- shadcn 은 라이브러리가 아니라 **코드 생성기**다. 생성물은 손대지 않는다 (INV-6)
+
+## 되돌리는 조건
+
+admin 이 정적 호스팅으로 감당 불가능한 요구(서버 인증 등)를 하게 되면,
+admin 만 별도 런타임으로 분리하는 ADR 을 새로 쓴다.

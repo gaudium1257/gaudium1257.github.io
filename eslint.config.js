@@ -6,18 +6,12 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   // .vite 는 개발 서버가 만드는 의존성 캐시다. 소스가 아니므로 검사하지 않는다
-  { ignores: ['dist', 'node_modules', 'coverage', '.vite', 'playwright-report'] },
+  { ignores: ['**/dist', 'node_modules', 'coverage', '**/.vite', '**/components/ui/**'] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ['**/*.{ts,tsx}'],
-    languageOptions: {
-      ecmaVersion: 2022,
-      globals: globals.browser,
-    },
-    plugins: {
-      'react-hooks': reactHooks,
-      'react-refresh': reactRefresh,
-    },
+    languageOptions: { ecmaVersion: 2022, globals: globals.browser },
+    plugins: { 'react-hooks': reactHooks, 'react-refresh': reactRefresh },
     rules: {
       ...reactHooks.configs.recommended.rules,
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
@@ -31,9 +25,9 @@ export default tseslint.config(
       'no-empty': ['error', { allowEmptyCatch: false }],
     },
   },
-  // 하네스 도구는 Node 환경이며 앱 규칙을 적용하지 않는다
+  // 빌드 설정과 하네스 도구는 Node 환경이다
   {
-    files: ['tools/**/*.mjs', '.claude/hooks/**/*.mjs'],
+    files: ['**/vite.config.ts', 'vitest.config.ts', 'tools/**/*.mjs', '.claude/hooks/**/*.mjs'],
     languageOptions: { globals: globals.node },
   },
 );

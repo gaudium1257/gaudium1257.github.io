@@ -4,11 +4,7 @@
     "SessionStart": [
       {
         "hooks": [
-          {
-            "type": "command",
-            "command": "node .claude/hooks/session-map.mjs",
-            "timeout": 10
-          }
+          { "type": "command", "command": "node .claude/hooks/session-map.mjs", "timeout": 10 }
         ]
       }
     ],
@@ -16,11 +12,7 @@
       {
         "matcher": "Write|Edit|MultiEdit|NotebookEdit",
         "hooks": [
-          {
-            "type": "command",
-            "command": "node .claude/hooks/guard-paths.mjs",
-            "timeout": 10
-          }
+          { "type": "command", "command": "node .claude/hooks/guard-paths.mjs", "timeout": 10 }
         ]
       }
     ],
@@ -28,21 +20,13 @@
       {
         "matcher": "Write|Edit|MultiEdit",
         "hooks": [
-          {
-            "type": "command",
-            "command": "node .claude/hooks/post-edit-check.mjs",
-            "timeout": 15
-          }
+          { "type": "command", "command": "node .claude/hooks/post-edit-check.mjs", "timeout": 15 }
         ]
       },
       {
         "matcher": "Bash",
         "hooks": [
-          {
-            "type": "command",
-            "command": "node .claude/hooks/track-verify.mjs",
-            "timeout": 10
-          }
+          { "type": "command", "command": "node .claude/hooks/track-verify.mjs", "timeout": 10 }
         ]
       }
     ],

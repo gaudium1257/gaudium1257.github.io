@@ -20,13 +20,12 @@
 
 | ID | 등급 | 내용 | 위치 | 등록일 |
 |---|---|---|---|---|
-| TD-005 | P0 | **커밋 성공 경로가 미검증이다.** 실패(401)만 실물 확인됨. 실제 토큰이 필요해 사용자만 검증 가능 | [github.ts](../../src/domains/admin/data/github.ts) | 2026-09-06 |
-| TD-003 | P1 | 제품 스펙 3건이 DRAFT. 스키마 필드가 확정 아님 | [product-specs](../product-specs/index.md) | 2026-09-06 |
-| TD-006 | P1 | E2E 테스트 없음. TESTING.md 는 Playwright 로 핵심 여정을 덮으라고 한다 | [TESTING.md](../TESTING.md) | 2026-09-06 |
-| TD-007 | P2 | 편집기가 JSON 직접 편집이다. 필드별 폼이 더 안전하고 빠름 (스펙 A-5) | [ContentEditor.tsx](../../src/domains/admin/ui/ContentEditor.tsx) | 2026-09-06 |
-| TD-008 | P2 | shadcn CLI 가 utils 별칭을 잘못 해석해 `from "cn"` 을 생성한다. `npm run ui:add` 가 교정하지만 CLI 가 고쳐지면 제거할 것 | [fix-shadcn-imports.mjs](../../tools/scripts/fix-shadcn-imports.mjs) | 2026-09-06 |
-
-| TD-010 | P2 | 이미지·첨부 업로드 미구현. 스펙 A-5 의 이미지 요구가 열려 있음 | [admin-mode.md](../product-specs/admin-mode.md) | 2026-09-06 |
+| TD-007 | P1 | admin 미들웨어에 자체 테스트가 없다. 경로 조작·검증 차단은 수동 확인만 했다 | [content-api-plugin.ts](../../admin/content-api-plugin.ts) | 2026-09-06 |
+| TD-008 | P2 | E2E 테스트 없음. 배너 동작은 수동 검증에 의존한다 | [TESTING.md](../TESTING.md) | 2026-09-06 |
+| TD-009 | P2 | 배포 워크플로 없음. CI 는 verify 만 하고 아직 실행된 적 없다 | [RELIABILITY.md](../RELIABILITY.md) | 2026-09-06 |
+| TD-005 | P2 | 다국어를 만들지 않기로 했다. 나중에 필요해지면 **스키마 마이그레이션**이 필요하다 | [ADR-0004](../design-docs/adr/0004-navigation-shell.md) | 2026-09-06 |
+| TD-006 | P2 | admin 이 로컬 전용이라 다른 기기에서 편집할 수 없다. 의도된 제약이나 기록해 둔다 | [ADR-0003](../design-docs/adr/0003-content-store.md) | 2026-09-06 |
+| TD-010 | P2 | 콘텐츠가 샘플이다. 실제 프로필·논문·프로젝트로 채워야 한다 | content/ | 2026-09-06 |
 
 해결한 항목은 지우지 말고 아래로 옮긴다.
 
@@ -34,7 +33,7 @@
 
 | ID | 내용 | 해결일 | 해결한 변경 |
 |---|---|---|---|
-| TD-001 | 관리자 자격 증명 방식 미확정 | 2026-09-06 | 파인그레인드 PAT + sessionStorage 로 확정 ([ADR-0004](../design-docs/adr/0004-single-app-admin-mode.md)) |
-| TD-002 | 애플리케이션 스캐폴드 부재 | 2026-09-06 | [EP-0001](active/0001-bootstrap-scaffold.md) 단계 1~10 완료 |
-| TD-004 | 마크다운 새니타이즈 라이브러리 미선정 | 2026-09-06 | react-markdown 채택 (raw HTML 을 렌더하지 않음) |
-| TD-009 | 미사용 shadcn 컴포넌트가 sonner·next-themes 를 끌고 들어옴 | 2026-09-06 | 자가 리뷰에서 발견. Dialog·Toaster 삭제 + 의존성 2개 제거 (GR-9) |
+| TD-001 | 콘텐츠 저장 방식·admin 실행 위치 미결정 | 2026-09-06 | admin 로컬 전용 + 개발 서버 미들웨어로 확정 ([ADR-0003](../design-docs/adr/0003-content-store.md)) |
+| TD-002 | 다국어 범위 미확정 | 2026-09-06 | 다국어를 만들지 않기로 결정 ([ADR-0004](../design-docs/adr/0004-navigation-shell.md)) |
+| TD-003 | 애플리케이션 스캐폴드 부재 | 2026-09-06 | [EP-0001](completed/0001-bootstrap-scaffold.md) 완주 |
+| TD-004 | 콘텐츠 스키마 필드 미확정 | 2026-09-06 | 엔티티 5종 확정 ([content-model.md](../product-specs/content-model.md)) |

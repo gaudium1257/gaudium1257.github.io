@@ -1,0 +1,11 @@
+{
+  "id": "edu-sample",
+  "category": "education",
+  "title": "○○대학교 ○○학과",
+  "organization": "",
+  "startedOn": "2022-03-01",
+  "endedOn": null,
+  "description": "학사 과정",
+  "order": 1,
+  "visibility": "public"
+}

@@ -2,14 +2,19 @@
   "name": "gaudium1257-portfolio",
   "private": true,
   "type": "module",
+  "workspaces": [
+    "viewer",
+    "admin",
+    "shared/*"
+  ],
   "engines": {
     "node": ">=20"
   },
   "scripts": {
     "verify": "node tools/scripts/verify.mjs",
-    "dev": "vite",
-    "build": "tsc --noEmit && vite build && node tools/scripts/prerender-routes.mjs",
-    "preview": "vite preview",
+    "dev:viewer": "npm run dev --workspace @portfolio/viewer",
+    "dev:admin": "npm run dev --workspace @portfolio/admin",
+    "build": "npm run build --workspace @portfolio/viewer",
     "typecheck": "tsc --noEmit",
     "lint": "eslint . && prettier --check .",
     "lint:fix": "eslint . --fix && prettier --write .",
@@ -17,7 +22,7 @@
     "lint:docs": "node tools/lint/check-docs.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
-    "ui:add": "shadcn add --yes && node tools/scripts/fix-shadcn-imports.mjs",
+    "ui:add": "shadcn add --yes --cwd shared/ui && node tools/scripts/fix-shadcn-imports.mjs",
     "ui:fix": "node tools/scripts/fix-shadcn-imports.mjs",
     "docs:generate": "echo \"생성기 없음 — tools/scripts/ 에 추가하고 docs/generated/README.md 표를 갱신하라\""
   },

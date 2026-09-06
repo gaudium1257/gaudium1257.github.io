@@ -1,0 +1,30 @@
+@import 'tailwindcss';
+
+/* 공유 UI 도 스캔해야 한다 — 이유는 docs/DESIGN.md 참고 */
+@source '../../../shared/ui';
+
+/* admin 은 도구다. 토큰은 최소한만 두고 라이트 모드로 고정한다 (PRODUCT_SENSE) */
+@theme {
+  --color-background: oklch(1 0 0);
+  --color-foreground: oklch(0.15 0.01 260);
+  --color-muted: oklch(0.97 0.003 260);
+  --color-muted-foreground: oklch(0.48 0.014 260);
+  --color-border: oklch(0.91 0.005 260);
+  --color-input: oklch(0.91 0.005 260);
+  --color-ring: oklch(0.62 0.02 260);
+  --color-primary: oklch(0.24 0.02 260);
+  --color-primary-foreground: oklch(0.98 0 0);
+  --color-secondary: oklch(0.96 0.004 260);
+  --color-secondary-foreground: oklch(0.24 0.02 260);
+  --color-accent: oklch(0.94 0.006 260);
+  --color-accent-foreground: oklch(0.24 0.02 260);
+  --color-destructive: oklch(0.55 0.21 27);
+  --color-card: oklch(1 0 0);
+  --color-card-foreground: oklch(0.15 0.01 260);
+  --radius: 0.5rem;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+}

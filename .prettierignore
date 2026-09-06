@@ -1,6 +1,7 @@
 dist
 node_modules
 coverage
+.vite
 package-lock.json
 
 # 문서는 사람이 쓰는 산문이다. 표·줄바꿈을 도구가 바꾸지 않게 둔다
@@ -8,8 +9,7 @@ docs
 *.md
 
 # shadcn CLI 생성물은 생성된 그대로 둔다 (INV-6)
-src/shared/ui/components/ui
+**/components/ui
 
-# 콘텐츠는 관리자 모드가 쓰는 데이터다 (ADR-0003)
+# 콘텐츠는 admin 이 쓰는 데이터다
 content
-.vite

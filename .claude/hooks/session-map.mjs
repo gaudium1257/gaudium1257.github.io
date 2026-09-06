@@ -4,14 +4,13 @@
 import { readdirSync, readFileSync, existsSync } from 'node:fs';
 
 const out = [];
-
-function safeRead(p) {
+const safeRead = (p) => {
   try {
     return existsSync(p) ? readFileSync(p, 'utf8') : '';
   } catch {
     return '';
   }
-}
+};
 
 // 1. 활성 실행 계획
 try {
@@ -31,7 +30,7 @@ try {
     out.push('## 활성 실행 계획\n- 없음. 다중 단계 작업을 시작한다면 `/exec-plan` 을 먼저 쓴다.');
   }
 } catch {
-  /* noop */
+  /* 계획을 못 읽어도 세션은 계속된다 */
 }
 
 // 2. 급한 기술 부채 (P0/P1만)
@@ -47,26 +46,37 @@ try {
     out.push('→ 상세: `docs/exec-plans/tech-debt-tracker.md`');
   }
 } catch {
-  /* noop */
+  /* 부채 목록을 못 읽어도 세션은 계속된다 */
 }
 
-// 3. 미결정 ADR / DRAFT 스펙 — 이 위에 큰 구현을 쌓으면 안 된다
+// 3. 미결정 — 이 위에 큰 구현을 쌓으면 안 된다
 try {
   const adr = safeRead('docs/design-docs/adr/index.md');
   const open = adr.split('\n').filter((l) => /\*\*OPEN\*\*|\|\s*OPEN\s*\|/.test(l));
-  if (open.length) {
+  const specs = safeRead('docs/product-specs/index.md');
+  // 상태 칸이 DRAFT 로 '시작'하는 행만. "AGREED (세부는 DRAFT)" 를 미결정으로 오해하지 않는다
+  const draft = specs.split('\n').filter((l) => {
+    const cells = l.split('|').map((c) => c.trim());
+    return cells.length >= 4 && /\.md\)/.test(cells[1]) && /^DRAFT\b/.test(cells[3]);
+  });
+  if (open.length || draft.length) {
     out.push('\n## 미결정 (이 위에 큰 구현을 쌓지 말 것)');
     for (const l of open) {
       const t = l.match(/\[(\d+)\]\(([^)]+)\)\s*\|\s*([^|]+)\|/);
       if (t) out.push(`- ADR-${t[1]} ${t[3].trim()} → \`docs/design-docs/adr/${t[2]}\``);
     }
+    for (const l of draft) {
+      const t = l.match(/\[([^\]]+)\]\(([^)]+)\)\s*\|\s*([^|]+)\|/);
+      if (t) out.push(`- 스펙 DRAFT: ${t[3].trim()} → \`docs/product-specs/${t[2]}\``);
+    }
   }
 } catch {
-  /* noop */
+  /* 미결정 목록을 못 읽어도 세션은 계속된다 */
 }
 
 out.push(
   '\n---\n지도는 `CLAUDE.md`. 불변식은 협상 불가하며 훅과 린터가 강제한다.\n' +
+    '앱이 둘(viewer/admin)이고 스키마는 `shared/content` 하나뿐이다 (INV-9).\n' +
     '코드를 바꿨으면 `/verify`, UI 를 바꿨으면 `/ui-verify`.',
 );
 

@@ -1,0 +1,11 @@
+{
+  "id": "skill-sample",
+  "category": "skill",
+  "title": "React · TypeScript",
+  "organization": "",
+  "startedOn": null,
+  "endedOn": null,
+  "description": "프로덕션 수준의 프론트엔드 개발",
+  "order": 1,
+  "visibility": "public"
+}

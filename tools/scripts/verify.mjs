@@ -6,7 +6,9 @@
 import { spawnSync } from 'node:child_process';
 import { existsSync, readdirSync } from 'node:fs';
 
-const hasSource = ['src'].some((d) => existsSync(d) && readdirSync(d).length > 0);
+const hasSource = ['viewer/src', 'admin/src', 'shared'].some(
+  (d) => existsSync(d) && readdirSync(d).length > 0,
+);
 const hasDeps = existsSync('node_modules');
 
 // Node 20+ 는 보안상 .cmd 를 shell 없이 실행하지 못한다. 명령을 문자열로 만들어 shell 에 넘긴다.
@@ -31,13 +33,13 @@ const steps = [
     name: 'lint:arch',
     command: `${node} tools/lint/check-architecture.mjs`,
     skip: false,
-    guards: 'INV-1, INV-2, INV-5, INV-8, INV-11',
+    guards: 'INV-1, 2, 5, 8, 9',
   },
   {
     name: 'lint:docs',
     command: `${node} tools/lint/check-docs.mjs`,
     skip: false,
-    guards: 'INV-9, INV-10, CB-2',
+    guards: 'INV-10, 11, CB-2',
   },
   {
     name: 'test',

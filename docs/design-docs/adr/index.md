@@ -5,10 +5,10 @@
 
 | # | 제목 | 상태 |
 |---|---|---|
-| [0001](0001-stack.md) | 기술 스택과 워크스페이스 구성 | SUPERSEDED by 0004 (스택 부분은 유효) |
+| [0001](0001-stack.md) | 기술 스택과 두 앱 워크스페이스 | ACCEPTED |
 | [0002](0002-layered-architecture.md) | 도메인 슬라이스 + 6레이어 아키텍처 | ACCEPTED |
-| [0003](0003-content-store.md) | 포트폴리오 콘텐츠 저장 방식 | ACCEPTED |
-| [0004](0004-single-app-admin-mode.md) | 단일 앱 + 인증 게이트 관리자 모드 | ACCEPTED |
+| [0003](0003-content-store.md) | 콘텐츠 저장 방식과 게시 경로 | ACCEPTED |
+| [0004](0004-navigation-shell.md) | 내비게이션 셸: 검색·테마 | ACCEPTED |
 
 상태값: `OPEN`(미결정) · `ACCEPTED` · `SUPERSEDED by NNNN` · `REJECTED`
 
