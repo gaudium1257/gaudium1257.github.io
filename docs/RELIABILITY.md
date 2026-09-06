@@ -13,7 +13,15 @@ admin 은 CI 빌드 대상이 아니다. 공개 경로에 올리려면 [SECURITY
 
 **게시는 git push 다.** admin 은 `content/` 파일을 고칠 뿐, 게시하지 않는다.
 
-배포 소스는 **GitHub Actions** 로 설정한다 (Settings → Pages → Source: GitHub Actions).
+배포 소스는 반드시 **GitHub Actions** 여야 한다 (Settings → Pages → Source).
+
+> **겪은 함정**: 소스가 `Deploy from a branch` 이면 레거시 브랜치 빌더와 우리 워크플로가
+> **같은 커밋을 각자 배포하며 경쟁한다.** 늦게 끝난 쪽이 이긴다.
+> 브랜치 빌더가 이기면 리포 루트가 그대로 서빙되어 (index.html 이 viewer/ 안에 있으므로)
+> 전 경로가 404 가 되고, `CLAUDE.md`·`package.json` 같은 내부 파일이 사이트 URL 로 노출된다.
+>
+> **진단법**: `curl -o /dev/null -w "%{http_code}" https://<site>/CLAUDE.md` 가 200 이면
+> 브랜치 빌더가 서빙 중이다. 한 커밋에 배포가 2개 생기는 것도 같은 신호다.
 빌드 산출물을 커밋하지 않는다 — 소스와 `content/` 만 커밋한다.
 
 ## 파이프라인
