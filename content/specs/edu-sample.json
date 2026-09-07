@@ -1,9 +1,9 @@
 {
   "id": "edu-sample",
   "category": "education",
-  "title": "○○대학교 ○○학과",
+  "title": "고려대학교 컴퓨터학과",
   "organization": "",
-  "startedOn": "2022-03-01",
+  "startedOn": "2026-03-01",
   "endedOn": null,
   "description": "학사 과정",
   "order": 1,
