@@ -69,10 +69,11 @@ export const FORM_FIELDS: Record<ContentKind, readonly FieldSpec[]> = {
       label: '분류',
       kind: 'select',
       options: [
-        { value: 'education', label: '학력' },
+        { value: 'education', label: '학력 / 학적' },
         { value: 'experience', label: '경력 · 활동' },
         { value: 'skill', label: '기술' },
-        { value: 'award', label: '수상 · 자격' },
+        { value: 'award', label: '수상' },
+        { value: 'certificate', label: '자격증' },
       ],
     },
     { name: 'title', label: '제목', kind: 'text' },

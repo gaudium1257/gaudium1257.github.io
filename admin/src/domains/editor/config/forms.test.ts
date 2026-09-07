@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { contentSchemas, type ContentKind } from '@portfolio/content';
+import { contentSchemas, specCategorySchema, type ContentKind } from '@portfolio/content';
 import { FORM_FIELDS } from './forms';
 
 /**
@@ -30,6 +30,12 @@ describe('폼 명세와 스키마 정합', () => {
       }
     });
   }
+
+  it('분류 선택지가 스키마 enum 과 일치한다', () => {
+    const field = FORM_FIELDS.spec.find((f) => f.name === 'category');
+    const optionValues = (field?.options ?? []).map((o) => o.value).sort();
+    expect(optionValues).toEqual([...specCategorySchema.options].sort());
+  });
 
   it('모든 종류에 폼이 있다', () => {
     expect(Object.keys(FORM_FIELDS).sort()).toEqual(KINDS.sort());

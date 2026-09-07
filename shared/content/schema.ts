@@ -41,7 +41,13 @@ export const profileSchema = z.object({
 });
 
 /** About 페이지의 스펙 항목. 분류는 스펙에서 확정됐다. */
-export const specCategorySchema = z.enum(['education', 'experience', 'skill', 'award']);
+export const specCategorySchema = z.enum([
+  'education',
+  'experience',
+  'skill',
+  'award',
+  'certificate',
+]);
 
 export const specItemSchema = z.object({
   id: idSchema,

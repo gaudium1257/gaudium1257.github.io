@@ -19,9 +19,14 @@
 | `Project` | Project | id, 제목, 기간, 역할, 요약, 본문, 기술 스택, 링크, 결과 |
 | `BlogPost` | Blog | id, 제목, 작성일, 요약, 본문, 태그 |
 
-### SpecItem 분류 (기본안 채택)
+### SpecItem 분류
 
-`education`(학력) · `experience`(경력·활동) · `skill`(기술) · `award`(수상·자격)
+`education`(학력 / 학적) · `experience`(경력 · 활동) · `skill`(기술) ·
+`award`(수상) · `certificate`(자격증)
+
+> 2026-09-07: 수상과 자격증을 분리하고 학력을 '학력 / 학적' 으로 바꿨다 (사용자 요청).
+> 분류를 추가할 때는 **스키마 · 표시 목록 · 폼 선택지 세 곳**을 함께 고쳐야 한다 —
+> 빠뜨리면 저장은 되는데 화면에 안 나온다. sections.test.ts 와 forms.test.ts 가 잡는다.
 
 ## 저장 형태
 

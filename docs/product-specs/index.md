@@ -17,7 +17,7 @@
 - **admin 은 로컬 전용** — 자격 증명 없음 ([ADR-0003](../design-docs/adr/0003-content-store.md))
 - **다국어는 만들지 않음** — Language 버튼 제거 ([ADR-0004](../design-docs/adr/0004-navigation-shell.md))
 - Home 은 각 섹션 3개씩 노출
-- About 스펙 분류: 학력 · 경력/활동 · 기술 · 수상/자격
+- About 스펙 분류: 학력/학적 · 경력·활동 · 기술 · 수상 · 자격증 (2026-09-07 수상/자격증 분리)
 
 ## 규칙
 
