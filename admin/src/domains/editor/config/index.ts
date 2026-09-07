@@ -11,3 +11,6 @@ export const EDITABLE_KINDS: ReadonlyArray<{ kind: ContentKind; label: string }>
 
 /** 개발 서버 미들웨어의 엔드포인트 (ADR-0003) */
 export const CONTENT_API = '/api/content';
+
+/** 게시 엔드포인트 (ADR-0003 개정) */
+export const PUBLISH_API = '/api/publish';

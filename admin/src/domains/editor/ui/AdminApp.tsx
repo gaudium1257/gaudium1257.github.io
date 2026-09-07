@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react';
 import { PortfolioApp, type EditingSlots } from '@portfolio/portfolio';
 import type { ContentKind } from '@portfolio/content';
 import { useApiContent } from '../state/use-api-content';
+import { usePublish } from '../state/use-publish';
 import { AddButton, EditButton } from './EditButton';
 import { EditorPanel } from './EditorPanel';
 import { EditingBanner } from './EditingBanner';
@@ -25,6 +26,7 @@ interface Target {
  */
 export function AdminApp() {
   const { content, error, loaded, refresh } = useApiContent();
+  const publish = usePublish();
   const [target, setTarget] = useState<Target | null>(null);
 
   const open = useCallback((kind: ContentKind, id: string) => setTarget({ kind, id }), []);
@@ -32,7 +34,8 @@ export function AdminApp() {
 
   const handleSaved = useCallback(() => {
     void refresh();
-  }, [refresh]);
+    void publish.refreshChanges();
+  }, [refresh, publish]);
 
   const editing: EditingSlots = {
     renderAddAction: (kind) => <AddButton label={ADD_LABEL[kind]} onClick={() => open(kind, '')} />,
@@ -47,7 +50,16 @@ export function AdminApp() {
     <PortfolioApp
       content={content}
       editing={editing}
-      banner={<EditingBanner error={error} />}
+      banner={
+        <EditingBanner
+          error={error}
+          changes={publish.changes}
+          publishState={publish.state}
+          onConfirm={publish.confirm}
+          onCancel={publish.cancel}
+          onRun={() => void publish.run()}
+        />
+      }
       overlay={
         target ? (
           <EditorPanel

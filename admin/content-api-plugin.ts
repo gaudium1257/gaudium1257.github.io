@@ -1,6 +1,7 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import type { Plugin } from 'vite';
 import { createContentHandler } from './content-handler';
+import { pendingChanges, publish } from './publish-handler';
 
 /**
  * 콘텐츠 쓰기 미들웨어의 HTTP 어댑터 (ADR-0003).
@@ -47,6 +48,25 @@ export function contentApiPlugin(repoRoot: string): Plugin {
     // 개발 서버에만 존재한다 — 빌드에는 절대 들어가지 않는다
     apply: 'serve',
     configureServer(server) {
+      // 게시: 미게시 변경 조회(GET) 와 커밋+푸시(POST) — ADR-0003 개정
+      server.middlewares.use('/api/publish', (req: IncomingMessage, res: ServerResponse) => {
+        const send = (status: number, body: unknown) => {
+          res.statusCode = status;
+          res.setHeader('Content-Type', 'application/json; charset=utf-8');
+          res.end(JSON.stringify(body));
+        };
+        if (req.method === 'GET') {
+          send(200, { changes: pendingChanges(repoRoot) });
+          return;
+        }
+        if (req.method === 'POST') {
+          const result = publish(repoRoot);
+          send(result.ok ? 200 : 409, result);
+          return;
+        }
+        send(405, { error: '지원하지 않는 메서드입니다.' });
+      });
+
       server.middlewares.use('/api/content', (req: IncomingMessage, res: ServerResponse) => {
         const send = ({ status, body }: { status: number; body: unknown }) => {
           res.statusCode = status;
