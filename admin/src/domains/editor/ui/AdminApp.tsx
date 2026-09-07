@@ -39,6 +39,13 @@ export function AdminApp() {
     void publish.refreshChanges();
   }, [refresh, publish]);
 
+  /** 삭제하면 편집할 대상이 사라진다 — 패널을 닫아야 한다 (EP-0003) */
+  const handleDeleted = useCallback(() => {
+    setTarget(null);
+    void refresh();
+    void publish.refreshChanges();
+  }, [refresh, publish]);
+
   const editing: EditingSlots = {
     renderAddAction: (kind) => <AddButton label={ADD_LABEL[kind]} onClick={() => open(kind, '')} />,
     renderItemAction: (kind, id) => <EditButton onClick={() => open(kind, id)} />,
@@ -69,17 +76,39 @@ export function AdminApp() {
             onCancel={publish.cancel}
             onConfirm={() => void publish.run()}
           />
-          {target ? (
-            <EditorPanel
-              key={`${target.kind}:${target.id}`}
-              kind={target.kind}
-              id={target.id}
-              onClose={close}
-              onSaved={handleSaved}
-            />
-          ) : null}
+          <ActiveEditor
+            target={target}
+            onClose={close}
+            onSaved={handleSaved}
+            onDeleted={handleDeleted}
+          />
         </>
       }
+    />
+  );
+}
+
+/** key 로 대상이 바뀔 때 폼 상태를 초기화한다 — 이전 항목의 값이 새 항목에 남으면 안 된다 */
+function ActiveEditor({
+  target,
+  onClose,
+  onSaved,
+  onDeleted,
+}: {
+  target: Target | null;
+  onClose: () => void;
+  onSaved: () => void;
+  onDeleted: () => void;
+}) {
+  if (!target) return null;
+  return (
+    <EditorPanel
+      key={`${target.kind}:${target.id}`}
+      kind={target.kind}
+      id={target.id}
+      onClose={onClose}
+      onSaved={onSaved}
+      onDeleted={onDeleted}
     />
   );
 }

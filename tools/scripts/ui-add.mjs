@@ -17,7 +17,15 @@ if (components.length === 0) {
   process.exit(1);
 }
 
-const run = (command) => spawnSync(command, { stdio: 'inherit', shell: true });
+// stdin 을 막고 N 을 흘려보낸다. shadcn 은 --yes 를 줘도 '이미 있는 파일을 덮을까' 를
+// 따로 묻는데, 비대화형 셸에서는 그 프롬프트가 EOF 를 만나 **아무것도 안 쓰고 끝난다**
+// (실제로 그렇게 조용히 실패했다). 답을 N 으로 고정하면 기존 생성물을 덮지 않는다 (INV-6).
+const run = (command) =>
+  spawnSync(command, {
+    stdio: ['pipe', 'inherit', 'inherit'],
+    input: 'N\n'.repeat(20),
+    shell: true,
+  });
 
 const added = run(`npx --yes shadcn@latest add ${components.join(' ')} --yes`);
 if (added.status !== 0) {

@@ -5,7 +5,12 @@ import { PUBLISH_API } from '../config';
  * 게시 API 경계 (ADR-0003 개정). 응답을 추측하지 않고 파싱한다 (INV-3).
  */
 
-const changeSchema = z.object({ status: z.string(), path: z.string() });
+const changeSchema = z.object({
+  status: z.string(),
+  path: z.string(),
+  /** 삭제된 항목은 작업트리에 없다 — 서버가 git 에서 꺼내 준다 (EP-0003) */
+  deletedTitle: z.string().optional(),
+});
 
 const changesResponseSchema = z.object({ changes: z.array(changeSchema) });
 

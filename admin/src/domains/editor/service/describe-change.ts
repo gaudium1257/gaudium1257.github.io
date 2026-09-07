@@ -65,7 +65,8 @@ export function describeChange(
   return {
     action,
     kindLabel: KIND_LABEL[segment] ?? '콘텐츠',
-    title: findTitle(segment, id, content) ?? id,
+    // 삭제된 항목은 파일이 없어 content 에도 없다 — 서버가 git 에서 꺼내 준 제목을 쓴다
+    title: findTitle(segment, id, content) ?? change.deletedTitle ?? id,
     id,
   };
 }

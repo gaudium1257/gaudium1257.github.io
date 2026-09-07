@@ -54,7 +54,16 @@ describe('describeChange', () => {
     expect(describeChange({ status: 'D', path }, content).action).toBe('삭제');
   });
 
-  it('삭제된 항목은 콘텐츠에 없으므로 id 로 대체한다', () => {
+  it('삭제된 항목은 서버가 git 에서 꺼낸 제목을 쓴다', () => {
+    const result = describeChange(
+      { status: 'D', path: 'content/posts/gone.json', deletedTitle: '지운 글' },
+      content,
+    );
+    expect(result.action).toBe('삭제');
+    expect(result.title).toBe('지운 글');
+  });
+
+  it('제목을 못 꺼냈으면 id 로 대체하고 죽지 않는다', () => {
     const result = describeChange({ status: 'D', path: 'content/posts/gone.json' }, content);
     expect(result.action).toBe('삭제');
     expect(result.title).toBe('gone');

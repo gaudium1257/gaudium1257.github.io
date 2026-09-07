@@ -20,6 +20,16 @@ export { Label } from './components/ui/label';
 export { Badge } from './components/ui/badge';
 export { Separator } from './components/ui/separator';
 export {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from './components/ui/alert-dialog';
+export {
   Dialog,
   DialogClose,
   DialogContent,

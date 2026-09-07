@@ -87,7 +87,12 @@ if (/^viewer\//.test(file) && /\.(ts|tsx)$/.test(file)) {
 }
 
 // --- INV-9: 콘텐츠 스키마는 shared/content 에만 ---
-if (/^(viewer|admin)\/.*\.(ts|tsx)$/.test(file)) {
+//
+// data/ 레이어는 예외다 (CLAUDE.md INV-9 괄호, check-architecture.mjs 와 같은 규칙).
+// 거기서의 스키마는 콘텐츠 모델이 아니라 HTTP 응답 같은 '전송 형태'를 경계에서
+// 파싱하는 것이고, 그건 INV-3 이 요구하는 일이다. 막으면 `as` 캐스팅을 유도해 더 나빠진다.
+const isBoundaryLayer = /(?:^|\/)data\//.test(file);
+if (!isBoundaryLayer && /^(viewer|admin)\/.*\.(ts|tsx)$/.test(file)) {
   const schema = content.match(/\bz\.object\s*\(|\bz\.enum\s*\(|from\s+["']zod["']/);
   if (schema) {
     block(

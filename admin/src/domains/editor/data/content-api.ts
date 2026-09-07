@@ -63,6 +63,18 @@ export async function writeEntry(kind: ContentKind, id: string, json: string): P
   return writeResponseSchema.parse(raw).path;
 }
 
+/**
+ * 항목을 지운다. 미들웨어가 파일을 unlink 한다 (ADR-0003).
+ * 되돌리기는 화면에 없다 — git 이력에 남으므로 `git revert` 로 복구한다 (EP-0003).
+ */
+export async function deleteEntry(kind: ContentKind, id: string): Promise<string> {
+  const raw = await request(
+    `${CONTENT_API}?kind=${encodeURIComponent(kind)}&id=${encodeURIComponent(id)}`,
+    { method: 'DELETE' },
+  );
+  return writeResponseSchema.parse(raw).path;
+}
+
 interface ParserLike<T> {
   safeParse: (value: unknown) => { success: boolean; data?: T };
 }

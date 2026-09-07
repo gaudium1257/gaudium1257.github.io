@@ -16,6 +16,11 @@ export interface PendingChange {
   /** 'A' 추가 · 'M' 수정 · 'D' 삭제 */
   status: string;
   path: string;
+  /**
+   * 삭제된 항목의 제목. 삭제하면 작업트리에 파일이 없어 화면이 제목을 알 수 없다 —
+   * git 이 유일하게 아는 곳이므로 여기서 꺼내 실어 보낸다 (EP-0003).
+   */
+  deletedTitle?: string;
 }
 
 export interface PublishResult {
@@ -31,6 +36,24 @@ function git(repoRoot: string, args: string[]) {
   return spawnSync('git', args, { cwd: repoRoot, encoding: 'utf8', shell: false });
 }
 
+/**
+ * 삭제된 파일의 제목을 마지막 커밋에서 꺼낸다.
+ * 못 꺼내도 게시를 막지 않는다 — 화면이 id 로 대신 보여준다 (GR-4).
+ */
+function titleAtHead(repoRoot: string, path: string): string | undefined {
+  const res = git(repoRoot, ['show', `HEAD:${path}`]);
+  if (res.status !== 0) return undefined;
+  try {
+    const parsed: unknown = JSON.parse(res.stdout);
+    if (typeof parsed !== 'object' || parsed === null) return undefined;
+    const record = parsed as Record<string, unknown>;
+    const label = record.title ?? record.name;
+    return typeof label === 'string' && label ? label : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 /** 아직 게시되지 않은 content/ 변경 목록 */
 export function pendingChanges(repoRoot: string): PendingChange[] {
   const res = git(repoRoot, ['status', '--porcelain', '--', CONTENT_PATH]);
@@ -39,10 +62,12 @@ export function pendingChanges(repoRoot: string): PendingChange[] {
     .split('\n')
     .map((line) => line.trimEnd())
     .filter(Boolean)
-    .map((line) => ({
-      status: line.slice(0, 2).trim() || 'M',
-      path: line.slice(3).replace(/^"|"$/g, ''),
-    }));
+    .map((line) => {
+      const status = line.slice(0, 2).trim() || 'M';
+      const path = line.slice(3).replace(/^"|"$/g, '');
+      const deletedTitle = status.includes('D') ? titleAtHead(repoRoot, path) : undefined;
+      return deletedTitle ? { status, path, deletedTitle } : { status, path };
+    });
 }
 
 /** 변경 목록에서 커밋 메시지를 만든다 — 사용자가 메시지를 쓰지 않아도 이력이 읽힌다 */

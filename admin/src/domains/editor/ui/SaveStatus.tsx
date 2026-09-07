@@ -29,7 +29,7 @@ export function SaveStatus({ state, loadError }: { state: SaveState; loadError: 
 
       {state.status === 'saved' ? (
         <p role="status" className="text-sm text-muted-foreground">
-          저장했습니다 — {state.path}. 공개하려면 git commit &amp; push 하세요.
+          저장했습니다 — {state.path}. 공개하려면 위 배너의 게시 버튼을 누르세요.
         </p>
       ) : null}
     </>

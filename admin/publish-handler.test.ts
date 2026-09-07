@@ -46,6 +46,52 @@ describe('pendingChanges', () => {
     writeFileSync(join(repo, 'content', 'posts', 'b.json'), '{}', 'utf8');
     expect(pendingChanges(repo).map((c) => c.path)).toContain('content/posts/b.json');
   });
+
+  /**
+   * 삭제하면 작업트리에 파일이 없다. 화면이 제목을 알 방법은 git 뿐이다 (EP-0003).
+   * 이게 없으면 게시 모달이 파일명을 보여주게 되고, 그건 이미 한 번 고친 문제다.
+   */
+  it('삭제된 항목의 제목을 마지막 커밋에서 꺼낸다', () => {
+    writeFileSync(
+      join(repo, 'content', 'posts', 'c.json'),
+      JSON.stringify({ id: 'c', title: '지울 글' }),
+      'utf8',
+    );
+    git(['add', '-A']);
+    git(['commit', '-m', 'add c']);
+    rmSync(join(repo, 'content', 'posts', 'c.json'));
+
+    const change = pendingChanges(repo).find((c) => c.path.endsWith('c.json'));
+    expect(change?.status).toContain('D');
+    expect(change?.deletedTitle).toBe('지울 글');
+  });
+
+  it('프로필은 title 이 없으므로 name 을 쓴다', () => {
+    writeFileSync(
+      join(repo, 'content', 'profile.json'),
+      JSON.stringify({ name: '김태호' }),
+      'utf8',
+    );
+    git(['add', '-A']);
+    git(['commit', '-m', 'add profile']);
+    rmSync(join(repo, 'content', 'profile.json'));
+
+    const change = pendingChanges(repo).find((c) => c.path.endsWith('profile.json'));
+    expect(change?.deletedTitle).toBe('김태호');
+  });
+
+  it('제목을 못 꺼내도 게시를 막지 않는다', () => {
+    // a.json 은 '{}' 라 title 도 name 도 없다
+    rmSync(join(repo, 'content', 'posts', 'a.json'));
+    const change = pendingChanges(repo).find((c) => c.path.endsWith('a.json'));
+    expect(change?.status).toContain('D');
+    expect(change?.deletedTitle).toBeUndefined();
+  });
+
+  it('수정된 항목에는 삭제 제목을 붙이지 않는다', () => {
+    writeFileSync(join(repo, 'content', 'posts', 'a.json'), '{"a":1}', 'utf8');
+    expect(pendingChanges(repo)[0]?.deletedTitle).toBeUndefined();
+  });
 });
 
 describe('publish', () => {
