@@ -1,4 +1,3 @@
-import type { PendingChange } from '../data/publish-api';
 import type { PublishState } from '../state/use-publish';
 import { PublishButton } from './PublishButton';
 
@@ -10,18 +9,14 @@ import { PublishButton } from './PublishButton';
  */
 export function EditingBanner({
   error,
-  changes,
+  changeCount,
   publishState,
-  onConfirm,
-  onCancel,
-  onRun,
+  onPublishClick,
 }: {
   error: string | null;
-  changes: PendingChange[];
+  changeCount: number;
   publishState: PublishState;
-  onConfirm: () => void;
-  onCancel: () => void;
-  onRun: () => void;
+  onPublishClick: () => void;
 }) {
   return (
     <div className="border-b border-brand/40 bg-brand/10 backdrop-blur-md">
@@ -30,13 +25,7 @@ export function EditingBanner({
         <span className="hidden text-xs text-muted-foreground sm:inline">
           저장은 즉시, 공개는 게시할 때.
         </span>
-        <PublishButton
-          changes={changes}
-          state={publishState}
-          onConfirm={onConfirm}
-          onCancel={onCancel}
-          onRun={onRun}
-        />
+        <PublishButton count={changeCount} state={publishState} onClick={onPublishClick} />
       </div>
       {error ? (
         <p role="alert" className="px-5 pb-2 text-xs text-destructive sm:px-8">

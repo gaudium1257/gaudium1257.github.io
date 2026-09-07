@@ -6,6 +6,8 @@ import { usePublish } from '../state/use-publish';
 import { AddButton, EditButton } from './EditButton';
 import { EditorPanel } from './EditorPanel';
 import { EditingBanner } from './EditingBanner';
+import { PublishDialog } from './PublishDialog';
+import { describeChanges } from '../service/describe-change';
 
 const ADD_LABEL: Record<ContentKind, string> = {
   profile: '프로필',
@@ -53,23 +55,30 @@ export function AdminApp() {
       banner={
         <EditingBanner
           error={error}
-          changes={publish.changes}
+          changeCount={publish.changes.length}
           publishState={publish.state}
-          onConfirm={publish.confirm}
-          onCancel={publish.cancel}
-          onRun={() => void publish.run()}
+          onPublishClick={publish.confirm}
         />
       }
       overlay={
-        target ? (
-          <EditorPanel
-            key={`${target.kind}:${target.id}`}
-            kind={target.kind}
-            id={target.id}
-            onClose={close}
-            onSaved={handleSaved}
+        <>
+          <PublishDialog
+            open={publish.state.status === 'confirming' || publish.state.status === 'publishing'}
+            changes={describeChanges(publish.changes, content)}
+            publishing={publish.state.status === 'publishing'}
+            onCancel={publish.cancel}
+            onConfirm={() => void publish.run()}
           />
-        ) : null
+          {target ? (
+            <EditorPanel
+              key={`${target.kind}:${target.id}`}
+              kind={target.kind}
+              id={target.id}
+              onClose={close}
+              onSaved={handleSaved}
+            />
+          ) : null}
+        </>
       }
     />
   );

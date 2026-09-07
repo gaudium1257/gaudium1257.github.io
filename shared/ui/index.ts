@@ -19,3 +19,12 @@ export { Textarea } from './components/ui/textarea';
 export { Label } from './components/ui/label';
 export { Badge } from './components/ui/badge';
 export { Separator } from './components/ui/separator';
+export {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from './components/ui/dialog';
