@@ -47,7 +47,7 @@ export function AdminApp() {
     <PortfolioApp
       content={content}
       editing={editing}
-      banner={<EditingBanner error={error} onEditProfile={() => open('profile', 'profile')} />}
+      banner={<EditingBanner error={error} />}
       overlay={
         target ? (
           <EditorPanel

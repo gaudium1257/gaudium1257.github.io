@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom';
 import type { Profile } from '@portfolio/content';
+import type { EditingSlots } from '../types';
 
 interface Props {
   profile: Profile;
   counts: { papers: number; projects: number; posts: number };
+  editing?: EditingSlots;
 }
 
 /**
@@ -11,11 +13,14 @@ interface Props {
  *
  * 숫자는 장식이 아니라 콘텐츠에서 온다 — 실제로 무엇을 얼마나 했는지가 첫 화면에서 보인다.
  */
-export function Hero({ profile, counts }: Props) {
+export function Hero({ profile, counts, editing = {} }: Props) {
   return (
     <section className="space-y-6 pt-2 pb-4">
       <div className="space-y-4">
-        <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">{profile.name}</h1>
+        <div className="flex flex-wrap items-center gap-3">
+          <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">{profile.name}</h1>
+          {editing.renderItemAction?.('profile', 'profile')}
+        </div>
         <p className="max-w-2xl text-lg text-muted-foreground sm:text-xl">{profile.headline}</p>
         {profile.intro ? (
           <p className="max-w-2xl leading-relaxed text-muted-foreground">{profile.intro}</p>

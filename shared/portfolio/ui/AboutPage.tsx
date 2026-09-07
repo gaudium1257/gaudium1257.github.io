@@ -3,7 +3,11 @@ import type { EditingSlots, PortfolioContent } from '../types';
 import { PageHeading } from './common';
 import { SpecSection } from './SpecSection';
 
-/** About — 소개 + 스펙 4개 분류 (스펙 A-1~A-4). 빈 분류는 숨긴다. */
+/**
+ * About — 소개 + 스펙 분류 (스펙 A-1~A-4). 빈 분류는 숨긴다.
+ *
+ * 편집은 **보이는 자리에서** 한다 — 프로필은 소개 옆에서, 스펙 항목은 그 항목 옆에서.
+ */
 export function AboutPage({
   content,
   editing = {},
@@ -18,7 +22,12 @@ export function AboutPage({
       <PageHeading
         title="About"
         description={profile.headline}
-        action={editing.renderAddAction?.('spec')}
+        action={
+          <div className="flex items-center gap-2">
+            {editing.renderItemAction?.('profile', 'profile')}
+            {editing.renderAddAction?.('spec')}
+          </div>
+        }
       />
 
       {profile.intro ? <p className="max-w-3xl leading-relaxed">{profile.intro}</p> : null}
@@ -46,6 +55,7 @@ export function AboutPage({
           category={category}
           label={label}
           items={specs.filter((spec) => spec.category === category)}
+          editing={editing}
         />
       ))}
     </div>

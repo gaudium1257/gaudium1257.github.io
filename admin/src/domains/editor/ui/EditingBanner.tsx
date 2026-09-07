@@ -1,15 +1,10 @@
-import { Button } from '@portfolio/ui';
-
 /**
  * 편집 중임이 항상 보여야 한다 — 공개 화면과 구분되지 않으면 실수한다 (docs/DESIGN.md).
+ *
+ * 편집 버튼은 여기 두지 않는다. **보이는 자리에서 고친다** —
+ * 프로필은 이름 옆, 항목은 그 항목 옆.
  */
-export function EditingBanner({
-  error,
-  onEditProfile,
-}: {
-  error: string | null;
-  onEditProfile: () => void;
-}) {
+export function EditingBanner({ error }: { error: string | null }) {
   return (
     <div className="border-b border-brand/40 bg-brand/10 backdrop-blur-md">
       <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-3 px-5 py-2 sm:px-8">
@@ -17,9 +12,6 @@ export function EditingBanner({
         <span className="text-xs text-muted-foreground">
           저장하면 content/ 파일이 바뀝니다. 공개는 git push.
         </span>
-        <Button size="sm" variant="outline" className="ml-auto" onClick={onEditProfile}>
-          프로필 편집
-        </Button>
       </div>
       {error ? (
         <p role="alert" className="px-5 pb-2 text-xs text-destructive sm:px-8">
