@@ -22,13 +22,14 @@
     "lint:docs": "node tools/lint/check-docs.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
-    "ui:add": "shadcn add --yes --cwd shared/ui && node tools/scripts/fix-shadcn-imports.mjs",
+    "ui:add": "node tools/scripts/ui-add.mjs",
     "ui:fix": "node tools/scripts/fix-shadcn-imports.mjs",
     "docs:generate": "echo \"생성기 없음 — tools/scripts/ 에 추가하고 docs/generated/README.md 표를 갱신하라\""
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "cn": "^0.2.6",
     "lucide-react": "^0.469.0",
     "radix-ui": "^1.6.7",
     "react": "^19.0.0",

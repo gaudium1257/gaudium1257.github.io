@@ -1,4 +1,4 @@
-import type { SaveState } from '../state/use-editor';
+import type { SaveState } from '../state/use-form';
 
 /** 실패를 원인별로 구분해 보여준다 (스펙 E-4, GR-4). */
 export function SaveStatus({ state, loadError }: { state: SaveState; loadError: string | null }) {

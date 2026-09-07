@@ -15,5 +15,7 @@ export {
   CardTitle,
 } from './components/ui/card';
 export { Input } from './components/ui/input';
+export { Textarea } from './components/ui/textarea';
+export { Label } from './components/ui/label';
 export { Badge } from './components/ui/badge';
 export { Separator } from './components/ui/separator';

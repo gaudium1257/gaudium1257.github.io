@@ -26,16 +26,16 @@ export const visibilitySchema = z.enum(['public', 'private']);
 
 /** javascript: 스킴을 막는다 (docs/SECURITY.md) */
 export const linkSchema = z.object({
-  label: z.string().min(1),
+  label: z.string().min(1, '링크 이름을 입력하세요'),
   url: z
     .string()
-    .url()
+    .url('올바른 주소를 입력하세요')
     .refine((u) => /^https?:/i.test(u), 'http(s) URL 만 허용한다'),
 });
 
 export const profileSchema = z.object({
-  name: z.string().min(1),
-  headline: z.string().min(1),
+  name: z.string().min(1, '이름을 입력하세요'),
+  headline: z.string().min(1, '한 줄 소개를 입력하세요'),
   intro: z.string().default(''),
   links: z.array(linkSchema).default([]),
 });
@@ -46,7 +46,7 @@ export const specCategorySchema = z.enum(['education', 'experience', 'skill', 'a
 export const specItemSchema = z.object({
   id: idSchema,
   category: specCategorySchema,
-  title: z.string().min(1),
+  title: z.string().min(1, '제목을 입력하세요'),
   organization: z.string().default(''),
   startedOn: isoDateSchema.nullable().default(null),
   endedOn: isoDateSchema.nullable().default(null),
@@ -57,7 +57,7 @@ export const specItemSchema = z.object({
 
 export const paperReviewSchema = z.object({
   id: idSchema,
-  title: z.string().min(1),
+  title: z.string().min(1, '제목을 입력하세요'),
   authors: z.array(z.string()).default([]),
   year: z.number().int().min(1900).max(2100).nullable().default(null),
   venue: z.string().default(''),
@@ -72,7 +72,7 @@ export const paperReviewSchema = z.object({
 
 export const projectSchema = z.object({
   id: idSchema,
-  title: z.string().min(1),
+  title: z.string().min(1, '제목을 입력하세요'),
   role: z.string().default(''),
   startedOn: isoDateSchema,
   endedOn: isoDateSchema.nullable().default(null),
@@ -87,7 +87,7 @@ export const projectSchema = z.object({
 
 export const blogPostSchema = z.object({
   id: idSchema,
-  title: z.string().min(1),
+  title: z.string().min(1, '제목을 입력하세요'),
   publishedOn: isoDateSchema,
   summary: z.string().default(''),
   body: z.string().default(''),

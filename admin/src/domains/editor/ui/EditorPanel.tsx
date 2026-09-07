@@ -1,6 +1,8 @@
 import { Button } from '@portfolio/ui';
 import type { ContentKind } from '@portfolio/content';
-import { useDraft } from '../state/use-editor';
+import { FORM_FIELDS } from '../config/forms';
+import { useContentForm } from '../state/use-form';
+import { Field } from './fields/Field';
 import { SaveStatus } from './SaveStatus';
 
 const KIND_LABEL: Record<ContentKind, string> = {
@@ -12,8 +14,10 @@ const KIND_LABEL: Record<ContentKind, string> = {
 };
 
 /**
- * 편집 패널. 화면 오른쪽에서 밀려 들어온다 —
- * 사이트를 가리지 않아야 편집 결과를 바로 확인할 수 있다 (스펙 E-7).
+ * 편집 패널 — 필드별 폼 (스펙 E-2).
+ * 화면 오른쪽에서 밀려 들어온다. 사이트를 다 가리지 않아야 결과를 바로 확인할 수 있다 (E-7).
+ *
+ * 검증은 JSON 편집기 때와 같은 경로를 쓴다 — 스키마가 유일한 판단자다 (INV-9).
  */
 export function EditorPanel({
   kind,
@@ -26,7 +30,7 @@ export function EditorPanel({
   onClose: () => void;
   onSaved: () => void;
 }) {
-  const { text, setText, state, loadError, save } = useDraft(kind, id);
+  const { values, setField, state, loadError, save } = useContentForm(kind, id);
 
   async function handleSave() {
     const saved = await save();
@@ -35,31 +39,33 @@ export function EditorPanel({
 
   return (
     <aside
-      className="fixed inset-y-0 right-0 z-40 flex w-full max-w-xl flex-col border-l border-border bg-background shadow-2xl"
+      className="fixed inset-y-0 right-0 z-40 flex w-full max-w-2xl flex-col border-l border-border bg-background shadow-2xl"
       role="dialog"
       aria-label={`${KIND_LABEL[kind]} 편집`}
     >
-      <header className="flex items-center justify-between gap-3 border-b border-border px-5 py-3">
-        <div>
-          <h2 className="font-semibold">{KIND_LABEL[kind]}</h2>
-          <p className="text-xs text-muted-foreground">{id || '새 항목'}</p>
-        </div>
-        <Button size="sm" variant="ghost" onClick={onClose} aria-label="편집 닫기">
-          닫기
-        </Button>
-      </header>
+      <PanelHeader title={KIND_LABEL[kind]} subtitle={id || '새 항목'} onClose={onClose} />
 
-      <div className="flex-1 overflow-y-auto p-5">
-        <textarea
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          spellCheck={false}
-          aria-label={`${KIND_LABEL[kind]} 내용`}
-          className="h-full min-h-96 w-full resize-none rounded-md border border-input bg-background p-3 font-mono text-xs"
-        />
-      </div>
+      <form
+        className="flex-1 space-y-5 overflow-y-auto px-6 py-5"
+        onSubmit={(e) => {
+          e.preventDefault();
+          void handleSave();
+        }}
+      >
+        {FORM_FIELDS[kind].map((spec) => (
+          <Field
+            key={spec.name}
+            spec={spec}
+            value={values[spec.name] ?? null}
+            onChange={(value) => setField(spec.name, value)}
+          />
+        ))}
+        {/* Enter 로도 저장되게 하되 버튼은 아래 고정 영역에 둔다 */}
+        <button type="submit" className="hidden" aria-hidden="true" />
+      </form>
 
-      <footer className="space-y-3 border-t border-border px-5 py-4">
+      <footer className="space-y-3 border-t border-border px-6 py-4">
+        <SaveStatus state={state} loadError={loadError} />
         <div className="flex items-center gap-3">
           <Button onClick={() => void handleSave()} disabled={state.status === 'saving'}>
             {state.status === 'saving' ? '저장 중...' : '저장'}
@@ -68,8 +74,29 @@ export function EditorPanel({
             취소
           </Button>
         </div>
-        <SaveStatus state={state} loadError={loadError} />
       </footer>
     </aside>
+  );
+}
+
+function PanelHeader({
+  title,
+  subtitle,
+  onClose,
+}: {
+  title: string;
+  subtitle: string;
+  onClose: () => void;
+}) {
+  return (
+    <header className="flex items-center justify-between gap-3 border-b border-border px-6 py-4">
+      <div>
+        <h2 className="text-lg font-semibold tracking-tight">{title}</h2>
+        <p className="text-xs text-muted-foreground">{subtitle}</p>
+      </div>
+      <Button size="sm" variant="ghost" onClick={onClose} aria-label="편집 닫기">
+        닫기
+      </Button>
+    </header>
   );
 }

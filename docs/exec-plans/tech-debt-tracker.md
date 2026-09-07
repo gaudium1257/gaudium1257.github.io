@@ -23,7 +23,6 @@
 | TD-008 | P2 | E2E 테스트 없음. 배너 동작은 수동 검증에 의존한다 | [TESTING.md](../TESTING.md) | 2026-09-06 |
 | TD-005 | P2 | 다국어를 만들지 않기로 했다. 나중에 필요해지면 **스키마 마이그레이션**이 필요하다 | [ADR-0004](../design-docs/adr/0004-navigation-shell.md) | 2026-09-06 |
 | TD-006 | P2 | admin 이 로컬 전용이라 다른 기기에서 편집할 수 없다. 의도된 제약이나 기록해 둔다 | [ADR-0003](../design-docs/adr/0003-content-store.md) | 2026-09-06 |
-| TD-011 | P2 | 편집기가 JSON 직접 편집이다. 항목이 늘면 필드별 폼이 낫다 | [EditorPanel.tsx](../../admin/src/domains/editor/ui/EditorPanel.tsx) | 2026-09-06 |
 | TD-010 | P2 | 콘텐츠가 샘플이다. 실제 프로필·논문·프로젝트로 채워야 한다 | content/ | 2026-09-06 |
 
 해결한 항목은 지우지 말고 아래로 옮긴다.
@@ -37,4 +36,5 @@
 | TD-003 | 애플리케이션 스캐폴드 부재 | 2026-09-06 | [EP-0001](completed/0001-bootstrap-scaffold.md) 완주 |
 | TD-004 | 콘텐츠 스키마 필드 미확정 | 2026-09-06 | 엔티티 5종 확정 ([content-model.md](../product-specs/content-model.md)) |
 | TD-009 | 배포 워크플로 없음 | 2026-09-06 | deploy.yml 추가 + 라우트 프리렌더로 딥링크 200 보장 |
+| TD-011 | 편집기가 JSON 직접 편집 | 2026-09-07 | 필드별 폼으로 전환. forms.test.ts 가 스키마와의 드리프트를 막는다 |
 | TD-007 | admin 미들웨어 테스트 없음 | 2026-09-06 | 핸들러를 HTTP/Vite 에서 분리하고 임시 디렉터리로 28건 테스트. 변이 테스트로 회귀 탐지 확인 |
