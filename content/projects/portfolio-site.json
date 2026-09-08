@@ -6,7 +6,13 @@
   "endedOn": null,
   "summary": "공개 사이트와 로컬 편집 도구를 분리한 정적 포트폴리오.",
   "body": "## 문제\n\n포트폴리오는 만들고 나면 낡는다. 편집이 번거로우면 아무도 갱신하지 않는다.\n\n## 접근\n\n읽기(viewer)와 쓰기(admin)를 별도 앱으로 분리하되, 스키마는 한 곳에만 두었다.\n공개 번들에 편집 코드가 섞이지 않고, 두 앱의 데이터 모델이 갈라지지 않는다.\n\n## 결과\n\n- 편집 도구가 로컬 전용이라 자격 증명이 아예 필요 없다\n- 콘텐츠가 git 에 남아 이력과 롤백이 공짜다",
-  "stack": ["React", "TypeScript", "Vite", "Tailwind", "Zod"],
+  "stack": [
+    "React",
+    "TypeScript",
+    "Vite",
+    "Tailwind",
+    "Zod"
+  ],
   "links": [],
   "outcome": "진행 중",
   "order": 1,
