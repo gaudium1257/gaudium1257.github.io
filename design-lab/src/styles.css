@@ -13,6 +13,9 @@
   --lab-ink: #e9e9ee;
   --lab-dim: #9a9aa6;
   --lab-accent: #6b8cff;
+  /* 썸네일 뒤에 까는 종이. 시안이 자기 배경을 칠하기 전 잠깐 보이는 바탕이다 */
+  --lab-thumb: #ffffff;
+  --lab-edge: #ffffff1a;
 }
 
 body {

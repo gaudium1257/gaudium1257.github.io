@@ -7,14 +7,16 @@ export function Sidebar({
   dark,
   width,
   onSelect,
+  onShowAll,
   onToggleDark,
   onToggleWidth,
 }: {
   concepts: Concept[];
-  currentId: string;
+  currentId: string | null;
   dark: boolean;
   width: 'full' | 'mobile';
   onSelect: (id: string) => void;
+  onShowAll: () => void;
   onToggleDark: () => void;
   onToggleWidth: () => void;
 }) {
@@ -30,10 +32,14 @@ export function Sidebar({
         </p>
       </div>
 
-      <div className="flex gap-2 px-5 pb-4">
-        <Toggle label={dark ? '다크' : '라이트'} onClick={onToggleDark} />
-        <Toggle label={width === 'mobile' ? '모바일' : '데스크톱'} onClick={onToggleWidth} />
-      </div>
+      <Controls
+        dark={dark}
+        width={width}
+        showingAll={currentId === null}
+        onToggleDark={onToggleDark}
+        onToggleWidth={onToggleWidth}
+        onShowAll={onShowAll}
+      />
 
       <nav className="flex flex-col gap-1 px-3 pb-6">
         {concepts.map((c, i) => (
@@ -47,6 +53,45 @@ export function Sidebar({
         ))}
       </nav>
     </aside>
+  );
+}
+
+/** 보기 방식 조작부 — 명암·폭·전체보기 */
+function Controls({
+  dark,
+  width,
+  showingAll,
+  onToggleDark,
+  onToggleWidth,
+  onShowAll,
+}: {
+  dark: boolean;
+  width: 'full' | 'mobile';
+  showingAll: boolean;
+  onToggleDark: () => void;
+  onToggleWidth: () => void;
+  onShowAll: () => void;
+}) {
+  return (
+    <>
+      <div className="flex gap-2 px-5 pb-2">
+        <Toggle label={dark ? '다크' : '라이트'} onClick={onToggleDark} />
+        <Toggle label={width === 'mobile' ? '모바일' : '데스크톱'} onClick={onToggleWidth} />
+      </div>
+      <div className="px-5 pb-4">
+        <button
+          type="button"
+          onClick={onShowAll}
+          className="w-full rounded-md px-2 py-2 text-xs font-medium"
+          style={{
+            background: showingAll ? 'var(--lab-accent)' : 'var(--lab-chrome-soft)',
+            color: 'var(--lab-ink)',
+          }}
+        >
+          전체 보기 (16개 한눈에)
+        </button>
+      </div>
+    </>
   );
 }
 
