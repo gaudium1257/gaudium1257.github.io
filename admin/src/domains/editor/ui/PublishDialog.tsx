@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from '@portfolio/ui';
 import type { ChangeDescription } from '../service/describe-change';
-import { RevertConfirm } from './RevertConfirm';
+import { ItemConfirm, type ItemAction } from './ItemConfirm';
 
 const ACTION_VARIANT: Record<ChangeDescription['action'], 'default' | 'secondary' | 'destructive'> =
   {
@@ -48,7 +48,8 @@ export function PublishDialog({
   onPublishOne,
   onRevertOne,
 }: Props) {
-  const [pendingRevert, setPendingRevert] = useState<ChangeDescription | null>(null);
+  // 복구도 게시도 되돌리기 비싸다 — 어느 쪽이든 확인을 거친다
+  const [pending, setPending] = useState<Pending>(null);
 
   return (
     <>
@@ -71,8 +72,8 @@ export function PublishDialog({
             changes={changes}
             busyPath={busyPath}
             publishing={publishing}
-            onPublishOne={onPublishOne}
-            onRevertRequest={setPendingRevert}
+            onPublishRequest={(change) => setPending({ action: 'publish', change })}
+            onRevertRequest={(change) => setPending({ action: 'revert', change })}
           />
 
           <DialogFooter>
@@ -86,29 +87,45 @@ export function PublishDialog({
         </DialogContent>
       </Dialog>
 
-      <RevertConfirm
-        change={pendingRevert}
-        onCancel={() => setPendingRevert(null)}
-        onConfirm={() => {
-          if (pendingRevert) onRevertOne(pendingRevert.path);
-          setPendingRevert(null);
-        }}
+      <ItemConfirm
+        action={pending?.action ?? 'publish'}
+        change={pending?.change ?? null}
+        remaining={changes.length - 1}
+        onCancel={() => setPending(null)}
+        onConfirm={() => runPending(pending, { onPublishOne, onRevertOne, done: setPending })}
       />
     </>
   );
+}
+
+type Pending = { action: ItemAction; change: ChangeDescription } | null;
+
+/** 확인된 동작을 실행한다. 어느 쪽이든 확인 모달을 닫는다 */
+function runPending(
+  pending: Pending,
+  handlers: {
+    onPublishOne: (path: string) => void;
+    onRevertOne: (path: string) => void;
+    done: (next: Pending) => void;
+  },
+) {
+  if (!pending) return;
+  const act = pending.action === 'revert' ? handlers.onRevertOne : handlers.onPublishOne;
+  act(pending.change.path);
+  handlers.done(null);
 }
 
 function ChangeList({
   changes,
   busyPath,
   publishing,
-  onPublishOne,
+  onPublishRequest,
   onRevertRequest,
 }: {
   changes: ChangeDescription[];
   busyPath: string | null;
   publishing: boolean;
-  onPublishOne: (path: string) => void;
+  onPublishRequest: (change: ChangeDescription) => void;
   onRevertRequest: (change: ChangeDescription) => void;
 }) {
   return (
@@ -118,7 +135,7 @@ function ChangeList({
           key={`${change.kindLabel}:${change.id}`}
           change={change}
           busy={busyPath === change.path || publishing}
-          onPublish={() => onPublishOne(change.path)}
+          onPublish={() => onPublishRequest(change)}
           onRevert={() => onRevertRequest(change)}
         />
       ))}

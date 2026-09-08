@@ -1,6 +1,7 @@
 import type { EditingSlots, PortfolioContent } from '../types';
 import { PageHeading } from './common';
 import { PaperList } from './PaperList';
+import { sectionLabel } from '../config';
 
 export function PapersPage({
   content,
@@ -12,7 +13,7 @@ export function PapersPage({
   return (
     <div className="space-y-6">
       <PageHeading
-        title="Paper Review"
+        title={sectionLabel('papers')}
         description="공부한 논문과 정리"
         action={editing.renderAddAction?.('paper')}
       />
