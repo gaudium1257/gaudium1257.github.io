@@ -22,6 +22,18 @@ describe('폼 명세와 스키마 정합', () => {
       expect(new Set(names).size).toBe(names.length);
     });
 
+    /**
+     * id 는 URL 이자 파일 이름이라 한 종류라도 잠기지 않으면 그쪽에서만 사본이 생긴다.
+     * 지금은 네 종류가 같은 ID 상수를 쓰지만, 누가 필드를 직접 써넣으면 조용히 뚫린다.
+     */
+    it(`${kind}: 스키마에 id 가 있으면 폼의 id 는 반드시 immutable 이다`, () => {
+      const schemaHasId = 'id' in contentSchemas[kind].shape;
+      const idField = FORM_FIELDS[kind].find((f) => f.name === 'id');
+
+      expect(Boolean(idField)).toBe(schemaHasId);
+      if (schemaHasId) expect(idField?.immutable).toBe(true);
+    });
+
     it(`${kind}: select 필드는 선택지를 갖는다`, () => {
       for (const field of FORM_FIELDS[kind]) {
         if (field.kind === 'select') {
