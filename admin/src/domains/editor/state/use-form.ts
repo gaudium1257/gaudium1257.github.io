@@ -25,11 +25,25 @@ function toFormValues(kind: ContentKind, raw: unknown): FormValues {
   return values;
 }
 
-/** 빈 문자열은 저장 전에 정리한다 — 비운 날짜는 null 이어야 스키마를 통과한다. */
-function toPayload(kind: ContentKind, values: FormValues): Record<string, unknown> {
+/**
+ * 빈 문자열은 저장 전에 정리한다 — 비운 날짜는 null 이어야 스키마를 통과한다.
+ *
+ * `lockedId` 가 있으면(= 기존 항목을 수정 중이면) immutable 필드를 원래 값으로 되돌린다.
+ * id 는 **파일 이름이자 URL** 이라, 바뀐 채로 저장하면 새 파일이 생기고 원본이 남는다 —
+ * 사본이 조용히 늘고 기존 링크가 깨진다. 입력을 잠그는 것만으로는 부족해 여기서 강제한다.
+ */
+export function toPayload(
+  kind: ContentKind,
+  values: FormValues,
+  lockedId: string,
+): Record<string, unknown> {
   const payload: Record<string, unknown> = {};
   for (const field of FORM_FIELDS[kind]) {
     const value = values[field.name];
+    if (field.immutable && lockedId) {
+      payload[field.name] = lockedId;
+      continue;
+    }
     payload[field.name] = field.nullable && value === '' ? null : value;
   }
   return payload;
@@ -69,7 +83,7 @@ export function useContentForm(kind: ContentKind, id: string) {
   }, []);
 
   const save = useCallback(async () => {
-    const payload = toPayload(kind, values);
+    const payload = toPayload(kind, values, id);
     const result = validateContent(kind, JSON.stringify(payload));
     if (!result.ok) {
       setState({ status: 'invalid', issues: result.issues });
@@ -94,7 +108,7 @@ export function useContentForm(kind: ContentKind, id: string) {
       });
       return null;
     }
-  }, [kind, values]);
+  }, [kind, values, id]);
 
   return { values, setField, state, loadError, load, save };
 }

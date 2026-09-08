@@ -57,6 +57,7 @@ export function EditorPanel({ kind, id, onClose, onSaved, onDeleted }: EditorPan
         kind={kind}
         values={values}
         setField={setField}
+        existing={id !== ''}
         onSubmit={() => void handleSave()}
       />
 
@@ -86,11 +87,13 @@ function PanelForm({
   kind,
   values,
   setField,
+  existing,
   onSubmit,
 }: {
   kind: ContentKind;
   values: FormValues;
   setField: (name: string, value: FieldValue) => void;
+  existing: boolean;
   onSubmit: () => void;
 }) {
   return (
@@ -106,6 +109,7 @@ function PanelForm({
           key={spec.name}
           spec={spec}
           value={values[spec.name] ?? null}
+          existing={existing}
           onChange={(value) => setField(spec.name, value)}
         />
       ))}

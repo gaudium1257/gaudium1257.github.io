@@ -27,6 +27,11 @@ export interface FieldSpec {
   placeholder?: string;
   help?: string;
   options?: ReadonlyArray<{ value: string; label: string }>;
+  /**
+   * 한 번 저장하면 바꿀 수 없는 필드. 새 항목에서만 입력받는다.
+   * 화면에서 잠그는 것으로 끝내지 않는다 — 저장 경로에서도 강제한다 (use-form).
+   */
+  immutable?: boolean;
 }
 
 const VISIBILITY: FieldSpec = {
@@ -52,7 +57,8 @@ const ID: FieldSpec = {
   label: 'id',
   kind: 'text',
   placeholder: 'my-first-paper',
-  help: '소문자·숫자·하이픈만. URL 이 되므로 한 번 정하면 바꾸지 마세요.',
+  help: '소문자·숫자·하이픈만. URL 과 파일 이름이 되므로 저장한 뒤에는 바꿀 수 없습니다.',
+  immutable: true,
 };
 
 export const FORM_FIELDS: Record<ContentKind, readonly FieldSpec[]> = {

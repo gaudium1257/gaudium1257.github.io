@@ -7,16 +7,21 @@ export function FieldShell({
   spec,
   htmlFor,
   children,
+  locked = false,
 }: {
   spec: FieldSpec;
   htmlFor: string;
   children: ReactNode;
+  /** 저장 뒤 바꿀 수 없는 필드 — 왜 입력이 잠겼는지 화면에 이유를 남긴다 */
+  locked?: boolean;
 }) {
   return (
     <div className="space-y-1.5">
       <div className="flex items-baseline gap-2">
         <Label htmlFor={htmlFor}>{spec.label}</Label>
-        {spec.optional ? (
+        {locked ? (
+          <span className="text-xs text-muted-foreground">고정 · 바꿀 수 없음</span>
+        ) : spec.optional ? (
           <span className="text-xs text-muted-foreground">선택</span>
         ) : (
           <span className="text-xs text-brand">필수</span>
