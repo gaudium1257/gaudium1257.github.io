@@ -10,7 +10,7 @@ import { join, dirname, sep } from 'node:path';
 const LAYERS = ['types', 'config', 'data', 'service', 'state', 'ui'];
 const MAX_FILE_LINES = 400;
 const MAX_FN_LINES = 60;
-const ROOTS = ['viewer/src', 'admin/src', 'shared'];
+const ROOTS = ['viewer/src', 'admin/src', 'design-lab/src', 'shared'];
 
 /** 콘텐츠 스키마가 존재해도 되는 유일한 위치 (INV-9) */
 const SCHEMA_HOME = 'shared/content/';
@@ -208,7 +208,13 @@ for (const file of files) {
   }
 
   // ---- DESIGN: 하드코딩된 색은 다크 모드를 깨뜨린다
-  if (!isGenerated && !isTest) {
+  //
+  // 예외: design-lab 의 시안(concepts/). 규칙의 근거는 "테마 토글이 토큰만 바꾸므로
+  // 하드코딩된 색이 다크에서 그대로 남는다" 인데, 시안은 dark 값을 받아 두 팔레트를
+  // 직접 계산하므로 근거가 닿지 않는다. 공용 토큰을 쓰면 시안이 전부 같은 색이 되어
+  // 비교라는 목적이 사라진다 (EP-0005).
+  const isDesignConcept = /(?:^|\/)design-lab\/src\/concepts\//.test(posix);
+  if (!isGenerated && !isTest && !isDesignConcept) {
     const hardColor = src.match(/#[0-9a-fA-F]{3,8}\b|\brgba?\([^)]*\)/);
     if (hardColor) {
       errors.push(

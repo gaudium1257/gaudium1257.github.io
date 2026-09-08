@@ -19,6 +19,7 @@
 | `viewer/` | 학회 심사위원, 채용 담당자 | 포트폴리오를 **읽는** 공개 사이트 |
 | `admin/` | 본인 단독 (**로컬 전용**) | 포트폴리오를 **편집하는** 관리 도구 |
 | `shared/` | 위 두 앱 | 콘텐츠 스키마·UI 프리미티브 공유 |
+| `design-lab/` | 본인 단독 (**로컬 전용**) | 디자인 시안을 나란히 놓고 **고르는** 비교소 |
 
 스택: React 19 + TypeScript(strict) + Vite + Tailwind + **shadcn/ui** + Zod.
 선택 근거 → [ADR-0001](docs/design-docs/adr/0001-stack.md)

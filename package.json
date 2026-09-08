@@ -5,6 +5,7 @@
   "workspaces": [
     "viewer",
     "admin",
+    "design-lab",
     "shared/*"
   ],
   "engines": {
@@ -14,6 +15,7 @@
     "verify": "node tools/scripts/verify.mjs",
     "dev:viewer": "npm run dev --workspace @portfolio/viewer",
     "dev:admin": "npm run dev --workspace @portfolio/admin",
+    "dev:lab": "npm run dev --workspace @portfolio/design-lab",
     "build": "npm run build --workspace @portfolio/viewer",
     "typecheck": "tsc --noEmit",
     "lint": "eslint . && prettier --check .",

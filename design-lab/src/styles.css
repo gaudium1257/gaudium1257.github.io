@@ -1,0 +1,22 @@
+@import 'tailwindcss';
+
+/* 시안들이 shared/portfolio 의 클래스를 쓰지 않으므로 그쪽 소스도 스캔할 필요가 없다 */
+@source '../src';
+
+/*
+ * 비교소 자체의 껍데기 색. 시안이 자기 배경색을 칠하므로
+ * 껍데기는 중립 회색으로 두어 시안 색과 섞이지 않게 한다.
+ */
+:root {
+  --lab-chrome: #17171a;
+  --lab-chrome-soft: #232329;
+  --lab-ink: #e9e9ee;
+  --lab-dim: #9a9aa6;
+  --lab-accent: #6b8cff;
+}
+
+body {
+  margin: 0;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', system-ui, sans-serif;
+}

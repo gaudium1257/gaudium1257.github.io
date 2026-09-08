@@ -96,8 +96,14 @@ if (
 }
 
 // --- DESIGN: 하드코딩된 색 (다크 모드를 깨뜨린다) ---
+//
+// 예외: design-lab 의 시안(concepts/). 규칙의 근거는 "테마 토글이 토큰만 바꾸므로
+// 하드코딩된 색이 다크에서 그대로 남는다" 인데, 시안은 dark 를 받아 **두 팔레트를 직접
+// 계산한다.** 근거가 닿지 않는다. 공용 토큰을 강제하면 시안이 전부 같은 색이 되어
+// 비교라는 목적 자체가 사라진다 (EP-0005). 같은 예외가 check-architecture.mjs 에도 있다.
+const isDesignConcept = /^design-lab\/src\/concepts\//.test(file);
 const hardColor = src.match(/#[0-9a-fA-F]{3,8}\b|\brgba?\([^)]*\)/);
-if (hardColor && !/\.css$/.test(file)) {
+if (hardColor && !/\.css$/.test(file) && !isDesignConcept) {
   problems.push(
     `[DESIGN] ${file} 에 하드코딩된 색이 있다: ${hardColor[0]}\n` +
       `  테마 토글은 토큰만 바꾼다. 하드코딩된 색은 다크 모드에서 그대로 남아 깨진다.\n` +

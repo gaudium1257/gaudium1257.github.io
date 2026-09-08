@@ -1,6 +1,6 @@
 name: deploy
 
-# viewer 만 배포한다. admin 은 로컬 전용이라 빌드 대상이 아니다 (ADR-0003).
+# viewer 만 배포한다. admin 과 design-lab 은 로컬 전용이라 빌드 대상이 아니다 (ADR-0003, EP-0005).
 #
 # 사전 설정 필요: Settings → Pages → Source: GitHub Actions
 
@@ -40,6 +40,15 @@ jobs:
       # viewer 만 빌드된다 (루트 build 스크립트가 viewer 워크스페이스를 가리킨다)
       - name: Build viewer
         run: npm run build
+
+      # design-lab(시안 비교소)이 공개 산출물에 섞이지 않았는지 확인한다 (EP-0005)
+      - name: Assert design-lab is not in the public bundle
+        run: |
+          if grep -rl "design-lab\|CONCEPTS" viewer/dist; then
+            echo "::error::디자인 시안 코드가 공개 번들에 섞였다 (EP-0005)"
+            exit 1
+          fi
+          echo "공개 번들에 design-lab 없음 ✓"
 
       # admin 코드가 공개 산출물에 섞이지 않았는지 확인한다 (INV-8)
       - name: Assert admin is not in the public bundle
