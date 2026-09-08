@@ -30,12 +30,37 @@ export async function fetchPendingChanges(): Promise<PendingChange[]> {
   return changesResponseSchema.parse(await res.json()).changes;
 }
 
-export async function requestPublish(): Promise<PublishResponse> {
-  let res: Response;
+const revertResponseSchema = z.object({
+  ok: z.boolean(),
+  message: z.string(),
+  reason: z.enum(['nothing', 'unknown-path', 'failed']).optional(),
+});
+
+export type RevertResponse = z.infer<typeof revertResponseSchema>;
+
+async function post(url: string, paths?: string[]): Promise<unknown> {
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(paths ? { paths } : {}),
+  });
+  return res.json();
+}
+
+/** `paths` 를 주면 그 항목만 게시한다. 없으면 전체 (EP-0004). */
+export async function requestPublish(paths?: string[]): Promise<PublishResponse> {
   try {
-    res = await fetch(PUBLISH_API, { method: 'POST' });
+    return publishResponseSchema.parse(await post(PUBLISH_API, paths));
   } catch {
     return { ok: false, message: '개발 서버에 연결할 수 없습니다.', reason: 'failed' };
   }
-  return publishResponseSchema.parse(await res.json());
+}
+
+/** 미게시 변경을 되돌린다. **되살릴 수 없다** — 확인은 화면이 받는다 (EP-0004). */
+export async function requestRevert(paths: string[]): Promise<RevertResponse> {
+  try {
+    return revertResponseSchema.parse(await post(`${PUBLISH_API}/revert`, paths));
+  } catch {
+    return { ok: false, message: '개발 서버에 연결할 수 없습니다.', reason: 'failed' };
+  }
 }

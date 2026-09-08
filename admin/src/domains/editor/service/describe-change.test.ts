@@ -24,6 +24,8 @@ describe('describeChange', () => {
       kindLabel: '논문 리뷰',
       title: 'Attention Is All You Need',
       id: 'attention',
+      // 항목별 복구·게시가 이 경로로 서버에 요청한다 (EP-0004)
+      path: 'content/papers/attention.json',
     });
   });
 

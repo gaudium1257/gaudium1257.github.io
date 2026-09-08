@@ -14,6 +14,8 @@ export interface ChangeDescription {
   title: string;
   /** 같은 제목이 여러 개일 때 구분용. 화면에서는 보조 정보로만 쓴다 */
   id: string;
+  /** 항목별 복구·게시의 대상 (EP-0004). 서버가 허용 목록과 대조한다 */
+  path: string;
 }
 
 const KIND_LABEL: Record<string, string> = {
@@ -58,7 +60,13 @@ export function describeChange(
   const action = actionOf(change.status);
 
   if (change.path.endsWith('profile.json')) {
-    return { action, kindLabel: '프로필', title: content.profile.name || '프로필', id: 'profile' };
+    return {
+      action,
+      kindLabel: '프로필',
+      title: content.profile.name || '프로필',
+      id: 'profile',
+      path: change.path,
+    };
   }
 
   const { segment, id } = parsePath(change.path);
@@ -68,6 +76,7 @@ export function describeChange(
     // 삭제된 항목은 파일이 없어 content 에도 없다 — 서버가 git 에서 꺼내 준 제목을 쓴다
     title: findTitle(segment, id, content) ?? change.deletedTitle ?? id,
     id,
+    path: change.path,
   };
 }
 

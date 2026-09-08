@@ -1,8 +1,8 @@
-import { useCallback, useState } from 'react';
-import { PortfolioApp, type EditingSlots } from '@portfolio/portfolio';
+import { PortfolioApp, type EditingSlots, type PortfolioContent } from '@portfolio/portfolio';
 import type { ContentKind } from '@portfolio/content';
 import { useApiContent } from '../state/use-api-content';
 import { usePublish } from '../state/use-publish';
+import { useEditorTarget, type EditorTarget } from '../state/use-editor-target';
 import { AddButton, EditButton } from './EditButton';
 import { EditorPanel } from './EditorPanel';
 import { EditingBanner } from './EditingBanner';
@@ -17,11 +17,6 @@ const ADD_LABEL: Record<ContentKind, string> = {
   post: '글',
 };
 
-interface Target {
-  kind: ContentKind;
-  id: string;
-}
-
 /**
  * admin — viewer 와 **같은 화면**에 편집 버튼만 얹는다 (ADR-0005).
  * 표시 코드는 shared/portfolio 한 벌뿐이라 디자인이 갈라질 수 없다.
@@ -29,22 +24,7 @@ interface Target {
 export function AdminApp() {
   const { content, error, loaded, refresh } = useApiContent();
   const publish = usePublish();
-  const [target, setTarget] = useState<Target | null>(null);
-
-  const open = useCallback((kind: ContentKind, id: string) => setTarget({ kind, id }), []);
-  const close = useCallback(() => setTarget(null), []);
-
-  const handleSaved = useCallback(() => {
-    void refresh();
-    void publish.refreshChanges();
-  }, [refresh, publish]);
-
-  /** 삭제하면 편집할 대상이 사라진다 — 패널을 닫아야 한다 (EP-0003) */
-  const handleDeleted = useCallback(() => {
-    setTarget(null);
-    void refresh();
-    void publish.refreshChanges();
-  }, [refresh, publish]);
+  const { target, open, close, onSaved, onDeleted, onReverted } = useEditorTarget(refresh, publish);
 
   const editing: EditingSlots = {
     renderAddAction: (kind) => <AddButton label={ADD_LABEL[kind]} onClick={() => open(kind, '')} />,
@@ -69,21 +49,36 @@ export function AdminApp() {
       }
       overlay={
         <>
-          <PublishDialog
-            open={publish.state.status === 'confirming' || publish.state.status === 'publishing'}
-            changes={describeChanges(publish.changes, content)}
-            publishing={publish.state.status === 'publishing'}
-            onCancel={publish.cancel}
-            onConfirm={() => void publish.run()}
-          />
-          <ActiveEditor
-            target={target}
-            onClose={close}
-            onSaved={handleSaved}
-            onDeleted={handleDeleted}
-          />
+          <PublishOverlay publish={publish} content={content} onRevert={onReverted} />
+          <ActiveEditor target={target} onClose={close} onSaved={onSaved} onDeleted={onDeleted} />
         </>
       }
+    />
+  );
+}
+
+/** 게시 모달 배선. 경로→제목 변환은 여기서 한 번만 한다 */
+function PublishOverlay({
+  publish,
+  content,
+  onRevert,
+}: {
+  publish: ReturnType<typeof usePublish>;
+  content: PortfolioContent;
+  onRevert: (path: string) => Promise<void>;
+}) {
+  const busy = publish.state.status === 'publishing';
+  return (
+    <PublishDialog
+      open={publish.state.status === 'confirming' || busy}
+      changes={describeChanges(publish.changes, content)}
+      publishing={busy}
+      busyPath={publish.busyPath}
+      itemError={publish.itemError}
+      onCancel={publish.cancel}
+      onConfirm={() => void publish.run()}
+      onPublishOne={(path) => void publish.publishOne(path)}
+      onRevertOne={(path) => void onRevert(path)}
     />
   );
 }
@@ -95,7 +90,7 @@ function ActiveEditor({
   onSaved,
   onDeleted,
 }: {
-  target: Target | null;
+  target: EditorTarget | null;
   onClose: () => void;
   onSaved: () => void;
   onDeleted: () => void;

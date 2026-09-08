@@ -1,9 +1,15 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { commitMessageFor, pendingChanges, publish } from './publish-handler';
+import {
+  commitMessageFor,
+  pendingChanges,
+  publish,
+  resolveTargets,
+  revert,
+} from './publish-handler';
 
 /**
  * 게시는 되돌리기 어려운 동작이다 — 잘못 커밋하면 공개 사이트에 나간다.
@@ -144,5 +150,105 @@ describe('commitMessageFor', () => {
     expect(commitMessageFor([{ status: 'M', path: 'content/profile.json' }])).toBe(
       'content: 프로필 1건',
     );
+  });
+});
+
+/**
+ * 경로는 클라이언트에서 온다. git 에 그대로 넘기면 content/ 밖을 건드릴 수 있으므로
+ * **git 이 보고한 변경 목록**과 대조한다 (EP-0004).
+ */
+describe('resolveTargets — 경로 허용 목록', () => {
+  const changes = [
+    { status: 'M', path: 'content/posts/a.json' },
+    { status: '??', path: 'content/posts/b.json' },
+  ];
+
+  it('paths 가 없으면 전체를 뜻한다', () => {
+    expect(resolveTargets(changes)).toEqual(changes);
+  });
+
+  it('목록에 있는 경로만 고른다', () => {
+    expect(resolveTargets(changes, ['content/posts/b.json'])).toEqual([changes[1]]);
+  });
+
+  it('목록에 없는 경로가 하나라도 있으면 전부 거부한다', () => {
+    expect(resolveTargets(changes, ['content/posts/a.json', 'package.json'])).toBeNull();
+  });
+
+  it('상위 경로 탈출을 거부한다', () => {
+    expect(resolveTargets(changes, ['content/../../.ssh/id_rsa'])).toBeNull();
+  });
+
+  it('빈 목록은 거부한다 — 실수로 전체가 되면 안 된다', () => {
+    expect(resolveTargets(changes, [])).toBeNull();
+  });
+});
+
+describe('항목별 게시', () => {
+  it('지정한 항목만 커밋하고 나머지는 미게시로 남긴다', () => {
+    git(['remote', 'add', 'origin', repo]); // push 는 실패해도 커밋 범위를 볼 수 있다
+    writeFileSync(join(repo, 'content', 'posts', 'a.json'), '{"a":1}', 'utf8');
+    writeFileSync(join(repo, 'content', 'posts', 'b.json'), '{"b":2}', 'utf8');
+
+    publish(repo, ['content/posts/a.json']);
+
+    const committed = git(['show', '--name-only', '--format=', 'HEAD']).trim();
+    expect(committed).toBe('content/posts/a.json');
+    expect(pendingChanges(repo).map((c) => c.path)).toEqual(['content/posts/b.json']);
+  });
+
+  it('허용 목록 밖 경로는 아무것도 커밋하지 않는다', () => {
+    writeFileSync(join(repo, 'content', 'posts', 'a.json'), '{"a":1}', 'utf8');
+    const before = git(['rev-parse', 'HEAD']).trim();
+
+    const result = publish(repo, ['src.ts']);
+
+    expect(result.ok).toBe(false);
+    expect(git(['rev-parse', 'HEAD']).trim()).toBe(before);
+  });
+});
+
+describe('revert', () => {
+  it('수정한 파일을 마지막 게시 상태로 되돌린다', () => {
+    writeFileSync(join(repo, 'content', 'posts', 'a.json'), '{"a":999}', 'utf8');
+
+    const result = revert(repo, ['content/posts/a.json']);
+
+    expect(result.ok).toBe(true);
+    expect(readFileSync(join(repo, 'content', 'posts', 'a.json'), 'utf8')).toBe('{}');
+    expect(pendingChanges(repo)).toEqual([]);
+  });
+
+  it('삭제한 파일을 되살린다', () => {
+    rmSync(join(repo, 'content', 'posts', 'a.json'));
+
+    expect(revert(repo, ['content/posts/a.json']).ok).toBe(true);
+    expect(existsSync(join(repo, 'content', 'posts', 'a.json'))).toBe(true);
+  });
+
+  it('한 번도 게시 안 한 새 파일은 되돌릴 내용이 없으므로 지운다', () => {
+    writeFileSync(join(repo, 'content', 'posts', 'new.json'), '{}', 'utf8');
+
+    expect(revert(repo, ['content/posts/new.json']).ok).toBe(true);
+    expect(existsSync(join(repo, 'content', 'posts', 'new.json'))).toBe(false);
+  });
+
+  it('다른 항목은 건드리지 않는다', () => {
+    writeFileSync(join(repo, 'content', 'posts', 'a.json'), '{"a":1}', 'utf8');
+    writeFileSync(join(repo, 'content', 'posts', 'keep.json'), '{"keep":true}', 'utf8');
+
+    revert(repo, ['content/posts/a.json']);
+
+    expect(readFileSync(join(repo, 'content', 'posts', 'keep.json'), 'utf8')).toBe('{"keep":true}');
+  });
+
+  it('허용 목록 밖 경로는 소스 코드를 되돌리지 않는다', () => {
+    writeFileSync(join(repo, 'src.ts'), 'export const x = 2;\n', 'utf8');
+
+    const result = revert(repo, ['src.ts']);
+
+    expect(result.ok).toBe(false);
+    expect(result.reason).toBe('unknown-path');
+    expect(readFileSync(join(repo, 'src.ts'), 'utf8')).toContain('x = 2');
   });
 });

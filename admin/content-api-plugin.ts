@@ -1,7 +1,7 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import type { Plugin } from 'vite';
 import { createContentHandler } from './content-handler';
-import { pendingChanges, publish } from './publish-handler';
+import { pendingChanges, publish, revert } from './publish-handler';
 
 /**
  * 콘텐츠 쓰기 미들웨어의 HTTP 어댑터 (ADR-0003).
@@ -40,6 +40,18 @@ function readJsonBody(req: IncomingMessage): Promise<unknown> {
   });
 }
 
+/**
+ * 본문에서 paths 를 꺼낸다. 형태가 아니면 undefined = '전체' 로 본다 (INV-3).
+ * **경로가 안전한지는 여기서 판단하지 않는다** — publish/revert 가 git 의 변경 목록과 대조한다.
+ */
+function pathsFrom(body: unknown): string[] | undefined {
+  if (typeof body !== 'object' || body === null) return undefined;
+  const paths = (body as { paths?: unknown }).paths;
+  if (!Array.isArray(paths)) return undefined;
+  if (!paths.every((p): p is string => typeof p === 'string')) return undefined;
+  return paths;
+}
+
 export function contentApiPlugin(repoRoot: string): Plugin {
   const handle = createContentHandler(repoRoot);
 
@@ -60,8 +72,21 @@ export function contentApiPlugin(repoRoot: string): Plugin {
           return;
         }
         if (req.method === 'POST') {
-          const result = publish(repoRoot);
-          send(result.ok ? 200 : 409, result);
+          // 본문의 paths 는 '이것만' 을 뜻한다. 없으면 전체 (EP-0004).
+          // 경로 검증은 publish/revert 안에서 pendingChanges 와 대조해 한다.
+          void readJsonBody(req)
+            .then((body) => pathsFrom(body))
+            .catch(() => undefined)
+            .then((paths) => {
+              const revertOnly = (req.url ?? '').startsWith('/revert');
+              if (revertOnly) {
+                if (!paths) return send(400, { error: '복구할 항목이 없습니다.' });
+                const result = revert(repoRoot, paths);
+                return send(result.ok ? 200 : 409, result);
+              }
+              const result = publish(repoRoot, paths);
+              return send(result.ok ? 200 : 409, result);
+            });
           return;
         }
         send(405, { error: '지원하지 않는 메서드입니다.' });
