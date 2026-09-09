@@ -2,6 +2,7 @@ import type { IncomingMessage, ServerResponse } from 'node:http';
 import type { Plugin } from 'vite';
 import { createContentHandler } from './content-handler';
 import { pendingChanges, publish, revert } from './publish-handler';
+import { handleUpload } from './upload-handler';
 
 /**
  * 콘텐츠 쓰기 미들웨어의 HTTP 어댑터 (ADR-0003).
@@ -13,7 +14,11 @@ import { pendingChanges, publish, revert } from './publish-handler';
  * admin 은 애초에 배포 대상이 아니고, 이 미들웨어는 로컬 개발 서버에만 존재한다.
  */
 
-const MAX_BODY_BYTES = 1_000_000;
+/**
+ * base64 는 원본보다 약 33% 크다. 이미지 상한(5MB)을 담으려면 본문 상한이 그보다 커야 한다
+ * — 안 그러면 상한 안내가 아니라 '요청이 너무 큽니다' 가 뜬다 (EP-0007).
+ */
+const MAX_BODY_BYTES = 8_000_000;
 
 function readJsonBody(req: IncomingMessage): Promise<unknown> {
   return new Promise((resolveBody, rejectBody) => {
@@ -90,6 +95,27 @@ export function contentApiPlugin(repoRoot: string): Plugin {
           return;
         }
         send(405, { error: '지원하지 않는 메서드입니다.' });
+      });
+
+      // 이미지 업로드 — 개발 서버에만 존재한다 (EP-0007)
+      server.middlewares.use('/api/upload', (req: IncomingMessage, res: ServerResponse) => {
+        const send = (status: number, body: unknown) => {
+          res.statusCode = status;
+          res.setHeader('Content-Type', 'application/json; charset=utf-8');
+          res.end(JSON.stringify(body));
+        };
+        if (req.method !== 'POST') {
+          send(405, { error: '지원하지 않는 메서드입니다.' });
+          return;
+        }
+        void readJsonBody(req)
+          .then((body) => {
+            const result = handleUpload(repoRoot, body);
+            send(result.ok ? 200 : result.status, result);
+          })
+          .catch((error: unknown) => {
+            send(400, { error: error instanceof Error ? error.message : '업로드 오류' });
+          });
       });
 
       server.middlewares.use('/api/content', (req: IncomingMessage, res: ServerResponse) => {

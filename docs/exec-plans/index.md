@@ -8,6 +8,7 @@
 | [0004](completed/0004-per-item-publish.md) | 항목별 복구·게시 | DONE |
 | [0005](completed/0005-design-lab.md) | 디자인 시안 비교소 | DONE |
 | [0006](completed/0006-docs-skin.md) | 문서 도구 배치 적용 | DONE |
+| [0007](completed/0007-writing-tools.md) | 글쓰기 편집기 (서식·미리보기·이미지) | DONE |
 
 완료된 계획은 `completed/` 로 옮기고 이 표의 상태를 `DONE` 으로 바꾼다.
 기술 부채는 → [tech-debt-tracker.md](tech-debt-tracker.md)

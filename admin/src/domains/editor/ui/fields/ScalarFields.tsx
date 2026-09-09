@@ -1,4 +1,5 @@
-import { Input, Textarea, cn } from '@portfolio/ui';
+import { Input, cn } from '@portfolio/ui';
+import { MarkdownEditor } from './MarkdownEditor';
 import type { FieldSpec, FieldValue } from '../../config/forms';
 
 export const asText = (value: FieldValue): string =>
@@ -13,18 +14,20 @@ interface ScalarProps {
   disabled?: boolean;
 }
 
-/** 긴 본문. notes·body 는 실제로 길게 쓰므로 더 크게 준다. */
+/**
+ * 긴 본문. notes·body 는 실제로 길게 쓰므로 더 크게 준다.
+ * 서식 도구·미리보기·이미지 첨부는 MarkdownEditor 가 갖는다 (EP-0007).
+ */
 export function MarkdownField({ id, spec, value, onChange, disabled }: ScalarProps) {
   const long = spec.name === 'notes' || spec.name === 'body';
   return (
-    <Textarea
+    <MarkdownEditor
       id={id}
       value={asText(value)}
-      onChange={(e) => onChange(e.target.value)}
-      rows={long ? 12 : 4}
-      disabled={disabled}
+      rows={long ? 14 : 6}
       placeholder={spec.placeholder}
-      className="font-mono text-xs leading-relaxed"
+      disabled={disabled}
+      onChange={onChange}
     />
   );
 }
