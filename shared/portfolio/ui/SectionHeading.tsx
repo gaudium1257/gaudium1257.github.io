@@ -4,32 +4,23 @@ import type { ReactNode } from 'react';
 /**
  * 섹션 제목 (EP-0006, 시안 07 문서 도구).
  *
- * `01 — 제목 ————————— 전체 보기` 형태다.
- * 번호와 괘선이 페이지 전체에 같은 리듬을 준다.
+ * `제목 ———————————— 전체 보기` 형태다.
+ * 괘선이 페이지 전체에 같은 리듬을 준다. 번호는 쓰지 않는다 — 순서에 의미가 없다 (EP-0009).
  */
 export function SectionHeading({
   id,
   title,
-  index,
   moreTo,
   action,
 }: {
   id: string;
   title: string;
-  /** 목차 번호. 없으면 번호를 숨긴다 */
-  index?: number;
   moreTo?: string;
   /** 편집 모드에서만 채워진다 (ADR-0005) */
   action?: ReactNode;
 }) {
   return (
     <div className="flex items-baseline gap-4">
-      {index !== undefined ? (
-        <span aria-hidden="true" className="hanging-index text-[0.8rem] font-semibold">
-          {String(index).padStart(2, '0')}
-        </span>
-      ) : null}
-
       <h2 id={id} className="shrink-0 text-xl font-bold tracking-tight">
         {title}
       </h2>

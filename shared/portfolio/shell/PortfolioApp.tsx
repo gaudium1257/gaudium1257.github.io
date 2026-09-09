@@ -11,6 +11,10 @@ import { ThemeProvider } from './theme';
  * 배치는 **좌측 목차 + 본문** 한 가지다 (EP-0006, 시안 07 문서 도구).
  * 선택지를 두지 않는다 — 레이아웃이 둘이면 어느 쪽도 끝까지 다듬지 않게 된다.
  *
+ * 본문 컨테이너는 넓게(5xl) 잡되, **글줄은 그 안에서 따로 묶는다** (EP-0009).
+ * 폭을 안 늘리면 넓은 모니터에서 휴대폰 화면을 늘려놓은 것처럼 보이고,
+ * 무작정 늘리면 글 줄이 길어져 눈이 줄을 놓친다.
+ *
  * `editing` 을 넘기지 않으면 편집 UI 가 전혀 렌더되지 않는다 — viewer 의 기본값이다 (INV-8).
  * `banner` 는 admin 이 "편집 중"임을 알리는 데 쓴다 (docs/DESIGN.md).
  */
@@ -36,7 +40,7 @@ export function PortfolioApp({
 
           <div className="min-w-0 flex-1">
             {banner ? <div className="sticky top-0 z-30">{banner}</div> : null}
-            <main className="hero-surface mx-auto w-full max-w-3xl px-6 py-10 sm:px-8 sm:py-14">
+            <main className="hero-surface mx-auto w-full max-w-5xl px-6 py-10 sm:px-10 sm:py-16 lg:px-14">
               <PortfolioRoutes content={content} editing={editing} />
             </main>
           </div>

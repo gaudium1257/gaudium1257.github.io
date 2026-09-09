@@ -22,7 +22,7 @@ export function DocsSidebar({ searchIndex }: { searchIndex: SearchEntry[] }) {
     <aside
       className={cn(
         'no-print rail-surface bg-background',
-        'flex flex-col border-b border-border md:h-full md:w-56 md:border-r md:border-b-0',
+        'flex flex-col border-b border-border md:h-full md:w-56 md:border-r md:border-b-0 lg:w-64',
       )}
     >
       <div className="flex items-center gap-2 px-5 pt-4 pb-3 md:pt-6 md:pb-5">
@@ -43,10 +43,10 @@ export function DocsSidebar({ searchIndex }: { searchIndex: SearchEntry[] }) {
       <nav aria-label="주요 섹션" className="flex-1 px-2 pb-2 md:px-0 md:pb-0">
         <p className="eyebrow hidden px-5 pb-2 md:block">Index</p>
         <ul className="flex gap-1 overflow-x-auto md:block md:overflow-visible">
-          {NAV_ITEMS.map((item, i) => (
+          {NAV_ITEMS.map((item) => (
             <li key={item.path}>
               <NavLink to={item.path} end={item.path === '/'}>
-                {({ isActive }) => <NavRow label={item.label} n={i + 1} isActive={isActive} />}
+                {({ isActive }) => <NavRow label={item.label} isActive={isActive} />}
               </NavLink>
             </li>
           ))}
@@ -64,12 +64,14 @@ export function DocsSidebar({ searchIndex }: { searchIndex: SearchEntry[] }) {
 /**
  * 현재 항목은 **왼쪽 막대 + 굵기 + 색** 세 가지로 구분한다.
  * 색만으로 구분하면 색각 이상에서 사라지고, 배경만으로는 노션의 그 회색 칩이 된다.
+ *
+ * 번호는 쓰지 않는다 — 목차의 순서에는 의미가 없다 (EP-0009).
  */
-function NavRow({ label, n, isActive }: { label: string; n: number; isActive: boolean }) {
+function NavRow({ label, isActive }: { label: string; isActive: boolean }) {
   return (
     <span
       className={cn(
-        'flex items-center gap-2.5 border-l-2 py-2.5 pr-4 pl-4 text-[0.9375rem] whitespace-nowrap transition-colors md:pl-[18px]',
+        'flex items-center gap-2.5 border-l-2 py-2.5 pr-4 pl-5 text-[0.9375rem] whitespace-nowrap transition-colors',
         isActive
           ? 'border-brand bg-brand-subtle font-semibold text-foreground'
           : 'border-transparent text-muted-foreground hover:bg-accent/50 hover:text-foreground',
@@ -77,12 +79,9 @@ function NavRow({ label, n, isActive }: { label: string; n: number; isActive: bo
     >
       <span
         aria-hidden="true"
-        className={cn(
-          'text-[0.75rem] font-semibold tabular-nums',
-          isActive ? 'text-brand' : 'opacity-45',
-        )}
+        className={cn('text-base leading-none', isActive ? 'text-brand' : 'opacity-35')}
       >
-        {String(n).padStart(2, '0')}
+        ·
       </span>
       {label}
     </span>

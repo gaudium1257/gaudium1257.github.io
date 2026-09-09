@@ -8,7 +8,7 @@ import { cn } from '@portfolio/ui';
  * 색은 전부 토큰이다 — 하드코딩하면 다크 모드에서 그대로 남는다.
  */
 const PROSE = [
-  't-body space-y-5 text-foreground/85',
+  't-body max-w-[68ch] space-y-5 text-foreground/85',
   // 소제목은 본문보다 진하게. 크기 차이만으로는 스캔이 안 된다
   '[&_h2]:mt-9 [&_h2]:text-xl [&_h2]:font-bold [&_h2]:tracking-tight [&_h2]:text-foreground',
   '[&_h3]:mt-7 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-foreground',

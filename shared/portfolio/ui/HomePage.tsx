@@ -30,7 +30,7 @@ function IntroPreview({ intro }: { intro: string }) {
       <h2 id="intro-preview" className="eyebrow">
         소개
       </h2>
-      <p className="t-lead text-foreground/85">{text}</p>
+      <p className="t-lead max-w-[62ch] text-foreground/85">{text}</p>
       <Link
         to="/about"
         className="t-meta inline-block font-medium text-brand underline-offset-4 hover:underline"
@@ -44,7 +44,6 @@ function IntroPreview({ intro }: { intro: string }) {
 /** 홈의 섹션 셋은 형태가 같다. 따로 쓰면 하나만 고쳐 어긋난다 */
 function PreviewSection({
   id,
-  index,
   label,
   count,
   kind,
@@ -52,7 +51,6 @@ function PreviewSection({
   children,
 }: {
   id: string;
-  index: number;
   label: string;
   count: number;
   kind: ContentKind;
@@ -67,7 +65,6 @@ function PreviewSection({
       <SectionHeading
         id={`${id}-heading`}
         title={label}
-        index={index}
         moreTo={to}
         action={editing.renderAddAction?.(kind)}
       />
@@ -83,18 +80,13 @@ export function HomePage({ content, editing = {} }: Props) {
 
   return (
     <div className="space-y-14">
-      <Hero
-        profile={profile}
-        counts={{ papers: papers.length, projects: projects.length, posts: posts.length }}
-        editing={editing}
-      />
+      <Hero profile={profile} editing={editing} />
 
       <IntroPreview intro={profile.intro} />
 
       {/* 편집 중에는 비어 있어도 섹션을 보여준다 — 그래야 첫 항목을 추가할 수 있다 */}
       <PreviewSection
         id="papers"
-        index={1}
         label={sectionLabel('papers')}
         count={papers.length}
         editing={editing}
@@ -105,7 +97,6 @@ export function HomePage({ content, editing = {} }: Props) {
 
       <PreviewSection
         id="projects"
-        index={2}
         label={sectionLabel('projects')}
         count={projects.length}
         editing={editing}
@@ -116,7 +107,6 @@ export function HomePage({ content, editing = {} }: Props) {
 
       <PreviewSection
         id="posts"
-        index={3}
         label={sectionLabel('blog')}
         count={posts.length}
         editing={editing}

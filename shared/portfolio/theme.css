@@ -122,13 +122,6 @@ body {
   background-size: 100% 1px;
 }
 
-/* 목록 항목의 걸린 번호. 본문 왼쪽 여백으로 밀어내 색인처럼 보이게 한다 */
-.hanging-index {
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.04em;
-  color: var(--color-brand);
-}
-
 /* 제목 위의 작은 분류 라벨. 브랜드색을 써서 회색 일변도를 끊는다 */
 .eyebrow {
   font-size: 0.78rem;
