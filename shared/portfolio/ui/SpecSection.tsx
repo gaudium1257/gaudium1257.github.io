@@ -18,13 +18,13 @@ export function SpecSection({
 
   return (
     <section aria-labelledby={`${category}-heading`} className="space-y-3">
-      <h2
-        id={`${category}-heading`}
-        className="border-b border-border pb-1.5 text-lg font-semibold tracking-tight"
-      >
-        {label}
-      </h2>
-      <ul className="divide-y divide-border">
+      <div className="flex items-baseline gap-4">
+        <h2 id={`${category}-heading`} className="shrink-0 text-base font-semibold tracking-tight">
+          {label}
+        </h2>
+        <span aria-hidden="true" className="rule-trail h-px flex-1" />
+      </div>
+      <ul className="divide-y divide-border border-t border-border">
         {items.map((item) => (
           <li key={item.id} className="flex items-start gap-3 py-3">
             <div className="flex-1 space-y-1">

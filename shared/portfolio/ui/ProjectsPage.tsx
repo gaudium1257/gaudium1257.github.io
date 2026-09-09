@@ -1,7 +1,7 @@
 import type { EditingSlots, PortfolioContent } from '../types';
 import { PageHeading } from './common';
 import { ProjectList } from './ProjectList';
-import { SECTION_ICONS, sectionLabel } from '../config';
+import { sectionLabel } from '../config';
 
 export function ProjectsPage({
   content,
@@ -14,7 +14,7 @@ export function ProjectsPage({
     <div className="space-y-6">
       <PageHeading
         title={sectionLabel('projects')}
-        icon={SECTION_ICONS.projects}
+        eyebrow="Project"
         description="만든 것들"
         action={editing.renderAddAction?.('project')}
       />

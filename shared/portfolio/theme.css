@@ -78,6 +78,32 @@ body {
   );
 }
 
+/*
+ * 제목과 오른쪽 도구 사이를 잇는 가는 괘선.
+ * 빈 공간 대신 선이 지나가면 목록이 목차처럼 읽힌다 — 노션식 평평한 블록과 갈리는 지점이다.
+ */
+.rule-trail {
+  background-image: linear-gradient(to right, var(--color-border) 0 100%);
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: 100% 1px;
+}
+
+/* 목록 항목의 걸린 번호. 본문 왼쪽 여백으로 밀어내 색인처럼 보이게 한다 */
+.hanging-index {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  color: var(--color-brand);
+}
+
+/* 제목 위의 작은 분류 라벨 */
+.eyebrow {
+  font-size: 0.66rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-muted-foreground);
+}
+
 /* 심사자는 종종 인쇄/PDF 로 본다 (스펙 C-2) */
 @media print {
   .no-print {

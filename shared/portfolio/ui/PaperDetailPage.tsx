@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
-import { Separator } from '@portfolio/ui';
 import { findById, formatDate } from '../service/select';
 import type { PortfolioContent } from '../types';
+import { DetailHeader, DetailSection } from './DetailShell';
 import { Markdown } from './Markdown';
 import { BackLink, NotFoundNotice, TagList } from './common';
 
@@ -12,46 +12,53 @@ export function PaperDetailPage({ content }: { content: PortfolioContent }) {
 
   if (!paper) return <NotFoundNotice message="찾을 수 없는 논문 리뷰입니다." />;
 
-  return (
-    <article className="max-w-3xl space-y-6">
-      <header className="space-y-2">
-        <h1 className="text-3xl font-semibold tracking-tight">{paper.title}</h1>
-        <p className="text-sm text-muted-foreground">
-          {[paper.authors.join(', '), paper.venue, paper.year].filter(Boolean).join(' · ')}
-        </p>
-        <p className="text-xs text-muted-foreground">읽은 날짜 {formatDate(paper.readOn)}</p>
-        {paper.paperUrl ? (
-          <a
-            href={paper.paperUrl}
-            target="_blank"
-            rel="noreferrer noopener"
-            className="inline-block text-sm underline underline-offset-4"
-          >
-            원문 보기
-          </a>
-        ) : null}
-      </header>
+  const meta = [paper.authors.join(', '), paper.venue, paper.year].filter(Boolean).join(' · ');
 
-      <TagList tags={paper.tags} />
+  return (
+    <article>
+      <DetailHeader
+        eyebrow="Paper Review"
+        title={paper.title}
+        meta={meta}
+        aside={
+          paper.paperUrl ? (
+            <a
+              href={paper.paperUrl}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="text-sm text-muted-foreground underline underline-offset-4 transition-colors hover:text-brand"
+            >
+              원문 보기 ↗
+            </a>
+          ) : null
+        }
+      />
+
+      <p className="text-xs text-muted-foreground tabular-nums">
+        읽은 날짜 {formatDate(paper.readOn)}
+      </p>
+
+      {paper.tags.length > 0 ? (
+        <div className="mt-4">
+          <TagList tags={paper.tags} />
+        </div>
+      ) : null}
 
       {paper.summary ? (
-        <section className="space-y-2">
-          <h2 className="text-sm font-semibold tracking-wide uppercase">요약</h2>
-          <p className="text-sm leading-relaxed text-muted-foreground">{paper.summary}</p>
-        </section>
+        <DetailSection title="요약">
+          <p className="leading-relaxed text-muted-foreground">{paper.summary}</p>
+        </DetailSection>
       ) : null}
 
       {paper.notes ? (
-        <>
-          <Separator />
-          <section className="space-y-2">
-            <h2 className="text-sm font-semibold tracking-wide uppercase">정리</h2>
-            <Markdown>{paper.notes}</Markdown>
-          </section>
-        </>
+        <DetailSection title="정리">
+          <Markdown>{paper.notes}</Markdown>
+        </DetailSection>
       ) : null}
 
-      <BackLink />
+      <div className="mt-10 border-t border-border pt-5">
+        <BackLink />
+      </div>
     </article>
   );
 }

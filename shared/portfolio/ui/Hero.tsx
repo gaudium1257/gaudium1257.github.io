@@ -11,22 +11,18 @@ interface Props {
 /**
  * 첫 화면 (스펙 H-1). 심사자가 30초 안에 파악해야 할 것만 담는다.
  *
- * 문서 도구 배치(EP-0006)라 문서의 첫 장처럼 짠다:
- * 큰 아이콘 → 제목 → 부제 → 본문. 숫자는 표 대신 한 줄로 눕혔다 —
- * 좌측 목차가 이미 세로선을 만들고 있어 표를 또 세우면 화면이 조각난다.
+ * 작은 라벨 → 괘선 → 이름 → 한 줄 소개 → 실적 표.
+ * 이모지나 색면으로 시선을 끌지 않는다. 활자 크기 차이와 선만으로 위계를 만든다.
  */
 export function Hero({ profile, counts, editing = {} }: Props) {
   return (
     <section className="pb-8">
-      <div aria-hidden="true" className="text-5xl leading-none">
-        📓
-      </div>
-
-      <div className="mt-3 flex flex-wrap items-center gap-3">
-        <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">{profile.name}</h1>
+      <div className="flex items-center justify-between gap-3 border-b border-border pb-2">
+        <p className="eyebrow">Portfolio</p>
         {editing.renderItemAction?.('profile', 'profile')}
       </div>
 
+      <h1 className="mt-6 text-4xl font-semibold tracking-tight sm:text-5xl">{profile.name}</h1>
       <p className="mt-3 text-lg text-muted-foreground">{profile.headline}</p>
 
       {profile.intro ? (
@@ -54,7 +50,7 @@ export function Hero({ profile, counts, editing = {} }: Props) {
   );
 }
 
-/** 실적을 한 줄로 놓는다. 값이 0 인 항목은 빼서, 없는 것을 굳이 광고하지 않는다. */
+/** 실적 표. 값이 0 인 항목은 빼서, 없는 것을 굳이 광고하지 않는다. */
 function Ledger({ counts }: { counts: Props['counts'] }) {
   const items = [
     { label: '논문 리뷰', value: counts.papers, to: '/papers' },
@@ -65,16 +61,17 @@ function Ledger({ counts }: { counts: Props['counts'] }) {
   if (items.length === 0) return null;
 
   return (
-    <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-1 rounded-md bg-muted/60 px-4 py-3 text-sm">
+    <dl className="mt-7 flex flex-wrap gap-x-10 gap-y-4 border-y border-border py-4">
       {items.map((item) => (
-        <Link
-          key={item.label}
-          to={item.to}
-          className="text-muted-foreground transition-colors hover:text-brand"
-        >
-          {item.label} <span className="font-semibold tabular-nums">{item.value}</span>
-        </Link>
+        <div key={item.label}>
+          <dt className="eyebrow">{item.label}</dt>
+          <dd className="mt-1 text-2xl font-semibold tabular-nums">
+            <Link to={item.to} className="transition-colors hover:text-brand">
+              {String(item.value).padStart(2, '0')}
+            </Link>
+          </dd>
+        </div>
       ))}
-    </div>
+    </dl>
   );
 }

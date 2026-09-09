@@ -1,6 +1,6 @@
 import { Separator } from '@portfolio/ui';
 import { preview } from '../service/select';
-import { HOME_PREVIEW_COUNT, SECTION_ICONS, sectionLabel } from '../config';
+import { HOME_PREVIEW_COUNT, sectionLabel } from '../config';
 import type { EditingSlots, PortfolioContent } from '../types';
 import { Hero } from './Hero';
 import { PaperList } from './PaperList';
@@ -32,7 +32,7 @@ export function HomePage({ content, editing = {} }: Props) {
           <SectionHeading
             id="papers-heading"
             title={sectionLabel('papers')}
-            icon={SECTION_ICONS.papers}
+            index={1}
             moreTo="/papers"
             action={editing.renderAddAction?.('paper')}
           />
@@ -45,7 +45,7 @@ export function HomePage({ content, editing = {} }: Props) {
           <SectionHeading
             id="projects-heading"
             title={sectionLabel('projects')}
-            icon={SECTION_ICONS.projects}
+            index={2}
             moreTo="/projects"
             action={editing.renderAddAction?.('project')}
           />
@@ -58,7 +58,7 @@ export function HomePage({ content, editing = {} }: Props) {
           <SectionHeading
             id="posts-heading"
             title={sectionLabel('blog')}
-            icon={SECTION_ICONS.blog}
+            index={3}
             moreTo="/blog"
             action={editing.renderAddAction?.('post')}
           />

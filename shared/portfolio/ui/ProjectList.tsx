@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import type { Project } from '@portfolio/content';
-import { SECTION_ICONS } from '../config';
 import { formatPeriod } from '../service/select';
 import type { EditingSlots } from '../types';
 import { TagList } from './common';
@@ -23,12 +22,12 @@ export function ProjectList({
   }
 
   return (
-    <ul className="divide-y divide-border">
-      {projects.map((project) => (
+    <ul className="divide-y divide-border border-t border-border">
+      {projects.map((project, i) => (
         <li key={project.id} className="flex items-start gap-3">
           <Link to={`/projects/${project.id}`} className="group flex flex-1 gap-3 py-3">
-            <span aria-hidden="true" className="pt-0.5 text-base">
-              {SECTION_ICONS.projects}
+            <span aria-hidden="true" className="hanging-index w-6 shrink-0 pt-1 text-[0.7rem]">
+              {String(i + 1).padStart(2, '0')}
             </span>
             <div className="min-w-0 flex-1 space-y-1.5">
               <div className="flex flex-wrap items-baseline justify-between gap-2">

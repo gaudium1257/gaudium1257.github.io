@@ -6,27 +6,23 @@ import { Badge } from '@portfolio/ui';
 export function PageHeading({
   title,
   description,
-  icon,
+  eyebrow,
   action,
 }: {
   title: string;
   description?: string;
-  /** 문서 도구 배치의 큰 아이콘 (EP-0006). 없으면 생략된다 */
-  icon?: string;
+  /** 제목 위의 작은 분류 라벨. 없으면 생략된다 */
+  eyebrow?: string;
   /** 편집 모드에서만 채워진다 (ADR-0005) */
   action?: ReactNode;
 }) {
   return (
-    <header className="pb-6">
-      {icon ? (
-        <div aria-hidden="true" className="text-5xl leading-none">
-          {icon}
-        </div>
-      ) : null}
-      <div className="mt-3 flex flex-wrap items-end justify-between gap-3">
-        <div className="space-y-1.5">
-          <h1 className="text-4xl font-bold tracking-tight">{title}</h1>
-          {description ? <p className="text-muted-foreground">{description}</p> : null}
+    <header className="pb-8">
+      {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
+      <div className="mt-2 flex flex-wrap items-end justify-between gap-3 border-b-2 border-foreground pb-3">
+        <div className="space-y-1">
+          <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">{title}</h1>
+          {description ? <p className="text-sm text-muted-foreground">{description}</p> : null}
         </div>
         {action}
       </div>

@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import type { PaperReview } from '@portfolio/content';
-import { SECTION_ICONS } from '../config';
 import { formatDate } from '../service/select';
 import type { EditingSlots } from '../types';
 
@@ -16,13 +15,13 @@ export function PaperList({
   }
 
   return (
-    <ul className="divide-y divide-border">
-      {papers.map((paper) => (
+    <ul className="divide-y divide-border border-t border-border">
+      {papers.map((paper, i) => (
         <li key={paper.id} className="flex items-start gap-3">
           <Link to={`/papers/${paper.id}`} className="group flex flex-1 gap-3 py-3">
-            {/* 문서 블록의 머리 아이콘 — 목차와 같은 기호라 어디에 속한 줄인지 바로 읽힌다 */}
-            <span aria-hidden="true" className="pt-0.5 text-base">
-              {SECTION_ICONS.papers}
+            {/* 걸린 번호. 목록이 색인처럼 읽히게 하는 장치다 */}
+            <span aria-hidden="true" className="hanging-index w-6 shrink-0 pt-1 text-[0.7rem]">
+              {String(i + 1).padStart(2, '0')}
             </span>
             <div className="min-w-0 flex-1 space-y-1">
               <div className="flex flex-wrap items-baseline justify-between gap-2">
