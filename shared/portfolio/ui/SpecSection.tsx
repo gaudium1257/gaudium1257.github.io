@@ -20,11 +20,11 @@ export function SpecSection({
     <section aria-labelledby={`${category}-heading`} className="space-y-3">
       <h2
         id={`${category}-heading`}
-        className="eyebrow-rule text-sm font-semibold tracking-wide uppercase"
+        className="border-b border-border pb-1.5 text-lg font-semibold tracking-tight"
       >
         {label}
       </h2>
-      <ul className="divide-y divide-border border-y border-border">
+      <ul className="divide-y divide-border">
         {items.map((item) => (
           <li key={item.id} className="flex items-start gap-3 py-3">
             <div className="flex-1 space-y-1">

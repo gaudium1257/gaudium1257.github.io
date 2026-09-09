@@ -19,4 +19,8 @@ const NAV_PATHS: ReadonlyArray<{ path: string; key: SectionKey }> = [
   { path: '/blog', key: 'blog' },
 ];
 
-export const NAV_ITEMS = NAV_PATHS.map(({ path, key }) => ({ path, label: sectionLabel(key) }));
+export const NAV_ITEMS = NAV_PATHS.map(({ path, key }) => ({
+  path,
+  key,
+  label: sectionLabel(key),
+}));

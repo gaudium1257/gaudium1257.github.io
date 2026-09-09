@@ -1,9 +1,16 @@
 import { Link } from 'react-router-dom';
 import type { Project } from '@portfolio/content';
+import { SECTION_ICONS } from '../config';
 import { formatPeriod } from '../service/select';
 import type { EditingSlots } from '../types';
 import { TagList } from './common';
 
+/**
+ * 프로젝트 목록 (EP-0006, 시안 07 문서 도구).
+ *
+ * 카드 격자를 버리고 논문·글과 같은 문서 블록으로 맞췄다.
+ * 좌측 목차가 생겨 본문 폭이 좁아졌으므로, 2단 격자를 유지하면 칸마다 글이 뭉개진다.
+ */
 export function ProjectList({
   projects,
   editing = {},
@@ -16,42 +23,36 @@ export function ProjectList({
   }
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2">
+    <ul className="divide-y divide-border">
       {projects.map((project) => (
-        <article
-          key={project.id}
-          className="group relative overflow-hidden rounded-xl border border-border bg-card p-5 transition-colors hover:border-brand/50"
-        >
-          {/* 호버 시 위쪽에 강조 막대가 차오른다 */}
-          <span
-            aria-hidden="true"
-            className="absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-brand transition-transform duration-300 group-hover:scale-x-100"
-          />
-          <div className="space-y-3">
-            <div className="flex flex-wrap items-baseline justify-between gap-2">
-              <h3 className="font-semibold">
-                <Link to={`/projects/${project.id}`} className="after:absolute after:inset-0">
+        <li key={project.id} className="flex items-start gap-3">
+          <Link to={`/projects/${project.id}`} className="group flex flex-1 gap-3 py-3">
+            <span aria-hidden="true" className="pt-0.5 text-base">
+              {SECTION_ICONS.projects}
+            </span>
+            <div className="min-w-0 flex-1 space-y-1.5">
+              <div className="flex flex-wrap items-baseline justify-between gap-2">
+                <span className="font-medium transition-colors group-hover:text-brand">
                   {project.title}
-                </Link>
-              </h3>
-              <time className="text-xs text-muted-foreground">
-                {formatPeriod(project.startedOn, project.endedOn)}
-              </time>
-            </div>
-            {project.role ? <p className="text-xs text-muted-foreground">{project.role}</p> : null}
-            {project.summary ? (
-              <p className="text-sm leading-relaxed text-muted-foreground">{project.summary}</p>
-            ) : null}
-            <TagList tags={project.stack} />
-            {/* 카드 전체가 링크라 편집 버튼은 그 위에 띄운다 */}
-            {editing.renderItemAction ? (
-              <div className="relative z-10 pt-1">
-                {editing.renderItemAction('project', project.id)}
+                </span>
+                <time className="text-xs text-muted-foreground tabular-nums">
+                  {formatPeriod(project.startedOn, project.endedOn)}
+                </time>
               </div>
-            ) : null}
-          </div>
-        </article>
+              {project.role ? (
+                <p className="text-xs text-muted-foreground">{project.role}</p>
+              ) : null}
+              {project.summary ? (
+                <p className="text-sm leading-relaxed text-muted-foreground">{project.summary}</p>
+              ) : null}
+              <TagList tags={project.stack} />
+            </div>
+          </Link>
+          {editing.renderItemAction ? (
+            <div className="pt-3">{editing.renderItemAction('project', project.id)}</div>
+          ) : null}
+        </li>
       ))}
-    </div>
+    </ul>
   );
 }

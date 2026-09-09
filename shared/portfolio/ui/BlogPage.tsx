@@ -1,7 +1,7 @@
 import type { EditingSlots, PortfolioContent } from '../types';
 import { PageHeading } from './common';
 import { PostList } from './PostList';
-import { sectionLabel } from '../config';
+import { SECTION_ICONS, sectionLabel } from '../config';
 
 export function BlogPage({
   content,
@@ -14,6 +14,7 @@ export function BlogPage({
     <div className="space-y-6">
       <PageHeading
         title={sectionLabel('blog')}
+        icon={SECTION_ICONS.blog}
         description="글과 기록"
         action={editing.renderAddAction?.('post')}
       />

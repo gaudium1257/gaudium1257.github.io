@@ -2,7 +2,6 @@
 export { PortfolioApp } from './shell/PortfolioApp';
 export { useSearch } from './shell/use-search';
 export { useTheme, ThemeProvider } from './shell/theme';
-export { SHELL, PROSE_WIDTH } from './shell/layout';
 export { SITE_NAME, NAV_ITEMS } from './shell/site';
 export { HOME_PREVIEW_COUNT, SPEC_SECTIONS } from './config';
 

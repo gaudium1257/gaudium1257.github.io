@@ -29,6 +29,18 @@ export const SECTION_LABELS = {
 
 export type SectionKey = keyof typeof SECTION_LABELS;
 
+/**
+ * 문서 도구 스킨의 목차 아이콘 (EP-0006).
+ * 이모지는 서체가 아니라 **문자**라서 폰트를 바꾸지 않고도 목차에 리듬을 준다.
+ */
+export const SECTION_ICONS: Record<SectionKey, string> = {
+  home: '🏠',
+  about: '👤',
+  papers: '📄',
+  projects: '🛠️',
+  blog: '✏️',
+};
+
 /** 지금은 한국어만 쓴다. 언어 전환이 들어오면 이 함수만 바뀐다. */
 export function sectionLabel(key: SectionKey): string {
   return SECTION_LABELS[key].ko;

@@ -1,4 +1,4 @@
-import { SPEC_SECTIONS, sectionLabel } from '../config';
+import { SECTION_ICONS, SPEC_SECTIONS, sectionLabel } from '../config';
 import type { EditingSlots, PortfolioContent } from '../types';
 import { PageHeading } from './common';
 import { SpecSection } from './SpecSection';
@@ -21,6 +21,7 @@ export function AboutPage({
     <div className="space-y-10">
       <PageHeading
         title={sectionLabel('about')}
+        icon={SECTION_ICONS.about}
         description={profile.headline}
         action={
           <div className="flex items-center gap-2">
