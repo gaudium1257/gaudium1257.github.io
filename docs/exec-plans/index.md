@@ -11,6 +11,7 @@
 | [0007](completed/0007-writing-tools.md) | 글쓰기 편집기 (서식·미리보기·이미지) | DONE |
 | [0008](completed/0008-readability.md) | 가독성·색·홈 구성 | DONE |
 | [0009](completed/0009-desktop-layout.md) | 번호 제거·넓은 화면 대응 | DONE |
+| [0010](completed/0010-search-specs.md) | 검색에 스펙 포함 + 단축키 | DONE |
 
 완료된 계획은 `completed/` 로 옮기고 이 표의 상태를 `DONE` 으로 바꾼다.
 기술 부채는 → [tech-debt-tracker.md](tech-debt-tracker.md)

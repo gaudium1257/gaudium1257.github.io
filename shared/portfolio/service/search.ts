@@ -1,11 +1,11 @@
-import type { BlogPost, PaperReview, Project } from '@portfolio/content';
+import type { BlogPost, PaperReview, Project, SpecItem } from '@portfolio/content';
 
 /**
  * 검색 인덱스와 조회 (ADR-0004, 스펙 S-2·S-5).
  * 인덱스는 콘텐츠에서 파생된다 — 따로 관리하지 않는다.
  */
 
-export type SearchKind = 'paper' | 'project' | 'post';
+export type SearchKind = 'paper' | 'project' | 'post' | 'spec';
 
 export interface SearchEntry {
   kind: SearchKind;
@@ -17,10 +17,12 @@ export interface SearchEntry {
   path: string;
 }
 
+/** 화면에 보이는 이름과 같아야 한다 — 검색 결과만 영어면 다른 사이트처럼 읽힌다 */
 const KIND_LABEL: Record<SearchKind, string> = {
-  paper: 'Paper Review',
-  project: 'Project',
-  post: 'Blog',
+  paper: '논문 리뷰',
+  project: '프로젝트',
+  post: '블로그',
+  spec: '소개',
 };
 
 export const kindLabel = (kind: SearchKind): string => KIND_LABEL[kind];
@@ -38,15 +40,22 @@ function entry(
     id,
     title,
     summary,
-    haystack: [title, summary, ...extra].join(' ').toLowerCase(),
+    haystack: [title, summary, ...extra].filter(Boolean).join(' ').toLowerCase(),
     path,
   };
 }
+
+/**
+ * 스펙은 제 주소가 없다 — About 안의 한 줄이다.
+ * 그래서 **항목 앵커**로 보낸다. 섹션 맨 위에 떨구면 사용자가 다시 훑어야 한다 (EP-0010).
+ */
+export const specAnchorId = (id: string): string => `spec-${id}`;
 
 export function buildIndex(input: {
   papers: PaperReview[];
   projects: Project[];
   posts: BlogPost[];
+  specs?: SpecItem[];
 }): SearchEntry[] {
   return [
     ...input.papers.map((p) =>
@@ -64,6 +73,16 @@ export function buildIndex(input: {
     ),
     ...input.posts.map((p) =>
       entry('post', p.id, p.title, p.summary, [...p.tags, p.body], `/blog/${p.id}`),
+    ),
+    ...(input.specs ?? []).map((s) =>
+      entry(
+        'spec',
+        s.id,
+        s.title,
+        s.organization,
+        [s.description, s.category],
+        `/about#${specAnchorId(s.id)}`,
+      ),
     ),
   ];
 }

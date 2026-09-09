@@ -24,13 +24,14 @@ export function usePortfolioContent(): PortfolioContent {
     const papers = visiblePapers(loadPapers());
     const projects = visibleProjects(loadProjects());
     const posts = visiblePosts(loadPosts());
+    const specs = visibleSpecs(loadSpecs());
     return {
       profile: loadProfile(),
-      specs: visibleSpecs(loadSpecs()),
+      specs,
       papers,
       projects,
       posts,
-      searchIndex: buildIndex({ papers, projects, posts }),
+      searchIndex: buildIndex({ papers, projects, posts, specs }),
     };
   }, []);
 }

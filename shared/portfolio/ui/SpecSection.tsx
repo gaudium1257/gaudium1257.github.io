@@ -1,5 +1,6 @@
 import type { SpecItem } from '@portfolio/content';
 import { formatPeriod } from '../service/select';
+import { specAnchorId } from '../service/search';
 import type { EditingSlots } from '../types';
 
 /** About 의 한 분류. 항목이 없으면 통째로 숨긴다 (스펙 A-3). */
@@ -26,7 +27,12 @@ export function SpecSection({
       </div>
       <ul className="divide-y divide-border border-t border-border">
         {items.map((item) => (
-          <li key={item.id} className="flex items-start gap-3 py-3">
+          <li
+            key={item.id}
+            id={specAnchorId(item.id)}
+            // 검색에서 넘어왔을 때 화면 맨 위에 딱 붙지 않도록 여유를 둔다
+            className="flex scroll-mt-24 items-start gap-3 py-5"
+          >
             <div className="flex-1 space-y-1">
               <div className="flex flex-wrap items-baseline justify-between gap-2">
                 <span className="text-[1.0625rem] font-semibold tracking-tight">{item.title}</span>

@@ -48,9 +48,10 @@ export function useApiContent() {
       const sortedPapers = visiblePapers(papers, { includePrivate: true });
       const sortedProjects = visibleProjects(projects, { includePrivate: true });
       const sortedPosts = visiblePosts(posts, { includePrivate: true });
+      const sortedSpecs = visibleSpecs(specs, { includePrivate: true });
       setContent({
         profile: profile[0] ?? EMPTY.profile,
-        specs: visibleSpecs(specs, { includePrivate: true }),
+        specs: sortedSpecs,
         papers: sortedPapers,
         projects: sortedProjects,
         posts: sortedPosts,
@@ -58,6 +59,7 @@ export function useApiContent() {
           papers: sortedPapers,
           projects: sortedProjects,
           posts: sortedPosts,
+          specs: sortedSpecs,
         }),
       });
       setError(null);

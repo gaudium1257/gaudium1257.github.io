@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { BlogPost, PaperReview, Project } from '@portfolio/content';
+import type { BlogPost, PaperReview, Project, SpecItem } from '@portfolio/content';
 import { buildIndex, kindLabel, search } from './search';
 
 const papers: PaperReview[] = [
@@ -99,9 +99,70 @@ describe('search', () => {
 });
 
 describe('kindLabel', () => {
-  it('사람이 읽는 이름을 준다', () => {
-    expect(kindLabel('paper')).toBe('Paper Review');
-    expect(kindLabel('project')).toBe('Project');
-    expect(kindLabel('post')).toBe('Blog');
+  // 배너가 한국어가 된 뒤로 결과 라벨만 영어면 다른 사이트처럼 읽힌다 (EP-0010)
+  it('화면에 보이는 이름과 같은 한국어를 준다', () => {
+    expect(kindLabel('paper')).toBe('논문 리뷰');
+    expect(kindLabel('project')).toBe('프로젝트');
+    expect(kindLabel('post')).toBe('블로그');
+    expect(kindLabel('spec')).toBe('소개');
+  });
+});
+
+/**
+ * 스펙 검색 (EP-0010).
+ *
+ * 검색이 학력·경력을 못 찾으면 심사자가 "이 사람 학력이 뭐였지" 하고
+ * 검색했을 때 빈 결과를 본다. About 에 버젓이 있는데도.
+ */
+const specs: SpecItem[] = [
+  {
+    id: 'edu-korea',
+    category: 'education',
+    title: '고려대학교 컴퓨터학과',
+    organization: '학사 과정',
+    description: '자료구조·알고리즘 중심',
+    startedOn: '2026-03-01',
+    endedOn: null,
+    order: 0,
+    visibility: 'public',
+  },
+  {
+    id: 'skill-react',
+    category: 'skill',
+    title: 'React · TypeScript',
+    organization: '',
+    description: '프로덕션 수준의 프론트엔드 개발',
+    startedOn: null,
+    endedOn: null,
+    order: 1,
+    visibility: 'public',
+  },
+];
+
+describe('스펙 검색', () => {
+  const index = buildIndex({ papers, projects, posts, specs });
+
+  it('학력을 찾는다 — 이전에는 빈 결과였다', () => {
+    const hits = search(index, '고려대');
+    expect(hits).toHaveLength(1);
+    expect(hits[0]?.kind).toBe('spec');
+    expect(hits[0]?.title).toBe('고려대학교 컴퓨터학과');
+  });
+
+  it('설명으로도 찾는다', () => {
+    expect(search(index, '알고리즘').map((h) => h.id)).toEqual(['edu-korea']);
+  });
+
+  it('기술 스펙을 찾는다', () => {
+    const hits = search(index, '프론트엔드');
+    expect(hits.map((h) => h.id)).toContain('skill-react');
+  });
+
+  it('About 의 그 항목으로 보낸다 — 섹션 맨 위가 아니라', () => {
+    expect(search(index, '고려대')[0]?.path).toBe('/about#spec-edu-korea');
+  });
+
+  it('specs 를 넘기지 않아도 동작한다 — 기존 호출부가 깨지지 않는다', () => {
+    expect(() => buildIndex({ papers, projects, posts })).not.toThrow();
   });
 });

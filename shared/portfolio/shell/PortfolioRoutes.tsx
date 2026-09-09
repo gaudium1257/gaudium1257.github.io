@@ -9,6 +9,7 @@ import { PapersPage } from '../ui/PapersPage';
 import { ProjectDetailPage } from '../ui/ProjectDetailPage';
 import { ProjectsPage } from '../ui/ProjectsPage';
 import { NotFoundPage } from './NotFoundPage';
+import { useHashScroll } from './use-hash-scroll';
 
 /**
  * 두 앱이 같은 라우트를 쓴다 (ADR-0005).
@@ -21,6 +22,9 @@ export function PortfolioRoutes({
   content: PortfolioContent;
   editing?: EditingSlots;
 }) {
+  // 검색 결과가 About 의 특정 항목을 가리킨다 — 해시로 이동하면 거기까지 데려간다 (EP-0010)
+  useHashScroll();
+
   return (
     <Routes>
       <Route path="/" element={<HomePage content={content} editing={editing} />} />
