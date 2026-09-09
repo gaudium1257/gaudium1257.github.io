@@ -1,0 +1,14 @@
+{
+  "id": "zzz-test-attention",
+  "title": "Attention Is All You Need — 순환 없이 시퀀스를 다루기",
+  "authors": ["Vaswani", "Shazeer", "Parmar"],
+  "venue": "NeurIPS",
+  "year": 2017,
+  "paperUrl": "https://arxiv.org/abs/1706.03762",
+  "readOn": "2026-08-14",
+  "summary": "순환도 합성곱도 없이 어텐션만으로 시퀀스를 다룰 수 있다는 것을 보인 논문. 병렬화가 가능해져 학습 시간이 크게 줄었다.",
+  "notes": "## 왜 중요한가\n\n기존 seq2seq 는 순환 구조 때문에 앞 토큰을 처리해야 뒤를 볼 수 있었다. 이 순차성이 GPU 병렬화를 막는 병목이었다.\n\n## 핵심 장치\n\n- **Self-attention** — 모든 위치가 서로를 직접 참조한다. 거리와 무관하게 경로 길이가 1이다\n- **Multi-head** — 하나의 어텐션으로는 한 종류의 관계만 본다. 여러 갈래로 나눠 서로 다른 관계를 잡는다\n- **Positional encoding** — 순서 정보가 구조에서 사라졌으므로 입력에 직접 실어 준다\n\n## 읽고 남은 질문\n\n토큰 수가 늘면 어텐션 비용이 제곱으로 는다. 긴 문서에서 이 비용을 어떻게 감당하는지는 이후 논문들의 숙제로 남았다.",
+  "tags": ["Transformer", "NLP", "어텐션"],
+  "visibility": "public",
+  "order": 0
+}
