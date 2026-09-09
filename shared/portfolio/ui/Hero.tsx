@@ -13,6 +13,9 @@ interface Props {
  *
  * 작은 라벨 → 괘선 → 이름 → 한 줄 소개 → 실적 표.
  * 이모지나 색면으로 시선을 끌지 않는다. 활자 크기 차이와 선만으로 위계를 만든다.
+ *
+ * **자기소개글은 여기 두지 않는다.** 홈은 30초 안에 훑는 화면인데(H-1)
+ * 긴 글이 들어오면 그 전제가 깨진다. 자기소개는 About 이 갖는다 (A-1).
  */
 export function Hero({ profile, counts, editing = {} }: Props) {
   return (
@@ -24,10 +27,6 @@ export function Hero({ profile, counts, editing = {} }: Props) {
 
       <h1 className="mt-6 text-4xl font-semibold tracking-tight sm:text-5xl">{profile.name}</h1>
       <p className="mt-3 text-lg text-muted-foreground">{profile.headline}</p>
-
-      {profile.intro ? (
-        <p className="mt-4 leading-relaxed text-muted-foreground">{profile.intro}</p>
-      ) : null}
 
       <Ledger counts={counts} />
 
