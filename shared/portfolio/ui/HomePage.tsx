@@ -1,8 +1,10 @@
 import { Separator } from '@portfolio/ui';
-import { preview } from '../service/select';
+import { introPreview, preview } from '../service/select';
 import { HOME_PREVIEW_COUNT, sectionLabel } from '../config';
+import type { ContentKind } from '@portfolio/content';
 import type { EditingSlots, PortfolioContent } from '../types';
 import { Hero } from './Hero';
+import { Link } from 'react-router-dom';
 import { PaperList } from './PaperList';
 import { PostList } from './PostList';
 import { ProjectList } from './ProjectList';
@@ -11,6 +13,67 @@ import { SectionHeading } from './SectionHeading';
 interface Props {
   content: PortfolioContent;
   editing?: EditingSlots;
+}
+
+/**
+ * 홈의 자기소개 미리보기 (EP-0008, 스펙 H-2).
+ *
+ * **첫 문단만** 보여주고 About 으로 넘긴다. 전문을 실으면 홈이 30초 화면이 아니게 되고,
+ * About 이 따로 있을 이유도 사라진다. 소개가 비어 있으면 통째로 숨긴다.
+ */
+function IntroPreview({ intro }: { intro: string }) {
+  const text = introPreview(intro);
+  if (!text) return null;
+
+  return (
+    <section aria-labelledby="intro-preview" className="space-y-3">
+      <h2 id="intro-preview" className="eyebrow">
+        소개
+      </h2>
+      <p className="t-lead text-foreground/85">{text}</p>
+      <Link
+        to="/about"
+        className="t-meta inline-block font-medium text-brand underline-offset-4 hover:underline"
+      >
+        소개 더 보기 →
+      </Link>
+    </section>
+  );
+}
+
+/** 홈의 섹션 셋은 형태가 같다. 따로 쓰면 하나만 고쳐 어긋난다 */
+function PreviewSection({
+  id,
+  index,
+  label,
+  count,
+  kind,
+  editing,
+  children,
+}: {
+  id: string;
+  index: number;
+  label: string;
+  count: number;
+  kind: ContentKind;
+  editing: EditingSlots;
+  children: React.ReactNode;
+}) {
+  if (count === 0 && !editing.renderAddAction) return null;
+  const to = kind === 'post' ? '/blog' : `/${kind}s`;
+
+  return (
+    <section aria-labelledby={`${id}-heading`} className="space-y-4">
+      <SectionHeading
+        id={`${id}-heading`}
+        title={label}
+        index={index}
+        moreTo={to}
+        action={editing.renderAddAction?.(kind)}
+      />
+      {children}
+    </section>
+  );
 }
 
 /** Home 은 요약이다. 전체는 각 섹션에 있다 (스펙 H-1~H-6, PRODUCT_SENSE). */
@@ -26,45 +89,41 @@ export function HomePage({ content, editing = {} }: Props) {
         editing={editing}
       />
 
+      <IntroPreview intro={profile.intro} />
+
       {/* 편집 중에는 비어 있어도 섹션을 보여준다 — 그래야 첫 항목을 추가할 수 있다 */}
-      {papers.length > 0 || editing.renderAddAction ? (
-        <section aria-labelledby="papers-heading" className="space-y-4">
-          <SectionHeading
-            id="papers-heading"
-            title={sectionLabel('papers')}
-            index={1}
-            moreTo="/papers"
-            action={editing.renderAddAction?.('paper')}
-          />
-          <PaperList papers={preview(papers, HOME_PREVIEW_COUNT)} editing={editing} />
-        </section>
-      ) : null}
+      <PreviewSection
+        id="papers"
+        index={1}
+        label={sectionLabel('papers')}
+        count={papers.length}
+        editing={editing}
+        kind="paper"
+      >
+        <PaperList papers={preview(papers, HOME_PREVIEW_COUNT)} editing={editing} />
+      </PreviewSection>
 
-      {projects.length > 0 || editing.renderAddAction ? (
-        <section aria-labelledby="projects-heading" className="space-y-4">
-          <SectionHeading
-            id="projects-heading"
-            title={sectionLabel('projects')}
-            index={2}
-            moreTo="/projects"
-            action={editing.renderAddAction?.('project')}
-          />
-          <ProjectList projects={preview(projects, HOME_PREVIEW_COUNT)} editing={editing} />
-        </section>
-      ) : null}
+      <PreviewSection
+        id="projects"
+        index={2}
+        label={sectionLabel('projects')}
+        count={projects.length}
+        editing={editing}
+        kind="project"
+      >
+        <ProjectList projects={preview(projects, HOME_PREVIEW_COUNT)} editing={editing} />
+      </PreviewSection>
 
-      {posts.length > 0 || editing.renderAddAction ? (
-        <section aria-labelledby="posts-heading" className="space-y-4">
-          <SectionHeading
-            id="posts-heading"
-            title={sectionLabel('blog')}
-            index={3}
-            moreTo="/blog"
-            action={editing.renderAddAction?.('post')}
-          />
-          <PostList posts={preview(posts, HOME_PREVIEW_COUNT)} editing={editing} />
-        </section>
-      ) : null}
+      <PreviewSection
+        id="posts"
+        index={3}
+        label={sectionLabel('blog')}
+        count={posts.length}
+        editing={editing}
+        kind="post"
+      >
+        <PostList posts={preview(posts, HOME_PREVIEW_COUNT)} editing={editing} />
+      </PreviewSection>
 
       {isEmpty && !editing.renderAddAction ? (
         <>

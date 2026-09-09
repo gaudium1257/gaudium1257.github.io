@@ -21,8 +21,10 @@ export function PageHeading({
       {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
       <div className="mt-2 flex flex-wrap items-end justify-between gap-3 border-b-2 border-foreground pb-3">
         <div className="space-y-1">
-          <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">{title}</h1>
-          {description ? <p className="text-sm text-muted-foreground">{description}</p> : null}
+          <h1 className="text-[2.25rem] leading-tight font-bold tracking-tight sm:text-[2.75rem]">
+            {title}
+          </h1>
+          {description ? <p className="t-meta text-muted-foreground">{description}</p> : null}
         </div>
         {action}
       </div>

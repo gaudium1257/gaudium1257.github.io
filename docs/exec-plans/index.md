@@ -9,6 +9,7 @@
 | [0005](completed/0005-design-lab.md) | 디자인 시안 비교소 | DONE |
 | [0006](completed/0006-docs-skin.md) | 문서 도구 배치 적용 | DONE |
 | [0007](completed/0007-writing-tools.md) | 글쓰기 편집기 (서식·미리보기·이미지) | DONE |
+| [0008](completed/0008-readability.md) | 가독성·색·홈 구성 | DONE |
 
 완료된 계획은 `completed/` 로 옮기고 이 표의 상태를 `DONE` 으로 바꾼다.
 기술 부채는 → [tech-debt-tracker.md](tech-debt-tracker.md)

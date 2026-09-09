@@ -21,14 +21,14 @@ export function DocsSidebar({ searchIndex }: { searchIndex: SearchEntry[] }) {
   return (
     <aside
       className={cn(
-        'no-print bg-background',
+        'no-print rail-surface bg-background',
         'flex flex-col border-b border-border md:h-full md:w-56 md:border-r md:border-b-0',
       )}
     >
       <div className="flex items-center gap-2 px-5 pt-4 pb-3 md:pt-6 md:pb-5">
         <Link
           to="/"
-          className="text-base font-semibold tracking-tight transition-colors hover:text-brand"
+          className="text-lg font-semibold tracking-tight transition-colors hover:text-brand"
           aria-label={`${SITE_NAME} 홈으로`}
         >
           {SITE_NAME}
@@ -69,15 +69,18 @@ function NavRow({ label, n, isActive }: { label: string; n: number; isActive: bo
   return (
     <span
       className={cn(
-        'flex items-center gap-2.5 border-l-2 py-2 pr-4 pl-4 text-sm whitespace-nowrap transition-colors md:pl-[18px]',
+        'flex items-center gap-2.5 border-l-2 py-2.5 pr-4 pl-4 text-[0.9375rem] whitespace-nowrap transition-colors md:pl-[18px]',
         isActive
-          ? 'border-brand font-medium text-foreground'
-          : 'border-transparent text-muted-foreground hover:text-foreground',
+          ? 'border-brand bg-brand-subtle font-semibold text-foreground'
+          : 'border-transparent text-muted-foreground hover:bg-accent/50 hover:text-foreground',
       )}
     >
       <span
         aria-hidden="true"
-        className={cn('text-[0.65rem] tabular-nums', isActive ? 'text-brand' : 'opacity-50')}
+        className={cn(
+          'text-[0.75rem] font-semibold tabular-nums',
+          isActive ? 'text-brand' : 'opacity-45',
+        )}
       >
         {String(n).padStart(2, '0')}
       </span>

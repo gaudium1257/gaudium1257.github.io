@@ -18,37 +18,40 @@ export function ProjectList({
   editing?: EditingSlots;
 }) {
   if (projects.length === 0) {
-    return <p className="py-4 text-sm text-muted-foreground">아직 등록된 프로젝트가 없습니다.</p>;
+    return <p className="t-body py-4 text-muted-foreground">아직 등록된 프로젝트가 없습니다.</p>;
   }
 
   return (
     <ul className="divide-y divide-border border-t border-border">
       {projects.map((project, i) => (
         <li key={project.id} className="flex items-start gap-3">
-          <Link to={`/projects/${project.id}`} className="group flex flex-1 gap-3 py-3">
-            <span aria-hidden="true" className="hanging-index w-6 shrink-0 pt-1 text-[0.7rem]">
+          <Link to={`/projects/${project.id}`} className="group flex flex-1 gap-3 py-5">
+            <span
+              aria-hidden="true"
+              className="hanging-index w-7 shrink-0 pt-1.5 text-[0.8rem] font-semibold"
+            >
               {String(i + 1).padStart(2, '0')}
             </span>
             <div className="min-w-0 flex-1 space-y-1.5">
               <div className="flex flex-wrap items-baseline justify-between gap-2">
-                <span className="font-medium transition-colors group-hover:text-brand">
+                <span className="text-[1.0625rem] font-semibold tracking-tight transition-colors group-hover:text-brand">
                   {project.title}
                 </span>
-                <time className="text-xs text-muted-foreground tabular-nums">
+                <time className="t-label shrink-0 text-muted-foreground tabular-nums">
                   {formatPeriod(project.startedOn, project.endedOn)}
                 </time>
               </div>
               {project.role ? (
-                <p className="text-xs text-muted-foreground">{project.role}</p>
+                <p className="t-label text-muted-foreground">{project.role}</p>
               ) : null}
               {project.summary ? (
-                <p className="text-sm leading-relaxed text-muted-foreground">{project.summary}</p>
+                <p className="t-body text-muted-foreground">{project.summary}</p>
               ) : null}
               <TagList tags={project.stack} />
             </div>
           </Link>
           {editing.renderItemAction ? (
-            <div className="pt-3">{editing.renderItemAction('project', project.id)}</div>
+            <div className="pt-5">{editing.renderItemAction('project', project.id)}</div>
           ) : null}
         </li>
       ))}

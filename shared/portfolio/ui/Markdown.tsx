@@ -8,15 +8,15 @@ import { cn } from '@portfolio/ui';
  * 색은 전부 토큰이다 — 하드코딩하면 다크 모드에서 그대로 남는다.
  */
 const PROSE = [
-  'space-y-4 text-sm leading-relaxed text-muted-foreground',
+  't-body space-y-5 text-foreground/85',
   // 소제목은 본문보다 진하게. 크기 차이만으로는 스캔이 안 된다
-  '[&_h2]:mt-8 [&_h2]:text-base [&_h2]:font-semibold [&_h2]:text-foreground',
-  '[&_h3]:mt-6 [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:text-foreground',
+  '[&_h2]:mt-9 [&_h2]:text-xl [&_h2]:font-bold [&_h2]:tracking-tight [&_h2]:text-foreground',
+  '[&_h3]:mt-7 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-foreground',
   '[&_li]:ml-4 [&_li]:list-disc [&_li]:marker:text-brand',
   '[&_strong]:font-semibold [&_strong]:text-foreground',
   // 인용은 왼쪽 막대로 본문에서 떼어낸다 — 들여쓰기만으로는 목록과 헷갈린다
   '[&_blockquote]:border-l-2 [&_blockquote]:border-brand [&_blockquote]:pl-4',
-  '[&_blockquote]:text-foreground [&_blockquote]:italic',
+  '[&_blockquote]:bg-brand-subtle/40 [&_blockquote]:py-2 [&_blockquote]:text-foreground',
   '[&_code]:rounded [&_code]:bg-muted [&_code]:px-1.5 [&_code]:py-0.5',
   '[&_code]:font-mono [&_code]:text-[0.85em] [&_code]:text-foreground',
   '[&_pre]:overflow-x-auto [&_pre]:rounded-md [&_pre]:bg-muted [&_pre]:p-4',

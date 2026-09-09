@@ -63,3 +63,32 @@ export function formatPeriod(startedOn: string | null, endedOn: string | null): 
 export function formatDate(iso: string): string {
   return iso.replace(/-/g, '.');
 }
+
+/**
+ * 자기소개의 **첫 문단만** 잘라낸다 (EP-0008).
+ *
+ * 홈은 30초 안에 훑는 화면이다(H-1). 전문을 넣으면 그 전제가 깨지고,
+ * About 이 따로 있을 이유도 사라진다.
+ *
+ * 마크다운 기호는 떼어낸다 — 미리보기는 한 문단짜리 평문이라
+ * `##` 나 `-` 가 그대로 보이면 깨진 글로 읽힌다.
+ */
+export function introPreview(intro: string, maxChars = 160): string {
+  const firstBlock = intro.trim().split(/\n\s*\n/)[0] ?? '';
+
+  const plain = firstBlock
+    .replace(/^#{1,6}\s+/gm, '')
+    .replace(/^[-*>]\s+/gm, '')
+    .replace(/\*\*(.+?)\*\*/g, '$1')
+    .replace(/\*(.+?)\*/g, '$1')
+    .replace(/`(.+?)`/g, '$1')
+    .replace(/\[(.+?)\]\((.*?)\)/g, '$1')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  if (plain.length <= maxChars) return plain;
+  // 단어 중간에서 끊지 않는다
+  const cut = plain.slice(0, maxChars);
+  const lastSpace = cut.lastIndexOf(' ');
+  return `${lastSpace > maxChars * 0.6 ? cut.slice(0, lastSpace) : cut}…`;
+}

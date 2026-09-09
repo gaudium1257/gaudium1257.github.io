@@ -8,6 +8,7 @@ import {
   visiblePosts,
   visibleProjects,
   visibleSpecs,
+  introPreview,
 } from './select';
 
 const paper = (o: Partial<PaperReview>): PaperReview => ({
@@ -138,5 +139,37 @@ describe('formatPeriod', () => {
 
   it('시작일이 없으면 빈 문자열이다 (스펙 항목은 기간이 없을 수 있다)', () => {
     expect(formatPeriod(null, null)).toBe('');
+  });
+});
+
+/**
+ * 홈의 소개 미리보기 (EP-0008).
+ * 마크다운 기호가 그대로 새어나오면 깨진 글로 읽힌다.
+ */
+describe('introPreview', () => {
+  it('첫 문단만 가져온다', () => {
+    expect(introPreview('첫 문단입니다.\n\n둘째 문단입니다.')).toBe('첫 문단입니다.');
+  });
+
+  it('마크다운 기호를 떼어낸다', () => {
+    expect(introPreview('## 제목\n**굵게** 와 *기울임* 과 `코드`')).toBe(
+      '제목 굵게 와 기울임 과 코드',
+    );
+  });
+
+  it('링크는 문구만 남긴다', () => {
+    expect(introPreview('[깃허브](https://github.com) 봐주세요')).toBe('깃허브 봐주세요');
+  });
+
+  it('길면 자르고 말줄임을 붙인다', () => {
+    const long = '가'.repeat(300);
+    const result = introPreview(long, 50);
+    expect(result.length).toBeLessThanOrEqual(51);
+    expect(result.endsWith('…')).toBe(true);
+  });
+
+  it('비어 있으면 빈 문자열이다 — 홈이 그 자리를 숨길 수 있게', () => {
+    expect(introPreview('')).toBe('');
+    expect(introPreview('   \n\n  ')).toBe('');
   });
 });

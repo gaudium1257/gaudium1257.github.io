@@ -67,15 +67,48 @@ body {
 }
 
 /*
- * 첫 화면 배경. 브랜드색을 아주 옅게 깔아 헤더~히어로가 하나의 덩어리로 읽히게 한다.
+ * 본문 위쪽 표면. 브랜드색을 아주 옅게 깔아 시선이 처음 닿는 곳에 온도를 준다.
+ * 좌측 목차 배치에서는 상단 배너가 없으므로 **본문 머리**가 그 자리다 (EP-0008).
  * 컴포넌트에서 그라디언트를 쓰면 하드코딩된 색이 되므로 여기 유틸로 둔다.
  */
 .hero-surface {
   background-image: radial-gradient(
-    120% 100% at 50% 0%,
-    color-mix(in oklch, var(--color-brand) 12%, transparent) 0%,
-    transparent 60%
+    100% 70% at 15% 0%,
+    color-mix(in oklch, var(--color-brand) 10%, transparent) 0%,
+    transparent 65%
   );
+}
+
+/* 목차 기둥. 세로로 아주 옅게 흘려 사이드바가 판자처럼 보이지 않게 한다 */
+.rail-surface {
+  background-image: linear-gradient(
+    to bottom,
+    color-mix(in oklch, var(--color-brand) 7%, transparent) 0%,
+    transparent 45%
+  );
+}
+
+/*
+ * 활자 계단 (EP-0008).
+ *
+ * 컴포넌트가 제각각 크기를 고르면 화면마다 어긋난다. 쓸 수 있는 크기는 이 넷뿐이다.
+ * 본문 16px 이 기준 — 훑는 화면이 아니라 **읽는 화면**이다.
+ */
+.t-body {
+  font-size: 1rem;
+  line-height: 1.75;
+}
+.t-lead {
+  font-size: 1.125rem;
+  line-height: 1.7;
+}
+.t-meta {
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+.t-label {
+  font-size: 0.8125rem;
+  line-height: 1.5;
 }
 
 /*
@@ -96,12 +129,13 @@ body {
   color: var(--color-brand);
 }
 
-/* 제목 위의 작은 분류 라벨 */
+/* 제목 위의 작은 분류 라벨. 브랜드색을 써서 회색 일변도를 끊는다 */
 .eyebrow {
-  font-size: 0.66rem;
-  letter-spacing: 0.22em;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--color-muted-foreground);
+  color: var(--color-brand);
 }
 
 /* 심사자는 종종 인쇄/PDF 로 본다 (스펙 C-2) */

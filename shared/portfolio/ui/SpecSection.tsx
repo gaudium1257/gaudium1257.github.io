@@ -19,7 +19,7 @@ export function SpecSection({
   return (
     <section aria-labelledby={`${category}-heading`} className="space-y-3">
       <div className="flex items-baseline gap-4">
-        <h2 id={`${category}-heading`} className="shrink-0 text-base font-semibold tracking-tight">
+        <h2 id={`${category}-heading`} className="shrink-0 text-lg font-bold tracking-tight">
           {label}
         </h2>
         <span aria-hidden="true" className="rule-trail h-px flex-1" />
@@ -29,7 +29,7 @@ export function SpecSection({
           <li key={item.id} className="flex items-start gap-3 py-3">
             <div className="flex-1 space-y-1">
               <div className="flex flex-wrap items-baseline justify-between gap-2">
-                <span className="font-medium">{item.title}</span>
+                <span className="text-[1.0625rem] font-semibold tracking-tight">{item.title}</span>
                 <span className="text-xs text-muted-foreground tabular-nums">
                   {formatPeriod(item.startedOn, item.endedOn)}
                 </span>
@@ -38,7 +38,7 @@ export function SpecSection({
                 <p className="text-xs text-muted-foreground">{item.organization}</p>
               ) : null}
               {item.description ? (
-                <p className="text-sm leading-relaxed text-muted-foreground">{item.description}</p>
+                <p className="t-body text-muted-foreground">{item.description}</p>
               ) : null}
             </div>
             {editing.renderItemAction?.('spec', item.id)}

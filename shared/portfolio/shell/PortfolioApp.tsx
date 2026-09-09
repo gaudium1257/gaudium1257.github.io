@@ -36,7 +36,7 @@ export function PortfolioApp({
 
           <div className="min-w-0 flex-1">
             {banner ? <div className="sticky top-0 z-30">{banner}</div> : null}
-            <main className="mx-auto w-full max-w-3xl px-6 py-10 sm:px-8 sm:py-12">
+            <main className="hero-surface mx-auto w-full max-w-3xl px-6 py-10 sm:px-8 sm:py-14">
               <PortfolioRoutes content={content} editing={editing} />
             </main>
           </div>

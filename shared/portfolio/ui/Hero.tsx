@@ -25,8 +25,10 @@ export function Hero({ profile, counts, editing = {} }: Props) {
         {editing.renderItemAction?.('profile', 'profile')}
       </div>
 
-      <h1 className="mt-6 text-4xl font-semibold tracking-tight sm:text-5xl">{profile.name}</h1>
-      <p className="mt-3 text-lg text-muted-foreground">{profile.headline}</p>
+      <h1 className="mt-6 text-[2.75rem] leading-[1.1] font-bold tracking-tight sm:text-6xl">
+        {profile.name}
+      </h1>
+      <p className="t-lead mt-4 text-muted-foreground">{profile.headline}</p>
 
       <Ledger counts={counts} />
 
@@ -38,7 +40,7 @@ export function Hero({ profile, counts, editing = {} }: Props) {
               href={link.url}
               target="_blank"
               rel="noreferrer noopener"
-              className="text-sm text-muted-foreground underline underline-offset-4 transition-colors hover:text-brand"
+              className="t-meta text-muted-foreground underline underline-offset-4 transition-colors hover:text-brand"
             >
               {link.label}
             </a>
@@ -63,8 +65,8 @@ function Ledger({ counts }: { counts: Props['counts'] }) {
     <dl className="mt-7 flex flex-wrap gap-x-10 gap-y-4 border-y border-border py-4">
       {items.map((item) => (
         <div key={item.label}>
-          <dt className="eyebrow">{item.label}</dt>
-          <dd className="mt-1 text-2xl font-semibold tabular-nums">
+          <dt className="t-label text-muted-foreground">{item.label}</dt>
+          <dd className="mt-1 text-3xl font-bold tabular-nums text-brand">
             <Link to={item.to} className="transition-colors hover:text-brand">
               {String(item.value).padStart(2, '0')}
             </Link>

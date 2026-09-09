@@ -25,12 +25,12 @@ export function SectionHeading({
   return (
     <div className="flex items-baseline gap-4">
       {index !== undefined ? (
-        <span aria-hidden="true" className="hanging-index text-xs">
+        <span aria-hidden="true" className="hanging-index text-[0.8rem] font-semibold">
           {String(index).padStart(2, '0')}
         </span>
       ) : null}
 
-      <h2 id={id} className="shrink-0 text-lg font-semibold tracking-tight">
+      <h2 id={id} className="shrink-0 text-xl font-bold tracking-tight">
         {title}
       </h2>
 
@@ -41,7 +41,7 @@ export function SectionHeading({
         {moreTo ? (
           <Link
             to={moreTo}
-            className="text-xs text-muted-foreground transition-colors hover:text-brand"
+            className="t-label shrink-0 text-muted-foreground transition-colors hover:text-brand"
           >
             전체 보기 →
           </Link>
