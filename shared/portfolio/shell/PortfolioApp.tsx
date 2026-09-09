@@ -38,9 +38,13 @@ export function PortfolioApp({
             <DocsSidebar searchIndex={content.searchIndex} />
           </div>
 
-          <div className="min-w-0 flex-1">
+          {/*
+           * 그라데이션은 **본문 영역 전체**에 건다. 가운데 정렬된 main 에 걸면
+           * 그 상자 경계에서 색이 뚝 끊겨 네모가 보인다 (실제로 그랬다).
+           */}
+          <div className="hero-surface min-w-0 flex-1">
             {banner ? <div className="sticky top-0 z-30">{banner}</div> : null}
-            <main className="hero-surface mx-auto w-full max-w-5xl px-6 py-10 sm:px-10 sm:py-16 lg:px-14">
+            <main className="mx-auto w-full max-w-5xl px-6 py-10 sm:px-10 sm:py-16 lg:px-14">
               <PortfolioRoutes content={content} editing={editing} />
             </main>
           </div>

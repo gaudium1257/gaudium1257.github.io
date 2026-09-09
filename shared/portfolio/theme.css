@@ -73,19 +73,24 @@ body {
  */
 .hero-surface {
   background-image: radial-gradient(
-    100% 70% at 15% 0%,
-    color-mix(in oklch, var(--color-brand) 10%, transparent) 0%,
-    transparent 65%
+    120% 55% at 20% 0%,
+    color-mix(in oklch, var(--color-brand) 12%, transparent) 0%,
+    transparent 70%
   );
+  background-repeat: no-repeat;
+  /* 스크롤해도 위쪽에 머문다 — 아래로 반복되면 띠처럼 보인다 */
+  background-size: 100% 640px;
 }
 
 /* 목차 기둥. 세로로 아주 옅게 흘려 사이드바가 판자처럼 보이지 않게 한다 */
 .rail-surface {
   background-image: linear-gradient(
     to bottom,
-    color-mix(in oklch, var(--color-brand) 7%, transparent) 0%,
-    transparent 45%
+    color-mix(in oklch, var(--color-brand) 9%, transparent) 0%,
+    transparent 55%
   );
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
 }
 
 /*

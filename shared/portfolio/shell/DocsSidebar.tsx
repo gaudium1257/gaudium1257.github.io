@@ -77,12 +77,17 @@ function NavRow({ label, isActive }: { label: string; isActive: boolean }) {
           : 'border-transparent text-muted-foreground hover:bg-accent/50 hover:text-foreground',
       )}
     >
+      {/*
+       * 가운뎃점은 너무 작아 안 보였다. 짧은 막대는 크기를 직접 정할 수 있고,
+       * 활성일 때 길이와 진하기로 상태까지 말한다 (EP-0009 후속).
+       */}
       <span
         aria-hidden="true"
-        className={cn('text-base leading-none', isActive ? 'text-brand' : 'opacity-35')}
-      >
-        ·
-      </span>
+        className={cn(
+          'h-[3px] shrink-0 rounded-full transition-all',
+          isActive ? 'w-4 bg-brand' : 'w-2.5 bg-muted-foreground/40',
+        )}
+      />
       {label}
     </span>
   );

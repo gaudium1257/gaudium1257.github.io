@@ -30,9 +30,10 @@ export function ProjectList({
             <time className="t-label hidden w-24 shrink-0 pt-1 text-muted-foreground tabular-nums sm:block">
               {formatPeriod(project.startedOn, project.endedOn)}
             </time>
-            <span aria-hidden="true" className="shrink-0 pt-[0.45rem] text-brand/60 sm:hidden">
-              ·
-            </span>
+            <span
+              aria-hidden="true"
+              className="mt-[0.7rem] h-[3px] w-3 shrink-0 rounded-full bg-brand sm:hidden"
+            />
             <div className="min-w-0 flex-1 space-y-1.5">
               <div className="flex flex-wrap items-baseline justify-between gap-2">
                 <span className="text-[1.0625rem] font-semibold tracking-tight transition-colors group-hover:text-brand">
