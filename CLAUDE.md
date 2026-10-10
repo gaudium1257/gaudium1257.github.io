@@ -9,7 +9,7 @@ Bilingual (ko/en) personal portfolio. Next.js 16 (App Router, static export) + T
 1. **Facts only.** Content is the owner's public record. Never invent or embellish projects, numbers, roles, awards or dates. Missing info → ask the owner, or leave the field out. Project content comes from `docs/prompts/project-fact-sheet.md` (run in that project's folder) and is ingested with the `add-content` skill + `content-fact-checker` agent.
 2. **Both languages, always.** Every user-facing string exists in ko and en: content uses `Localized` (`{ ko, en }`), UI strings live in `src/i18n/dictionaries/{ko,en}.ts` (tsc enforces identical shape). No hard-coded UI text in components.
 3. **Findability over length.** Every section reachable in one click from persistent navigation; long lists collapse; detail lives on detail pages. Don't add anything that makes the home page a long scroll.
-4. **Design tokens only.** Colors/spacing come from tokens in `src/app/globals.css` (`bg-primary`, `text-muted`…). No raw hex in components. Theme: purple. The visual design comes from the owner's Variant mockups — do not invent a new visual direction; ask when the mockup doesn't cover a case.
+4. **Design tokens only.** Colors/spacing come from tokens in `src/app/globals.css` (`bg-primary`, `text-muted`…). No raw hex in components. Theme: purple. The visual design comes from the owner's chosen mockup (made with `docs/prompts/design.md`) — do not invent a new visual direction; ask when the mockup doesn't cover a case.
 5. **Responsive.** Must work at 375px with no horizontal scroll; verify with screenshots.
 
 ## Commands
@@ -41,7 +41,7 @@ src/i18n/                   locales, t(), dictionaries
 src/config/sections.ts      section registry → drives nav order and home sections
 src/app/[locale]/…          pages (/ko/, /en/, /ko/projects/<id>/)
 src/app/(root)/             "/" → redirects to saved or browser language
-docs/prompts/               project-fact-sheet.md (for other project sessions), variant-design.md
+docs/prompts/               project-fact-sheet.md (for other project sessions), design.md (/design prompt)
 ```
 
 - Ids are global kebab-case and equal the file name. `related: [ids]` may point to any collection; declaring one side is enough (relations are undirected).

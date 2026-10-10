@@ -31,7 +31,7 @@ export async function generateMetadata({
   };
 }
 
-// NOTE: placeholder shell — replaced once the Variant design is delivered.
+// NOTE: placeholder shell — replaced once the chosen design is delivered.
 export default async function LocaleLayout({
   children,
   params,

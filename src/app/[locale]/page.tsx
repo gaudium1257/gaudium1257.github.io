@@ -5,7 +5,7 @@ import { hasLocale, t } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 
 // NOTE: unstyled placeholder that only proves the content pipeline works.
-// The real layout comes from the Variant design.
+// The real layout comes from the chosen design.
 export default async function HomePage({ params }: PageProps<"/[locale]">) {
   const { locale } = await params;
   if (!hasLocale(locale)) notFound();

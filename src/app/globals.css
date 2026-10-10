@@ -2,7 +2,7 @@
 
 /*
  * Design tokens. Placeholder values only — the final palette, type scale and
- * spacing come from the Variant design. Components must use these tokens
+ * spacing come from the chosen design. Components must use these tokens
  * (e.g. `bg-primary`, `text-muted`), never raw hex values, so the theme can be
  * changed in one place.
  */

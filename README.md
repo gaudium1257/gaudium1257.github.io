@@ -22,7 +22,7 @@ npm run build        # out/ 정적 빌드
 
 ## 디자인
 
-[`docs/prompts/variant-design.md`](docs/prompts/variant-design.md) — Variant에서 시안을 뽑기 위한 프롬프트입니다.
+[`docs/prompts/design.md`](docs/prompts/design.md) — `/design` 명령으로 시안을 뽑기 위한 프롬프트입니다.
 
 ## 배포
 

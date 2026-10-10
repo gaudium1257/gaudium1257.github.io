@@ -34,7 +34,7 @@ export async function generateMetadata({
   };
 }
 
-// NOTE: unstyled placeholder — replaced once the Variant design is delivered.
+// NOTE: unstyled placeholder — replaced once the chosen design is delivered.
 export default async function ProjectPage({
   params,
 }: PageProps<"/[locale]/projects/[slug]">) {
