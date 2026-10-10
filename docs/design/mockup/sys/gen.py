@@ -44,7 +44,7 @@ def A(proto, dc):
 S = {
     "ko": dict(
         skip="본문으로 건너뛰기", nav_label="섹션 바로가기", logo_label="홍길동, 맨 위로", lang_label="언어 선택",
-        motion_pause="움직임 멈추기", motion_play="움직임 다시 재생",
+        motion_pause="움직임 멈추기",
         nav=dict(about="소개", projects="프로젝트", activities="대외활동", awards="수상", society="학회", skills="개발 역량", education="학력", connect="연락처"),
         count="{n}개", view_all="전체 보기", view_all_label="프로젝트 전체 보기", featured="대표 프로젝트", related="관련", used_in="사용",
         copy="복사", copied="복사됨", copy_failed="복사 실패",
@@ -74,7 +74,7 @@ S = {
     ),
     "en": dict(
         skip="Skip to content", nav_label="Sections", logo_label="Gildong Hong, back to top", lang_label="Language",
-        motion_pause="Pause motion", motion_play="Play motion",
+        motion_pause="Pause motion",
         nav=dict(about="About", projects="Projects", activities="Activities", awards="Awards", society="Society", skills="Skills", education="Education", connect="Connect"),
         count="{n}", view_all="View all", view_all_label="View all projects", featured="Featured", related="Related", used_in="Used in",
         copy="Copy", copied="Copied", copy_failed="Copy failed",
@@ -87,8 +87,8 @@ S = {
         photo_tag="ID photo 3:4", photo_label="ID photo slot (3:4)",
         facts=dict(affil="Affiliation", society="Society", email="Email", github="GitHub"),
         affil="Computer Science and Engineering, Hankuk University (enrolled)", society_role="THE LAB, Head of Education",
-        f_form="Form", f_period="Period", f_tech="Tech",
-        form=dict(personal="Personal", team="Team"), category=dict(hackathon="Hackathon", club="Club"),
+        f_form="Type", f_period="Period", f_tech="Tech",
+        form=dict(personal="Personal", team="Team"), category=dict(hackathon="Hackathon", club="Society"),
         kind=dict(project="Project", activity="Activity", award="Award", society="Society", event="Society event"),
         event_type=dict(seminar="Seminar", hackathon="Hackathon", education="Education"),
         society_label="Society",
@@ -120,7 +120,7 @@ ROLES = [
 ]
 INTRO = {
     "ko": "일상의 불편을 작은 서비스로 풀어내는 개발자입니다. AI와 웹으로 만들고, 학회에서 바이브코딩을 가르칩니다.",
-    "en": "I'm a developer who turns everyday inconveniences into small services. I build with AI and the web, and teach vibe coding in my university society.",
+    "en": "I'm a developer who turns everyday inconveniences into small services. I build with AI and the web, and teach vibe coding in my society.",
 }
 EMAIL, GITHUB, INSTA, DISCORD = "hong@example.com", "gaudium1257", "gildong.dev", "gildong"
 
@@ -165,7 +165,7 @@ SKILLS = [
     ("ai-ml", ["OpenAI API"]),
 ]
 EDU = dict(school={"ko": "한국대학교", "en": "Hankuk University"}, major={"ko": "컴퓨터공학과", "en": "Computer Science and Engineering"}, start="2024-03")
-EDGES = [("study-timer", "award-oo-hackathon"), ("study-timer", "act-oo-hackathon"), ("act-oo-hackathon", "award-oo-hackathon"), ("attendance", "the-lab")]
+EDGES = [("study-timer", "award-oo-hackathon"), ("study-timer", "act-oo-hackathon")]  # content.md: 스터디 타이머 관련 only
 
 INDEX = {x["id"]: x for x in PROJECTS + ACTIVITIES + AWARDS + EVENTS + [SOCIETY]}
 KIND_ORDER = ["project", "award", "activity", "event", "society"]
@@ -190,7 +190,7 @@ def ym(v):
 def period(start, end=None, open_label=None):
     if end is None and open_label is None:
         return ym(start)
-    return f"{ym(start)} – {ym(end) if end else open_label}"
+    return f"{ym(start)}\u00a0–\u00a0{ym(end) if end else open_label}"
 
 
 def form_label(p):
@@ -268,8 +268,8 @@ def kind_mark(c, size="size-12"):
 def kind_mark_sm(kind, dark=False, ref=None):
     """14px mark of the target's collection, at the start of every relation link."""
     if kind == "project":
-        return ('<span aria-hidden="true" class="relative size-3.5 shrink-0 bg-white"><span class="absolute inset-[3px] rounded-full bg-primary"></span></span>' if dark
-                else '<span aria-hidden="true" class="relative size-3.5 shrink-0 bg-ink"><span class="absolute inset-[3px] rounded-full bg-primary-300"></span></span>')
+        return ('<span aria-hidden="true" class="relative size-3.5 shrink-0 bg-white"><span class="absolute inset-0.75 rounded-full bg-primary"></span></span>' if dark
+                else '<span aria-hidden="true" class="relative size-3.5 shrink-0 bg-ink"><span class="absolute inset-0.75 rounded-full bg-primary-300"></span></span>')
     if kind == "activity":
         return '<span aria-hidden="true" class="tri size-3.5 shrink-0 bg-ink"></span>'
     if kind == "award":
@@ -293,7 +293,8 @@ def related_links(i, extra="", dark=False):
             f'<a href="{item_href(r)}" class="{cls("inline-flex items-center gap-1.5 font-semibold underline-offset-4 hover:underline", color)}">'
             f'{kind_mark_sm(it["kind"], dark, r)}<span class="sr-only">{s("kind")[it["kind"]]}: </span>{esc(title_of(it))}</a>'
         )
-    return f'<p class="{cls("flex flex-wrap items-center gap-x-3 gap-y-0.5 text-ui leading-[1.7]", "text-primary-200" if dark else "text-muted", extra)}"><span>{s("related")}</span>{"".join(links)}</p>'
+    return (f'<p class="{cls("grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-3 text-ui leading-copy", "text-primary-200" if dark else "text-muted", extra)}">'
+            f'<span>{s("related")}</span><span class="flex flex-wrap gap-x-3 gap-y-0.5">{"".join(links)}</span></p>')
 
 
 def activity_thumb(typ, size="size-14 sm:size-16"):
@@ -325,10 +326,10 @@ PAL = {
     "ink": dict(bg="bg-ink", a="bg-primary", b="bg-primary-300", c="bg-white", c2="bg-primary-200", c3="bg-primary-700"),
 }
 SIZES = {
-    "feature": "aspect-[16/9] sm:aspect-[16/10] lg:aspect-auto lg:min-h-[400px]",
-    "card": "aspect-[3/1] sm:aspect-auto sm:min-h-[220px]",
-    "hero": "aspect-[16/10] lg:aspect-[4/3]",
-    "thumb": "aspect-[5/2] sm:aspect-[4/3]",
+    "feature": "aspect-video sm:aspect-16/10 lg:aspect-auto lg:min-h-100",
+    "card": "aspect-3/1 sm:aspect-auto sm:min-h-55",
+    "hero": "aspect-16/10 lg:aspect-4/3",
+    "thumb": "aspect-5/2 sm:aspect-4/3",
     "mini": "size-20",
 }
 
@@ -359,7 +360,7 @@ def m_clock(P, mini, pop):
         f'<div class="size-full rounded-full {P["a"]} {HOV} motion-safe:group-hover:-translate-x-[6%]">'
         f'<div class="{cls("absolute inset-0", loop("motion-safe:animate-sweep"))}"><div class="absolute left-1/2 top-0 size-1/2 rounded-tr-full {P["c"]}"></div></div>'
         f'{ticks}<div class="absolute left-1/2 top-1/2 size-[12%] -translate-1/2 rounded-full {P["b"]}"></div></div></div>'
-        f'<div class="{cls("absolute right-[9%] top-0 aspect-[2/1] w-[26%]", pop(1))}"><div class="size-full rounded-b-full {P["b"]} {HOV} motion-safe:group-hover:translate-y-[12%]"></div></div>'
+        f'<div class="{cls("absolute right-[9%] top-0 aspect-2/1 w-[26%]", pop(1))}"><div class="size-full rounded-b-full {P["b"]} {HOV} motion-safe:group-hover:translate-y-[12%]"></div></div>'
         f'{studiers}'
     )
 
@@ -374,7 +375,7 @@ def m_grid(P, mini, pop):
         f'<div class="{cls(P["b"], blink(8))}"></div><div></div><div class="rounded-full {P["b"]}"></div><div class="{P["a"]}"></div><div></div>'
         f'{fin}<div class="{P["b"]}"></div><div></div><div class="{cls(P["a"], blink(2))}"></div><div></div><div class="{P["a"]}"></div><div class="rounded-tl-full {P["b"]}"></div>'
         f'</div></div>')
-    scan = "" if mini else f'<div class="absolute inset-x-[14%] top-[12%] h-[3%] {P["b"]} [--scan-to:2400%] motion-safe:animate-scan-step motion-safe:anim-offset-17"></div>'
+    scan = "" if mini else f'<div class="absolute inset-x-[14%] top-[12%] h-[3%] {P["b"]} [--scan-to:2400%] motion-safe:animate-scan-step motion-safe:anim-offset-20"></div>'
     return grid + scan
 
 
@@ -382,10 +383,10 @@ def m_bubble(P, mini, pop):
     st = (lambda o: "") if mini else (lambda o: f"motion-safe:animate-stretch-step motion-safe:anim-offset-{o}")
     bars = (
         f'<div class="{cls("absolute left-[10%] top-[16%] flex h-[34%] w-[52%] flex-col justify-between", pop(1))}">'
-        f'<div class="{cls("h-[16%] w-full origin-left", P["b"], st(20))}"></div>'
-        f'<div class="{cls("h-[16%] w-[70%] origin-left", P["c2"], st(12))}"></div>'
-        f'<div class="{cls("h-[16%] w-[86%] origin-left", P["b"], st(9))}"></div>'
-        f'<div class="{cls("h-[16%] w-[56%] origin-left", P["c2"], st(4))}"></div></div>')
+        f'<div class="{cls("h-[16%] w-full origin-left", P["b"], st(23))}"></div>'
+        f'<div class="{cls("h-[16%] w-[70%] origin-left", P["c2"], st(17))}"></div>'
+        f'<div class="{cls("h-[16%] w-[86%] origin-left", P["b"], st(11))}"></div>'
+        f'<div class="{cls("h-[16%] w-[56%] origin-left", P["c2"], st(5))}"></div></div>')
     if mini:
         bars = (f'<div class="absolute left-[10%] top-[16%] flex h-[34%] w-[52%] flex-col justify-between">'
                 f'<div class="h-[22%] w-full {P["b"]}"></div><div class="h-[22%] w-[70%] {P["c2"]}"></div><div class="h-[22%] w-[86%] {P["b"]}"></div></div>')
@@ -429,18 +430,18 @@ def nav_link(i, variant):
     href = page_href("home", hash_=i) if CTX["page"] != "home" else f"#{i}"
     label = s("nav")[i]
     if variant == "bar":
-        return (f'<li><a href="{href}"{nav_attrs(i, variant)} class="group relative flex h-16 items-center px-2 text-ui font-medium text-muted transition-colors hover:text-ink data-[current=true]:text-ink xl:px-3">{label}'
-                f'<span aria-hidden="true" class="absolute inset-x-2 bottom-0 z-10 h-1 origin-left scale-x-0 bg-primary group-data-[current=true]:scale-x-100 motion-safe:transition-transform motion-safe:duration-300 xl:inset-x-3"></span></a></li>')
-    return (f'<li><a href="{href}"{nav_attrs(i, variant)} class="group relative flex h-9 items-center justify-center bg-white text-sm font-medium text-muted transition-colors hover:text-ink data-[current=true]:text-ink md:h-11 md:text-ui short:h-10 short:whitespace-nowrap short:px-3">{label}'
-            f'<span aria-hidden="true" class="absolute inset-x-3 bottom-0 z-10 h-1 scale-x-0 bg-primary group-data-[current=true]:scale-x-100 motion-safe:transition-transform motion-safe:duration-300"></span></a></li>')
+        return (f'<li><a href="{href}"{nav_attrs(i, variant)} class="group relative flex h-16 items-center px-2 text-ui font-medium text-muted transition-colors hover:text-ink focus-visible:z-20 focus-visible:-outline-offset-2 data-[current=true]:text-ink xl:px-3">{label}'
+                f'<span aria-hidden="true" class="absolute inset-x-2 bottom-0 z-10 h-1 origin-left scale-x-0 bg-primary group-data-[current=true]:scale-x-100 forced-colors:bg-[CanvasText] motion-safe:transition-transform motion-safe:duration-300 xl:inset-x-3"></span></a></li>')
+    return (f'<li><a href="{href}"{nav_attrs(i, variant)} class="group relative flex h-9 items-center justify-center bg-white text-sm font-medium text-muted transition-colors hover:text-ink focus-visible:z-20 focus-visible:-outline-offset-2 data-[current=true]:text-ink md:h-11 md:text-ui short:h-10 short:whitespace-nowrap short:px-3">{label}'
+            f'<span aria-hidden="true" class="absolute inset-x-3 bottom-0 z-10 h-1 scale-x-0 bg-primary group-data-[current=true]:scale-x-100 forced-colors:bg-[CanvasText] motion-safe:transition-transform motion-safe:duration-300"></span></a></li>')
 
 
 def motion_toggle():
-    labels = json.dumps({"pause": s("motion_pause"), "play": s("motion_play")}, ensure_ascii=False)
-    attrs = A(f'data-motion-toggle data-labels=\'{labels}\' aria-pressed="false" aria-label="{s("motion_pause")}" title="{s("motion_pause")}"',
-              'aria-pressed="{{motion.pressed}}" aria-label="{{motion.label}}" title="{{motion.label}}" onClick="{{motion.toggle}}"')
+    # Toggle button: the label stays "Pause motion"; aria-pressed="true" means paused
+    attrs = A(f'data-motion-toggle aria-pressed="false" aria-label="{s("motion_pause")}" title="{s("motion_pause")}"',
+              f'aria-pressed="{{{{motion.pressed}}}}" aria-label="{s("motion_pause")}" title="{s("motion_pause")}" onClick="{{{{motion.toggle}}}}"')
     return (f'<button type="button"{attrs} class="group ml-auto grid size-8 shrink-0 place-items-center border border-line text-ink transition-colors hover:border-ink motion-reduce:hidden lg:ml-3">'
-            f'<span aria-hidden="true" class="flex gap-[3px] group-aria-pressed:hidden"><span class="h-3 w-[3px] bg-current"></span><span class="h-3 w-[3px] bg-current"></span></span>'
+            f'<span aria-hidden="true" class="flex gap-0.75 group-aria-pressed:hidden"><span class="h-3 w-0.75 bg-current"></span><span class="h-3 w-0.75 bg-current"></span></span>'
             f'<span aria-hidden="true" class="tri hidden size-3 rotate-90 bg-current group-aria-pressed:block"></span></button>')
 
 
@@ -448,7 +449,7 @@ def lang_toggle():
     out = []
     for lc, lab in (("ko", "KO"), ("en", "EN")):
         cur = ' aria-current="page"' if lc == loc() else ""
-        out.append(f'<a href="{page_href(CTX["page"], lc)}" hreflang="{lc}" lang="{lc}"{cur} class="grid place-items-center px-2.5 text-ink transition-colors hover:bg-primary-50 aria-[current=page]:bg-ink aria-[current=page]:text-white">{lab}</a>')
+        out.append(f'<a href="{page_href(CTX["page"], lc)}" hreflang="{lc}" lang="{lc}"{cur} class="grid place-items-center px-2.5 text-ink transition-colors hover:bg-primary-50 aria-[current=page]:bg-ink aria-[current=page]:text-white forced-colors:aria-[current=page]:underline forced-colors:aria-[current=page]:decoration-2 forced-colors:aria-[current=page]:underline-offset-4">{lab}</a>')
     return f'<div role="group" aria-label="{s("lang_label")}" class="flex h-8 shrink-0 border border-ink text-sm font-semibold motion-reduce:ml-auto lg:motion-reduce:ml-3">{"".join(out)}</div>'
 
 
@@ -456,15 +457,15 @@ def header():
     logo_href = "#about" if CTX["page"] == "home" else page_href("home")
     logo = (f'<a href="{logo_href}" aria-label="{s("logo_label")}" class="group/logo flex shrink-0 items-center gap-2.5">'
             f'<span aria-hidden="true" class="grid size-7 grid-cols-2 grid-rows-2">'
-            f'<span class="rounded-tl-full bg-primary motion-safe:transition-transform motion-safe:duration-500 motion-safe:group-hover/logo:rotate-90"></span>'
+            f'<span class="rounded-tl-full bg-primary motion-safe:transition-transform motion-safe:duration-500 motion-safe:ease-snap motion-safe:group-hover/logo:rotate-90"></span>'
             f'<span class="bg-ink"></span>'
-            f'<span class="rounded-full bg-primary-300 motion-safe:transition-transform motion-safe:duration-500 motion-safe:group-hover/logo:scale-75"></span>'
-            f'<span class="tri bg-ink motion-safe:transition-transform motion-safe:duration-500 motion-safe:group-hover/logo:-translate-y-0.5"></span></span>'
+            f'<span class="rounded-full bg-primary-300 motion-safe:transition-transform motion-safe:duration-500 motion-safe:ease-snap motion-safe:group-hover/logo:scale-75"></span>'
+            f'<span class="tri bg-ink motion-safe:transition-transform motion-safe:duration-500 motion-safe:ease-snap motion-safe:group-hover/logo:-translate-y-0.5"></span></span>'
             f'<span class="text-lg font-bold tracking-tight text-ink">{t(NAME)}</span></a>')
     bar = "".join(nav_link(i, "bar") for i in NAV_IDS)
     cell = "".join(nav_link(i, "cell") for i in NAV_IDS)
     return (
-        '<header class="sticky top-0 z-50 bg-white after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-line">'
+        '<header class="sticky top-0 z-50 bg-white tiny:static after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-line">'
         f'<div class="shell flex h-11 items-center gap-3 lg:h-16 lg:gap-4">{logo}'
         f'<nav aria-label="{s("nav_label")}" class="ml-auto hidden lg:block"><ul class="flex">{bar}</ul></nav>'
         f'{motion_toggle()}{lang_toggle()}</div>'
@@ -477,25 +478,25 @@ PLINTH = [
     ("bg-white", '<div class="absolute inset-0 rounded-tl-full bg-ink motion-safe:animate-quarter-step motion-safe:anim-offset-93"></div>'),
     ("bg-primary", '<div class="absolute inset-[20%] rounded-full bg-white"></div>'),
     ("bg-primary-50", '<div class="tri absolute inset-x-[8%] bottom-0 top-[12%] bg-primary-300"></div>'),
-    ("bg-ink", '<div class="absolute inset-x-0 bottom-0 aspect-[2/1] rounded-t-full bg-primary-300"></div>'),
+    ("bg-ink", '<div class="absolute inset-x-0 bottom-0 aspect-2/1 rounded-t-full bg-primary-300"></div>'),
     ("bg-white", '<div class="absolute inset-[10%] overflow-hidden rounded-full bg-primary"><div class="absolute inset-y-0 left-0 w-1/2 bg-ink"></div></div>'),
     ("grid place-items-center bg-primary-200", '<div class="size-[44%] bg-ink motion-safe:animate-diamond-step motion-safe:anim-offset-39"></div>'),
     ("bg-white", '<div class="tri-corner absolute inset-0 bg-primary"></div>'),
-    ("bg-primary-100", '<div class="absolute inset-x-0 top-0 aspect-[2/1] rounded-b-full bg-ink"></div>'),
+    ("bg-primary-100", '<div class="absolute inset-x-0 top-0 aspect-2/1 rounded-b-full bg-ink"></div>'),
     ("bg-primary", '<div class="absolute inset-0 rounded-br-full bg-primary-300"></div>'),
     ("bg-white", '<div class="absolute inset-[22%] rounded-full bg-ink"></div>'),
     ("bg-primary-50", '<div class="absolute inset-x-[14%] top-[28%] h-[16%] bg-primary"></div><div class="absolute inset-x-[14%] bottom-[28%] h-[16%] bg-ink"></div>'),
     ("bg-ink", '<div class="tri absolute inset-x-[16%] bottom-0 top-[20%] bg-primary"></div>'),
     ("bg-white", '<div class="absolute inset-0 rounded-tr-full bg-primary-300"></div>'),
     ("bg-primary-700", '<div class="absolute inset-[24%] rounded-full bg-primary-200"></div>'),
-    ("bg-primary-50", '<div class="absolute inset-x-[12%] bottom-0 aspect-[2/1] rounded-t-full bg-ink"></div>'),
+    ("bg-primary-50", '<div class="absolute inset-x-[12%] bottom-0 aspect-2/1 rounded-t-full bg-ink"></div>'),
     ("bg-primary", '<div class="tri-corner absolute inset-0 rotate-180 bg-primary-300"></div>'),
     ("bg-white", '<div class="absolute left-[10%] top-1/2 size-[38%] -translate-y-1/2 rounded-full bg-ink"></div><div class="absolute right-[10%] top-1/2 size-[38%] -translate-y-1/2 rounded-full bg-primary"></div>'),
-    ("grid place-items-center bg-primary-300", '<div class="size-1/2 bg-ink"></div>'),
-    ("bg-white", '<div class="absolute inset-x-0 top-0 aspect-[2/1] rounded-b-full bg-primary"></div>'),
+    ("bg-primary-300", '<div class="absolute inset-1/4 bg-ink"></div>'),
+    ("bg-white", '<div class="absolute inset-x-0 top-0 aspect-2/1 rounded-b-full bg-primary"></div>'),
     ("bg-ink", '<div class="absolute inset-0 rounded-bl-full bg-primary"></div>'),
     ("bg-primary-50", '<div class="absolute inset-[16%] rounded-full bg-primary-300"></div>'),
-    ("bg-primary", '<div class="absolute inset-x-0 bottom-0 aspect-[2/1] rounded-t-full bg-white"></div>'),
+    ("bg-primary", '<div class="absolute inset-x-0 bottom-0 aspect-2/1 rounded-t-full bg-white"></div>'),
     ("bg-white", '<div class="tri absolute inset-x-[10%] bottom-0 top-[14%] bg-ink"></div>'),
     ("bg-primary-200", '<div class="absolute inset-0 rounded-tl-full bg-ink"></div>'),
 ]
@@ -550,14 +551,14 @@ def section_heading(sid, count=None, more=None):
             f'<h2 id="{sid}-title" class="text-h2-sm font-bold text-ink lg:text-h2">{s("nav")[sid]}</h2>{c}{m}</div>')
 
 
-SEC = "scroll-mt-32 md:scroll-mt-24 lg:scroll-mt-20"
+SEC = ""  # anchor offset = root scroll-padding (ROOT_CLS / dc helmet)
 
 
 # ───────────────────────────── home ─────────────────────────────
 def poster():
     pop = "motion-safe:animate-pop"
     return (
-        '<div class="group/poster mt-6 w-full max-w-[560px] lg:col-span-6 lg:col-start-7 lg:row-span-2 lg:row-start-1 lg:mt-0 lg:justify-self-end">'
+        '<div class="group/poster mt-6 w-full max-w-140 lg:col-span-6 lg:col-start-7 lg:row-span-2 lg:row-start-1 lg:mt-0 lg:self-center lg:justify-self-end xl:self-auto">'
         '<div class="grid aspect-square grid-cols-5 grid-rows-5">'
         f'<div aria-hidden="true" class="relative overflow-hidden {pop} motion-safe:anim-delay-4"><div class="absolute inset-0 rounded-tl-full bg-ink motion-safe:animate-quarter-step motion-safe:anim-offset-93"></div></div>'
         f'<div aria-hidden="true" class="relative grid place-items-center {pop} motion-safe:anim-delay-3"><div class="size-[62%] rounded-full bg-primary-300 {HOV} motion-safe:group-hover/poster:translate-x-1/3"></div></div>'
@@ -567,7 +568,7 @@ def poster():
         f'<div aria-hidden="true" class="relative col-span-2 row-span-2 overflow-hidden bg-primary-50 {pop} motion-safe:anim-delay-2"><div class="absolute inset-[6%] overflow-hidden rounded-full bg-primary {HOV} motion-safe:group-hover/poster:-rotate-45"><div class="absolute inset-y-0 left-0 w-1/2 bg-ink"></div></div></div>'
         f'<div role="img" aria-label="{s("photo_label")}" class="relative col-span-3 col-start-3 row-span-4 row-start-2 overflow-hidden bg-primary-100">'
         '<div aria-hidden="true" class="absolute left-1/2 top-[20%] aspect-square w-[34%] -translate-x-1/2 rounded-full bg-primary-300"></div>'
-        '<div aria-hidden="true" class="absolute -bottom-px left-1/2 aspect-[2/1] w-[78%] -translate-x-1/2 rounded-t-full bg-primary-300"></div>'
+        '<div aria-hidden="true" class="absolute -bottom-px left-1/2 aspect-2/1 w-[78%] -translate-x-1/2 rounded-t-full bg-primary-300"></div>'
         f'<span class="absolute left-3 top-3 bg-white px-2 py-1 text-sm font-medium text-ink-2">{s("photo_tag")}</span></div>'
         f'<div aria-hidden="true" class="relative col-start-1 row-start-4 overflow-hidden {pop} motion-safe:anim-delay-3"><div class="tri absolute inset-x-[4%] bottom-0 top-[8%] bg-primary-300 {HOV} motion-safe:group-hover/poster:-translate-y-[8%]"></div></div>'
         f'<div aria-hidden="true" class="relative col-start-2 row-start-4 grid place-items-center bg-primary-200 {pop} motion-safe:anim-delay-1"><div class="size-[44%] bg-ink motion-safe:animate-diamond-step motion-safe:anim-offset-39"></div></div>'
@@ -580,7 +581,7 @@ LINK_U = "text-ink underline decoration-primary-300 decoration-2 underline-offse
 
 
 def fact_row(label, dd, dd_cls="text-ink"):
-    return (f'<div class="grid grid-cols-[6.5rem_minmax(0,1fr)] items-center gap-x-4 py-2.5 lg:py-2">'
+    return (f'<div class="grid grid-cols-[6rem_minmax(0,1fr)] items-center gap-x-3 py-2.5 sm:grid-cols-[6.5rem_minmax(0,1fr)] sm:gap-x-4 lg:py-2">'
             f'<dt class="flex items-center gap-2 text-muted"><span aria-hidden="true" class="size-2 shrink-0 bg-primary"></span>{label}</dt>'
             f'<dd class="{dd_cls}">{dd}</dd></div>')
 
@@ -589,33 +590,33 @@ def hero():
     legend = "".join(f'<li class="flex items-center gap-2">{key_glyph(k)}{t(lbl)}</li>' for k, lbl in ROLES)
     if loc() == "ko":
         h1 = (f'<div class="mt-4 flex flex-wrap items-baseline gap-x-4 gap-y-1 motion-safe:animate-enter motion-safe:anim-delay-1 lg:mt-7">'
-              f'<h1 id="about-title" class="text-name-sm font-bold text-ink sm:text-7xl lg:text-name">{NAME["ko"]}</h1>'
+              f'<h1 id="about-title" class="text-name-sm font-bold text-ink sm:text-7xl xl:text-name">{NAME["ko"]}</h1>'
               f'<p lang="en" class="text-ui text-muted">{NAME["en"]}</p></div>')
     else:
         h1 = (f'<div class="mt-4 flex flex-wrap items-baseline gap-x-4 gap-y-1 motion-safe:animate-enter motion-safe:anim-delay-1 lg:mt-7">'
-              f'<h1 id="about-title" class="text-name-en-sm font-bold text-ink sm:text-6xl lg:text-name-en">{NAME["en"]}</h1>'
+              f'<h1 id="about-title" class="text-name-en-sm font-bold text-ink sm:text-6xl xl:text-name-en">{NAME["en"]}</h1>'
               f'<p lang="ko" class="text-ui text-muted">{NAME["ko"]}</p></div>')
     f = s("facts")
     facts = (
-        fact_row(f["affil"], s("affil"))
+        fact_row(f["affil"], s("affil"), "text-pretty text-ink")
         + fact_row(f["society"], f'<a href="#society" class="{LINK_U}">{s("society_role")}</a>', "")
         + fact_row(f["email"], f'<a href="mailto:{EMAIL}" class="{LINK_U} wrap-anywhere">{EMAIL}</a>{copy_button("email", EMAIL)}', "flex flex-wrap items-center gap-x-3 gap-y-1")
         + fact_row(f["github"], ext(f"https://github.com/{GITHUB}", f"github.com/{GITHUB}", f"{LINK_U} wrap-anywhere"), "")
     )
     ctas = (
-        f'<a href="#projects" class="group inline-flex h-12 items-center gap-3 bg-ink pl-5 pr-4 text-ui font-semibold text-white transition-colors hover:bg-primary">{s("cta_projects")}'
-        '<span aria-hidden="true" class="relative size-4"><span class="absolute inset-0 rounded-full bg-primary-300 motion-safe:transition-transform motion-safe:duration-300 motion-safe:group-hover:scale-75"></span></span></a>'
+        f'<a href="#projects" class="group inline-flex h-12 items-center gap-3 border border-transparent bg-ink pl-5 pr-4 text-ui font-semibold text-white transition-colors hover:bg-primary">{s("cta_projects")}'
+        '<span aria-hidden="true" class="relative size-4"><span class="absolute inset-0 rounded-full bg-primary-300 motion-safe:transition-transform motion-safe:duration-500 motion-safe:ease-snap motion-safe:group-hover:scale-75"></span></span></a>'
         f'<a href="#connect" class="group inline-flex h-12 items-center gap-3 border border-ink px-5 text-ui font-semibold text-ink transition-colors hover:bg-primary-50">{s("cta_contact")}'
-        '<span aria-hidden="true" class="size-3 bg-ink motion-safe:transition-transform motion-safe:duration-300 motion-safe:group-hover:rotate-45"></span></a>'
+        '<span aria-hidden="true" class="size-3 bg-ink motion-safe:transition-transform motion-safe:duration-500 motion-safe:ease-snap motion-safe:group-hover:rotate-45"></span></a>'
     )
     return (
         f'<section id="about" aria-labelledby="about-title" class="{SEC}">'
         '<div class="shell grid gap-x-12 pb-10 pt-6 lg:grid-cols-12 lg:grid-rows-[auto_1fr] lg:pb-16 lg:pt-14">'
         f'<div class="lg:col-span-6"><ul class="{cls("flex flex-wrap gap-x-5 gap-y-2 text-ui font-medium text-ink-2 motion-safe:animate-enter", "lg:gap-x-4 lg:text-sm" if loc() == "en" else "")}">{legend}</ul>{h1}</div>'
         f'{poster()}'
-        '<div class="mt-7 lg:col-span-6 lg:row-start-2 lg:mt-8 lg:self-end">'
-        f'<p class="max-w-[34rem] text-pretty text-lg leading-[1.75] text-ink-2 motion-safe:animate-enter motion-safe:anim-delay-2 lg:text-lead">{t(INTRO)}</p>'
-        f'<dl class="mt-7 max-w-[34rem] divide-y divide-line border-y border-line text-ui lg:mt-6 motion-safe:animate-enter motion-safe:anim-delay-3">{facts}</dl>'
+        '<div class="mt-7 lg:col-span-6 lg:row-start-2 lg:mt-8 xl:self-end">'
+        f'<p class="max-w-136 text-pretty text-lg leading-prose text-ink-2 motion-safe:animate-enter motion-safe:anim-delay-2 xl:text-lead">{t(INTRO)}</p>'
+        f'<dl class="mt-7 max-w-136 divide-y divide-line border-y border-line text-ui lg:mt-6 motion-safe:animate-enter motion-safe:anim-delay-3">{facts}</dl>'
         f'<div class="mt-7 flex flex-wrap gap-3 motion-safe:animate-enter motion-safe:anim-delay-4">{ctas}</div>'
         '</div></div></section>'
     )
@@ -643,8 +644,8 @@ def project_feature(p):
         '<div class="flex flex-col p-5 sm:p-8 lg:col-span-5 lg:p-10">'
         f'<div class="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm font-semibold">{badges}</div>'
         f'<h3 class="mt-4 text-h2-sm font-bold text-ink"><a href="{item_href(p["id"])}" data-stretch class="{STRETCH}">{t(p["title"])}</a></h3>'
-        f'<p class="mt-2 text-base leading-[1.7] text-ink-2">{t(p["tagline"])}</p>'
-        f'<dl class="mt-6 grid {dlw} gap-y-2.5 text-ui">'
+        f'<p class="mt-2 text-base leading-copy text-ink-2">{t(p["tagline"])}</p>'
+        f'<dl class="mt-6 grid {dlw} gap-y-2.5 text-ui lg:mb-5">'
         f'<dt class="text-muted">{s("f_form")}</dt><dd class="text-ink">{form_label(p)}</dd>'
         f'<dt class="text-muted">{s("f_period")}</dt><dd class="tabular-nums text-ink">{period(p["start"], p["end"])}</dd>'
         f'<dt class="text-muted">{s("f_tech")}</dt><dd>{chips(tech)}</dd></dl>'
@@ -687,8 +688,8 @@ def entry_row(it, thumb):
         h3 = t(it["title"])
         sub = f'{t(it["org"])} · {t(it["role"])}'
     return (
-        f'<li id="{it["id"]}" class="group flex scroll-mt-36 gap-4 bg-surface p-4 sm:gap-5 sm:p-5 lg:scroll-mt-24">{thumb}'
-        '<div class="min-w-0 flex-1"><div class="flex flex-wrap items-baseline justify-between gap-x-4">'
+        f'<li id="{it["id"]}" class="group flex gap-4 bg-surface p-4 sm:gap-5 sm:p-5">{thumb}'
+        '<div class="min-w-0 flex-1"><div class="flex flex-col sm:flex-row sm:flex-wrap sm:items-baseline sm:justify-between sm:gap-x-4">'
         f'<h3 class="text-lg font-bold text-ink">{h3}</h3><span class="text-ui tabular-nums text-muted">{period(it["start"], it.get("end"))}</span></div>'
         f'<p class="mt-0.5 text-ui text-ink-2">{sub}</p>{related_links(it["id"], "mt-2")}</div></li>'
     )
@@ -714,33 +715,37 @@ def lab_module(kind, first):
     the first module also runs its kind's ambient step (hover = translate, step = transform: two properties)."""
     ring = cls(has(kind, "ring-4"), has(kind, "ring-inset"), has(kind, "ring-white"))
     if kind == "seminar":
-        amb = "motion-safe:animate-sun-step motion-safe:anim-offset-33" if first else ""
-        return f'<div class="relative overflow-hidden bg-primary {ring}"><div class="{cls("absolute bottom-0 left-1/2 aspect-[2/1] w-[72%] -translate-x-1/2 rounded-t-full bg-primary-300", HOV, "motion-safe:" + has(kind, "-translate-y-[12%]"), amb)}"></div></div>'
+        # the sun rises inside the arch (as in the hero), so the arch itself never leaves its module
+        amb = "motion-safe:animate-sun-step motion-safe:anim-offset-46" if first else ""
+        return (f'<div class="relative overflow-hidden bg-primary {ring}"><div class="{cls("absolute bottom-0 left-1/2 aspect-2/1 w-[72%] -translate-x-1/2 overflow-hidden rounded-t-full bg-primary-300", HOV, "motion-safe:" + has(kind, "-translate-y-[12%]"))}">'
+                f'<div class="{cls("absolute bottom-0 left-1/2 aspect-square h-[56%] -translate-x-1/2 rounded-full bg-primary-50", amb)}"></div></div></div>')
     if kind == "hackathon":
         amb = "motion-safe:animate-hop motion-safe:anim-offset-9" if first else ""
-        return f'<div class="relative overflow-hidden bg-primary-700 {ring}"><div class="{cls("tri absolute inset-x-[18%] bottom-0 top-[22%] bg-white", HOV, "motion-safe:" + has(kind, "-translate-y-[10%]"), amb)}"></div></div>'
+        return f'<div class="relative overflow-hidden bg-primary-700 {ring}"><div class="{cls("tri absolute bottom-0 left-1/2 aspect-8/7 h-[72%] -translate-x-1/2 bg-white", HOV, "motion-safe:" + has(kind, "-translate-y-[10%]"), amb)}"></div></div>'
     if kind == "education":
         amb = "motion-safe:animate-diamond-step motion-safe:anim-offset-45" if first else ""
         return f'<div class="relative grid place-items-center overflow-hidden bg-primary-300 {ring}"><div class="{cls("aspect-square h-[46%] bg-ink", HOV, "motion-safe:" + has(kind, "rotate-45"), amb)}"></div></div>'
     raise KeyError(kind)
 
 
+# Event tile art = the event's Shape Key form at two scales, sized by width with a locked ratio
 EVENT_ART = {
-    "seminar": (f'<div class="absolute bottom-0 left-1/2 aspect-[2/1] w-[64%] -translate-x-1/2 rounded-t-full bg-primary"></div>'
-                f'<div class="absolute bottom-0 left-1/2 aspect-[2/1] w-[30%] -translate-x-1/2 rounded-t-full bg-ink {HOV5} motion-safe:group-hover:-translate-y-[30%]"></div>'),
-    "hackathon": (f'<div class="absolute inset-x-[12%] bottom-0 flex h-[70%] items-end gap-[6%]">'
-                  f'<div class="tri h-full flex-[1.3] bg-primary {HOV5} motion-safe:group-hover:-translate-y-[6%]"></div><div class="tri h-[64%] flex-1 bg-ink"></div></div>'),
+    "seminar": (f'<div class="absolute bottom-0 left-1/2 aspect-2/1 w-[64%] -translate-x-1/2 rounded-t-full bg-primary"></div>'
+                f'<div class="absolute bottom-0 left-1/2 aspect-2/1 w-[30%] -translate-x-1/2 rounded-t-full bg-ink {HOV5} motion-safe:group-hover:-translate-y-[30%]"></div>'),
+    "hackathon": (f'<div class="absolute inset-x-[8%] bottom-0 flex items-end justify-center gap-[4%]">'
+                  f'<div class="tri aspect-8/7 w-[56%] bg-primary {HOV5} motion-safe:group-hover:-translate-y-[6%]"></div><div class="tri aspect-8/7 w-[34%] bg-ink"></div></div>'),
     "education": (f'<div class="absolute inset-x-[14%] bottom-0 flex items-end gap-[8%]">'
                   f'<div class="aspect-square w-[58%] bg-primary"></div><div class="aspect-square w-[30%] bg-ink {HOV5} motion-safe:group-hover:rotate-45"></div></div>'),
 }
 
 
 def event_tile(e):
+    # phone + 1024–1279: horizontal tile (art left); 640–1023 and ≥1280: vertical tile with a fixed-height art panel
     return (
-        f'<li id="{e["id"]}" data-kind="{e["type"]}" class="group grid scroll-mt-36 grid-cols-[7.5rem_minmax(0,1fr)] bg-white sm:flex sm:flex-col lg:scroll-mt-24">'
-        f'<div aria-hidden="true" class="relative min-h-24 overflow-hidden bg-primary-100 sm:min-h-36 sm:flex-1">{EVENT_ART[e["type"]]}</div>'
+        f'<li id="{e["id"]}" data-kind="{e["type"]}" class="group grid grid-cols-[7.5rem_minmax(0,1fr)] bg-white sm:flex sm:flex-col lg:grid xl:flex">'
+        f'<div aria-hidden="true" class="relative min-h-24 overflow-hidden bg-primary-100 sm:h-36 sm:flex-none lg:h-auto xl:h-36">{EVENT_ART[e["type"]]}</div>'
         '<div class="p-4 sm:p-5">'
-        f'<p class="flex items-center gap-2 text-sm font-semibold text-primary-700">{key_glyph(e["type"])}{s("event_type")[e["type"]]} · {t(e["role"])}</p>'
+        f'<p class="flex items-center gap-2 text-sm font-semibold text-primary-700">{key_glyph(e["type"])}<span>{s("event_type")[e["type"]]} · <span class="whitespace-nowrap">{t(e["role"])}</span></span></p>'
         f'<h3 class="mt-1 text-lg font-bold leading-snug text-ink sm:mt-2">{t(e["title"])}</h3>'
         f'<p class="mt-1 text-ui tabular-nums text-muted sm:mt-2">{ym(e["start"])}</p></div></li>'
     )
@@ -758,19 +763,18 @@ def society_section():
     return (
         f'<section id="society" aria-labelledby="society-title" class="{SEC} bg-surface"><div class="shell py-8 sm:py-10 lg:py-12">'
         f'{section_heading("society")}'
-        '<div class="group/soc mt-6 grid gap-4 lg:mt-8 xl:grid-cols-12 xl:gap-6">'
-        '<div class="grid overflow-hidden bg-ink text-white sm:grid-cols-[minmax(0,1fr)_8.5rem] xl:col-span-5">'
+        '<div class="group/soc mt-6 grid gap-4 lg:mt-8 lg:grid-cols-12 lg:gap-6">'
+        '<div class="grid overflow-hidden bg-ink text-white sm:grid-cols-[minmax(0,1fr)_8.5rem] lg:col-span-6 lg:grid-cols-[minmax(0,1fr)_6rem]">'
         '<div class="p-6 sm:p-8">'
-        f'<p class="text-ui font-medium text-primary-200">{s("society_label")}</p>'
-        f'<h3 class="mt-1 text-4xl font-bold tracking-tight">{SOCIETY["title"]}</h3>'
-        f'<p class="mt-2 text-ui text-primary-200">{t(SOCIETY["desc"])}</p>'
+        f'<h3 class="text-4xl font-bold tracking-tight">{SOCIETY["title"]}</h3>'
+        f'<p class="mt-2 text-pretty text-ui text-primary-200">{t(SOCIETY["desc"])}</p>'
         f'<ul class="mt-4 flex flex-wrap gap-2 text-sm font-medium">{chips_}</ul>'
-        f'<dl class="mt-6 grid grid-cols-2 gap-x-6 gap-y-3 text-ui">{roles}</dl>'
+        f'<dl class="mt-6 flex flex-wrap gap-x-8 gap-y-3 text-ui">{roles}</dl>'
         f'{related_links("the-lab", "mt-5 border-t border-white/20 pt-4", dark=True)}'
         '</div>'
         f'<div aria-hidden="true"{gate_attrs("lab")} class="play-gate grid h-16 grid-cols-3 sm:h-auto sm:grid-cols-1 sm:grid-rows-3">{mods}</div>'
         '</div>'
-        f'<ul class="grid gap-4 sm:grid-cols-3 xl:col-span-7">{tiles}</ul>'
+        f'<ul class="grid gap-4 sm:grid-cols-3 lg:col-span-6 lg:grid-cols-1 xl:grid-cols-3">{tiles}</ul>'
         '</div></div></section>'
     )
 
@@ -778,6 +782,9 @@ def society_section():
 PRIM = {"frontend": "", "backend": "rounded-full", "ai-ml": "tri"}
 PRIM_AMB = {"frontend": "motion-safe:animate-diamond-step motion-safe:anim-offset-45", "backend": "motion-safe:animate-pulse-step motion-safe:anim-offset-13", "ai-ml": "motion-safe:animate-hop motion-safe:anim-offset-5"}
 SKILL_COL = [("bg-ink", ("bg-primary-300", "bg-primary")), ("bg-primary", ("bg-white", "bg-ink")), ("bg-primary-200", ("bg-primary", "bg-ink"))]
+
+
+CAT_INDEX = {cat: n for n, (cat, _) in enumerate(SKILLS)}
 
 
 def used_in(names):
@@ -798,16 +805,16 @@ def skills_section():
             f'<a href="{item_href(p["id"])}" class="inline-flex items-center gap-1.5 font-semibold text-primary underline-offset-4 hover:underline">{kind_mark_sm("project")}{t(p["title"])}</a>' for p in projs)
         chips_ = "".join(f'<li class="bg-white px-2.5 py-0.5 text-primary-900 sm:py-1">{esc(x)}</li>' for x in items)
         tiles.append(
-            '<li class="group grid grid-cols-[3rem_minmax(0,1fr)] bg-surface sm:grid-cols-[4rem_minmax(0,1fr)] md:grid-cols-[4.5rem_minmax(0,1fr)]">'
+            '<li class="group grid grid-cols-[3rem_minmax(0,1fr)] bg-surface sm:grid-cols-[4rem_minmax(0,1fr)] xl:grid-cols-[4.5rem_minmax(0,1fr)]">'
             f'<div aria-hidden="true" class="{cls("grid content-center justify-items-center gap-2 py-4 md:py-5", bg, cols)}">{prims}</div>'
-            '<div class="min-w-0 p-4 md:p-6">'
+            '<div class="min-w-0 p-4 xl:p-6">'
             f'<h3 class="text-lg font-bold text-ink">{s("tech_cat")[cat]}</h3>'
             f'<ul class="mt-2 flex flex-wrap gap-1.5 text-ui font-medium sm:mt-3 sm:gap-2">{chips_}</ul>'
-            f'<p class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-ui leading-[1.7] text-muted sm:mt-3"><span>{s("used_in")}</span>{links}</p>'
+            f'<p class="mt-2 grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-3 text-ui leading-copy text-muted sm:mt-3"><span>{s("used_in")}</span><span class="flex flex-wrap gap-x-3 gap-y-0.5">{links}</span></p>'
             '</div></li>')
     return (
         f'<section id="skills" aria-labelledby="skills-title" class="{SEC} border-t border-line"><div class="shell py-8 sm:py-10 lg:py-12">'
-        f'{section_heading("skills")}<ul{gate_attrs("skills")} class="play-gate mt-6 grid gap-4 lg:mt-8 xl:grid-cols-3">{"".join(tiles)}</ul></div></section>'
+        f'{section_heading("skills")}<ul{gate_attrs("skills")} class="play-gate mt-6 grid gap-4 lg:mt-8 lg:grid-cols-3">{"".join(tiles)}</ul></div></section>'
     )
 
 
@@ -827,15 +834,15 @@ def edu_connect():
     )
     module = (
         f'<div aria-hidden="true"{gate_attrs("contact")} class="play-gate grid h-16 grid-cols-3 border-t border-ink lg:h-auto lg:grid-cols-1 lg:grid-rows-3 lg:border-l lg:border-t-0">'
-        '<div class="relative grid place-items-center bg-primary-100"><span class="relative aspect-[3/2] h-[56%]"><span class="absolute left-0 aspect-square h-full rounded-full bg-ink"></span><span class="absolute right-0 aspect-square h-full rounded-full bg-primary"></span></span></div>'
-        '<div class="relative grid place-items-center bg-ink"><span class="aspect-square h-[56%] rounded-tl-full bg-primary-300 motion-safe:animate-quarter-step motion-safe:anim-offset-81"></span></div>'
-        '<div class="relative overflow-hidden bg-primary"><span class="tri absolute inset-x-[22%] bottom-0 top-[24%] bg-white"></span></div>'
+        '<div class="relative grid place-items-center bg-primary-100"><span class="relative aspect-3/2 h-[56%]"><span class="absolute left-0 aspect-square h-full rounded-full bg-ink"></span><span class="absolute right-0 aspect-square h-full rounded-full bg-primary"></span></span></div>'
+        '<div class="relative grid place-items-center bg-ink"><span class="aspect-square h-[56%] rounded-tl-full bg-primary-300 motion-safe:animate-quarter-step motion-safe:anim-offset-90"></span></div>'
+        '<div class="relative overflow-hidden bg-primary"><span class="tri absolute bottom-0 left-1/2 aspect-8/7 h-[68%] -translate-x-1/2 bg-white"></span></div>'
         '</div>'
     )
     edu = (
-        f'<section id="education" aria-labelledby="education-title" class="{SEC} xl:col-span-5">{section_heading("education")}'
+        f'<section id="education" aria-labelledby="education-title" class="{SEC} lg:col-span-5">{section_heading("education")}'
         '<div class="group mt-6 flex items-stretch overflow-hidden bg-surface lg:mt-7"><div class="min-w-0 flex-1 p-5 sm:p-6">'
-        f'<h3 class="text-lg font-bold text-ink">{t(EDU["school"])}</h3><p class="mt-0.5 text-ui text-ink-2">{t(EDU["major"])}</p>'
+        f'<h3 class="text-lg font-bold text-ink">{t(EDU["school"])}</h3><p class="mt-0.5 text-pretty text-ui text-ink-2">{t(EDU["major"])}</p>'
         f'<p class="mt-1 text-ui tabular-nums text-muted">{period(EDU["start"], None, s("enrolled"))}</p></div>'
         '<div aria-hidden="true" class="relative flex w-32 shrink-0 items-end gap-1.5 px-4 pt-6 sm:w-44">'
         f'<span class="h-[62%] flex-1 rounded-t-full bg-primary-300 {HOV5} motion-safe:group-hover:-translate-y-1"></span>'
@@ -844,10 +851,10 @@ def edu_connect():
         '<span class="absolute inset-x-0 bottom-0 h-2 bg-ink"></span></div></div></section>'
     )
     con = (
-        f'<section id="connect" aria-labelledby="connect-title" class="{SEC} xl:col-span-7">{section_heading("connect")}'
-        f'<div class="mt-6 grid border border-ink lg:mt-7 lg:grid-cols-[minmax(0,1fr)_6rem]"><dl class="grid gap-px bg-line sm:grid-cols-2">{cells}</dl>{module}</div></section>'
+        f'<section id="connect" aria-labelledby="connect-title" class="{SEC} lg:col-span-7">{section_heading("connect")}'
+        f'<div class="mt-6 grid border border-ink lg:mt-7 lg:grid-cols-[minmax(0,1fr)_6rem]"><dl class="grid gap-px bg-line sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">{cells}</dl>{module}</div></section>'
     )
-    return f'<div class="border-t border-line"><div class="shell grid gap-x-12 gap-y-10 py-8 sm:py-10 lg:py-12 xl:grid-cols-12">{edu}{con}</div></div>'
+    return f'<div class="border-t border-line"><div class="shell grid gap-x-12 gap-y-10 py-8 sm:py-10 lg:grid-cols-12 lg:py-12">{edu}{con}</div></div>'
 
 
 def home_body():
@@ -856,6 +863,15 @@ def home_body():
 
 # ───────────────────────────── detail ─────────────────────────────
 DETAIL_TOC = ["summary", "contributions", "features", "tech", "outcomes", "challenges", "related"]
+DETAIL_MARKS = [  # 32px module beside each detail h2, in the poster vocabulary
+    ("bg-ink", '<span class="absolute inset-0 rounded-tl-full bg-primary"></span>'),
+    ("bg-primary-100", '<span class="absolute inset-[22%] rounded-full bg-primary"></span>'),
+    ("bg-primary", '<span class="tri absolute bottom-0 left-1/2 aspect-8/7 h-[72%] -translate-x-1/2 bg-white"></span>'),
+    ("bg-primary-200", '<span class="absolute inset-1/4 bg-ink"></span>'),
+    ("grid place-items-center bg-ink", '<span class="grid size-[66%] place-items-center rounded-full bg-primary"><span class="size-[38%] rounded-full bg-white"></span></span>'),
+    ("bg-primary-100", '<span class="absolute inset-[12%] overflow-hidden rounded-full bg-primary"><span class="absolute inset-y-0 left-0 w-1/2 bg-ink"></span></span>'),
+    ("bg-primary-300", '<span class="absolute left-0 top-0 size-1/2 bg-ink"></span><span class="absolute bottom-0 right-0 size-1/2 bg-primary"></span>'),
+]
 
 
 def toc_attrs(i):
@@ -869,7 +885,7 @@ def ph(text, extra=""):
 
 
 def bullet_li(content, tone="text-muted"):
-    return f'<li class="flex gap-3 text-base leading-[1.75] {tone}"><span aria-hidden="true" class="mt-[0.65em] size-2 shrink-0 bg-primary"></span><span class="min-w-0">{content}</span></li>'
+    return f'<li class="flex gap-3 text-base leading-prose {tone}"><span aria-hidden="true" class="mt-2.5 size-2 shrink-0 bg-primary"></span><span class="min-w-0">{content}</span></li>'
 
 
 def detail_body():
@@ -884,7 +900,7 @@ def detail_body():
         + f'<a href="{item_href(award["id"])}" class="inline-flex items-center gap-1.5 text-award underline-offset-4 hover:underline">{kind_mark_sm("award")}<span class="sr-only">{s("kind")["award"]}: </span>{title_of(award)}</a>'
     )
     buttons = (
-        f'<a href="#" class="inline-flex h-11 items-center gap-2.5 bg-ink px-4 text-ui font-semibold text-white transition-colors hover:bg-primary"><span aria-hidden="true" class="size-3 rounded-full bg-primary-300"></span>{pp["demo"]}</a>'
+        f'<a href="#" class="inline-flex h-11 items-center gap-2.5 border border-transparent bg-ink px-4 text-ui font-semibold text-white transition-colors hover:bg-primary"><span aria-hidden="true" class="size-3 rounded-full bg-primary-300"></span>{pp["demo"]}</a>'
         f'<a href="#" class="inline-flex h-11 items-center gap-2.5 border border-ink px-4 text-ui font-semibold text-ink transition-colors hover:bg-primary-50"><span aria-hidden="true" class="size-3 bg-ink"></span>{pp["github"]}</a>'
     )
 
@@ -898,7 +914,7 @@ def detail_body():
         '<div class="shell grid gap-x-12 gap-y-8 pb-12 pt-6 lg:grid-cols-12 lg:pb-16 lg:pt-12"><div class="lg:col-span-6">'
         f'<a href="{page_href("list")}" class="inline-flex min-h-6 items-center text-ui font-semibold text-primary underline-offset-4 hover:underline"><span aria-hidden="true">←&nbsp;</span>{s("all_projects")}</a>'
         f'<div class="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm font-semibold">{badges}</div>'
-        f'<h1 class="mt-3 text-5xl font-bold leading-[1.1] tracking-[-0.03em] text-ink lg:text-title">{t(p["title"])}</h1>'
+        f'<h1 class="mt-3 text-5xl font-bold leading-display tracking-display text-ink lg:text-title">{t(p["title"])}</h1>'
         f'<p class="mt-4 text-pretty text-lead text-ink-2">{t(p["tagline"])}</p>'
         f'<div class="mt-7 flex flex-wrap gap-3">{buttons}</div>'
         f'<dl class="mt-8 grid grid-cols-2 border-t border-ink">{facts}</dl>'
@@ -907,28 +923,29 @@ def detail_body():
     names = s("d_sections")
     toc = "".join(
         f'<li><a href="#{i}"{toc_attrs(i)} class="group flex items-center gap-3 py-2 text-ui text-muted transition-colors hover:text-ink aria-[current=location]:text-ink">'
-        f'<span aria-hidden="true" class="size-2.5 shrink-0 border-2 border-ink group-aria-[current=location]:border-primary group-aria-[current=location]:bg-primary"></span>{names[i]}</a></li>'
+        f'<span aria-hidden="true" class="size-2.5 shrink-0 border-2 border-ink group-aria-[current=location]:border-primary group-aria-[current=location]:bg-primary forced-colors:group-aria-[current=location]:bg-[CanvasText]"></span>{names[i]}</a></li>'
         for i in DETAIL_TOC)
 
     def sec(i, body):
+        bg, shape = DETAIL_MARKS[DETAIL_TOC.index(i)]
         return (f'<section id="{i}" aria-labelledby="{i}-title" class="{SEC}"><h2 id="{i}-title" class="flex items-center gap-3 text-2xl font-bold tracking-tight text-ink">'
-                f'<span aria-hidden="true" class="size-3 shrink-0 bg-ink"></span>{names[i]}</h2>{body}</section>')
+                f'<span aria-hidden="true" class="relative size-8 shrink-0 overflow-hidden {bg}">{shape}</span>{names[i]}</h2>{body}</section>')
 
     tech_rows = "".join(
         f'<li class="grid grid-cols-[2.5rem_7rem_minmax(0,1fr)] items-center gap-3 border-b border-line py-3">'
-        f'<span aria-hidden="true" class="grid size-8 place-items-center bg-surface"><span class="{cls("size-5", PRIM[cat], "bg-primary" if n % 2 == 0 else "bg-ink")}"></span></span>'
+        f'<span aria-hidden="true" class="grid size-10 place-items-center {SKILL_COL[CAT_INDEX[cat]][0]}"><span class="{cls("size-6", PRIM[cat], SKILL_COL[CAT_INDEX[cat]][1][0])}"></span></span>'
         f'<span class="text-sm font-semibold text-muted">{s("tech_cat")[cat]}</span>{chips([name])}</li>'
         for n, (cat, name) in enumerate(p["tech"]))
     rel_cards = "".join(
         f'<li><a href="{item_href(r)}" class="group flex items-center gap-4 border border-line p-4 transition-colors hover:border-ink">{item_thumb(r, "size-12")}'
         f'<span class="min-w-0"><span class="block text-sm font-semibold text-muted">{s("kind")[INDEX[r]["kind"]]} · <span class="tabular-nums">{ym(INDEX[r]["start"])}</span></span>'
         f'<span class="block text-ui font-bold text-ink">{title_of(INDEX[r])}</span></span>'
-        f'<span aria-hidden="true" class="ml-auto size-3 shrink-0 bg-ink motion-safe:transition-transform motion-safe:duration-500 motion-safe:group-hover:rotate-45"></span></a></li>'
+        f'<span aria-hidden="true" class="ml-auto size-3 shrink-0 bg-ink motion-safe:transition-transform motion-safe:duration-500 motion-safe:ease-snap motion-safe:group-hover:rotate-45"></span></a></li>'
         for r in related(p["id"]))
     outcome = (f'<a href="{item_href(award["id"])}" class="inline-flex items-center gap-1.5 font-semibold text-award underline-offset-4 hover:underline">'
-               f'{kind_mark_sm("award")}<span class="sr-only">{s("kind")["award"]}: </span>{title_of(award)}</a> {s("award_outcome_suffix")}')
+               f'{kind_mark_sm("award")}<span class="sr-only">{s("kind")["award"]}: </span>{title_of(award)}</a> <span class="whitespace-nowrap">{s("award_outcome_suffix")}</span>')
     body = (
-        sec("summary", f'<p class="mt-5 text-lg leading-[1.8]">{ph(pp["summary"])}</p>')
+        sec("summary", f'<p class="mt-5 text-lg leading-read">{ph(pp["summary"])}</p>')
         + sec("contributions", '<ul class="mt-5 grid gap-3">' + "".join(bullet_li(pp["contrib"].format(n=n)) for n in (1, 2, 3)) + "</ul>")
         + sec("features", '<dl class="mt-5 divide-y divide-line border-y border-line">' + "".join(
             f'<div class="grid gap-1 py-5 sm:grid-cols-[12rem_minmax(0,1fr)] sm:gap-8"><dt class="text-base font-bold text-muted">{pp["feature"].format(n=n)}</dt><dd class="text-ui text-muted">{pp["feature_desc"]}</dd></div>'
@@ -937,10 +954,10 @@ def detail_body():
         + sec("outcomes", f'<ul class="mt-5 grid gap-3">{bullet_li(outcome, "text-ink-2")}</ul>')
         + sec("challenges",
               '<ul class="mt-5 grid gap-4"><li class="grid gap-3 md:grid-cols-[minmax(0,1fr)_3rem_minmax(0,1fr)]">'
-              f'<div class="bg-surface p-5"><p class="text-sm font-semibold text-muted">{s("problem")}</p><p class="mt-1 text-base leading-[1.75] text-muted">{pp["problem"]}</p></div>'
+              f'<div class="bg-surface p-5"><p class="text-sm font-semibold text-muted">{s("problem")}</p><p class="mt-1 text-base leading-prose text-muted">{pp["problem"]}</p></div>'
               '<div aria-hidden="true" class="grid h-11 place-items-center md:h-auto"><div class="flex rotate-90 items-center gap-1 md:rotate-0">'
               '<span class="size-3 bg-ink"></span><span class="h-0.5 w-4 bg-ink-2 motion-safe:reveal-x"></span><span class="size-3 rounded-full bg-primary"></span></div></div>'
-              f'<div class="border border-ink p-5"><p class="text-sm font-semibold text-primary-700">{s("solution")}</p><p class="mt-1 text-base leading-[1.75] text-muted">{pp["solution"]}</p></div>'
+              f'<div class="border border-ink p-5"><p class="text-sm font-semibold text-primary-700">{s("solution")}</p><p class="mt-1 text-base leading-prose text-muted">{pp["solution"]}</p></div>'
               '</li></ul>')
         + sec("related", f'<ul class="mt-5 grid gap-3 sm:grid-cols-2">{rel_cards}</ul>')
     )
@@ -960,7 +977,7 @@ def detail_body():
         '<div class="border-t border-line"><div class="shell grid gap-x-12 py-12 lg:grid-cols-12 lg:py-16">'
         f'<nav aria-label="{s("on_this_page")}" class="lg:col-span-3"><div class="lg:sticky lg:top-24"><p class="text-sm font-semibold text-muted">{s("on_this_page")}</p>'
         f'<ul class="mt-3 grid grid-cols-2 gap-x-4 sm:grid-cols-3 lg:grid-cols-1">{toc}</ul></div></nav>'
-        f'<div class="mt-10 min-w-0 space-y-14 lg:col-span-9 lg:mt-0 lg:max-w-[46rem]">{body}</div>'
+        f'<div class="mt-10 min-w-0 space-y-14 lg:col-span-9 lg:mt-0 lg:max-w-184">{body}</div>'
         f'</div></div>{pager}</main>'
     )
 
@@ -971,20 +988,22 @@ def list_body():
     for n, p in enumerate(PROJECTS):
         tech = [x for _, x in p["tech"]]
         status = live_badge() if p["live"] else ""
+        mobile_status = f'<span class="lg:hidden"> · {live_badge()}</span>' if p["live"] else ""
         rows.append(
             f'<li class="group relative grid gap-5 border-b border-line py-6 transition-colors hover:bg-primary-50/40 {CARD_FOCUS} sm:grid-cols-[12rem_minmax(0,1fr)] lg:grid-cols-[15rem_minmax(0,1fr)_auto] lg:items-center lg:gap-8">'
             f'{cover(p, "thumb", gate=f"row{n}")}'
             '<div class="min-w-0">'
-            f'<p class="text-ui font-semibold text-muted">{form_label(p)} · <span class="tabular-nums">{period(p["start"], p["end"])}</span></p>'
-            f'<h2 class="mt-1 text-2xl font-bold tracking-tight text-ink"><a href="{item_href(p["id"])}" data-stretch class="{STRETCH}">{t(p["title"])}</a></h2>'
+            f'<p class="text-ui font-semibold text-muted">{form_label(p)} · <span class="tabular-nums">{period(p["start"], p["end"])}</span>{mobile_status}</p>'
+            f'<h2 class="mt-1 text-2xl font-bold tracking-tight text-ink"><a href="{item_href(p["id"])}" data-stretch class="{STRETCH}">{t(p["title"])}</a>'
+            f'<span aria-hidden="true" class="ml-3 inline-block size-3 bg-ink align-middle motion-safe:transition-transform motion-safe:duration-500 motion-safe:ease-snap motion-safe:group-hover:rotate-45 lg:hidden"></span></h2>'
             f'<p class="mt-1.5 text-ui text-ink-2">{t(p["tagline"])}</p>{chips(tech, "mt-3")}{related_links(p["id"], "relative z-10 mt-3")}</div>'
-            f'<div class="flex items-center gap-4 text-sm font-semibold sm:col-start-2 lg:col-start-auto lg:flex-col lg:items-end">{status}'
-            '<span aria-hidden="true" class="ml-auto size-4 bg-ink motion-safe:transition-transform motion-safe:duration-500 motion-safe:group-hover:rotate-45 lg:ml-0"></span></div></li>'
+            f'<div class="hidden text-sm font-semibold lg:flex lg:flex-col lg:items-end lg:gap-4">{status}'
+            '<span aria-hidden="true" class="size-4 bg-ink motion-safe:transition-transform motion-safe:duration-500 motion-safe:ease-snap motion-safe:group-hover:rotate-45"></span></div></li>'
         )
     return (
         '<main id="main" class="shell py-10 lg:py-14">'
         f'<a href="{page_href("home")}" class="inline-flex min-h-6 items-center text-ui font-semibold text-primary underline-offset-4 hover:underline"><span aria-hidden="true">←&nbsp;</span>{s("back_home")}</a>'
-        f'<div class="mt-6 flex items-center gap-4">{kind_mark("projects", "size-16")}<h1 class="text-5xl font-bold tracking-[-0.03em] text-ink">{s("nav")["projects"]}</h1>'
+        f'<div class="mt-6 flex items-center gap-4">{kind_mark("projects", "size-16")}<h1 class="text-5xl font-bold tracking-display text-ink">{s("nav")["projects"]}</h1>'
         f'<span class="pt-2 text-ui tabular-nums text-muted">{s("count").format(n=len(PROJECTS))}</span></div>'
         f'<ol class="mt-10 border-t border-ink">{"".join(rows)}</ol></main>'
     )
@@ -997,7 +1016,7 @@ def body_for(page):
     return f'{skip}{header()}{main}{footer()}{status_region()}'
 
 
-ROOT_CLS = "scroll-smooth motion-reduce:scroll-auto data-[motion=off]:[--play:paused]"
+ROOT_CLS = "scroll-smooth scroll-pt-32 md:scroll-pt-24 lg:scroll-pt-20 tiny:scroll-pt-0 motion-reduce:scroll-auto data-[motion=off]:[--play:paused]"
 TITLES = {"home": "title_home", "detail": "title_detail", "list": "title_list"}
 
 PROTO_JS = open(os.path.join(HERE, "page.js"), encoding="utf8").read()
@@ -1023,7 +1042,6 @@ def dc_cfg(page):
         "toc": DETAIL_TOC if page == "detail" else None,
         "gates": gates, "copy": copy,
         "copyIdle": s("copy"), "copied": s("copied"), "copyFail": s("copy_failed"),
-        "pause": s("motion_pause"), "play": s("motion_play"),
     }
 
 
@@ -1033,7 +1051,7 @@ def render_dc(page, lc, mobile, css_blob, w, h):
     CTX.update(loc=lc, page=page, mobile=mobile)
     helmet = ('<style>\n'
               f'@font-face{{font-family:"Pretendard Variable";src:url({FONT_BLOB}) format("woff2");font-weight:45 920;font-style:normal;font-display:swap}}\n'
-              'body{margin:0}\nhtml{scroll-behavior:smooth}\n@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}\n'
+              'body{margin:0}\nhtml{scroll-behavior:smooth;scroll-padding-top:8rem}\n@media (width>=48rem){html{scroll-padding-top:6rem}}\n@media (width>=64rem){html{scroll-padding-top:5rem}}\n@media (max-height:240px){html{scroll-padding-top:0}}\n@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}\n'
               '</style>')
     root = f'<div data-motion="{{{{motion.state}}}}" class="data-[motion=off]:[--play:paused]">{body_for(page)}</div>'
     js = DC_JS.replace("__CFG__", json.dumps(dc_cfg(page), ensure_ascii=False))

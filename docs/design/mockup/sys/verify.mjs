@@ -356,8 +356,6 @@ for (const pg of ["home-ko", "detail-ko", "list-ko"]) {
   const edges = [
     ["study-timer", "award-oo-hackathon"],
     ["study-timer", "act-oo-hackathon"],
-    ["act-oo-hackathon", "award-oo-hackathon"],
-    ["attendance", "the-lab"],
   ];
   const relOk = await p.evaluate((edges) => {
     const has = (from, to) => {
@@ -416,6 +414,105 @@ for (const pg of ["home-ko", "detail-ko", "list-ko"]) {
   }
   await ctx.close();
 }
+
+// ── focus not obscured: skip link and "back to top" land below the sticky header (WCAG 2.4.11)
+for (const pg of ["detail-ko", "list-en", "home-ko"])
+  for (const [w, h] of [
+    [390, 844],
+    [1440, 900],
+    [844, 390],
+  ]) {
+    const p = await b.newPage({ viewport: { width: w, height: h } });
+    await p.emulateMedia({ reducedMotion: "reduce" });
+    await p.goto(url(pg));
+    await p.keyboard.press("Tab");
+    await p.keyboard.press("Enter");
+    await p.waitForTimeout(100);
+    await p.keyboard.press("Tab");
+    const r = await p.evaluate(() => {
+      const hb = document
+        .querySelector("header")
+        .getBoundingClientRect().bottom;
+      const f = document.activeElement.getBoundingClientRect();
+      return {
+        hb: Math.round(hb),
+        top: Math.round(f.top),
+        what: document.activeElement.textContent.trim().slice(0, 20),
+      };
+    });
+    ok(
+      r.top >= r.hb,
+      `${pg}@${w}x${h} skip link: focused "${r.what}" top ${r.top} under header ${r.hb}`,
+    );
+    await p.close();
+  }
+
+// ── detail TOC + home nav at a tall desktop: clicking any entry makes exactly that entry current
+for (const [pg, sel, key, ids] of [
+  [
+    "detail-ko",
+    "[data-toc]",
+    "toc",
+    [
+      "summary",
+      "contributions",
+      "features",
+      "tech",
+      "outcomes",
+      "challenges",
+      "related",
+    ],
+  ],
+  [
+    "home-en",
+    "header nav a[data-nav]",
+    "nav",
+    [
+      "about",
+      "projects",
+      "activities",
+      "awards",
+      "society",
+      "skills",
+      "education",
+      "connect",
+    ],
+  ],
+])
+  for (const [w, h] of [
+    [1440, 900],
+    [1920, 1080],
+    [390, 844],
+  ]) {
+    const p = await b.newPage({ viewport: { width: w, height: h } });
+    await p.emulateMedia({ reducedMotion: "reduce" });
+    await p.goto(url(pg));
+    for (const id of ids) {
+      await p
+        .locator(`${sel}[data-${key}="${id}"]`)
+        .filter({ visible: true })
+        .first()
+        .click();
+      await p.waitForTimeout(250);
+      await p.evaluate(() => window.dispatchEvent(new Event("scrollend")));
+      await p.waitForTimeout(80);
+      const cur = await p.evaluate(
+        (sel) =>
+          [...document.querySelectorAll(sel)]
+            .filter(
+              (a) =>
+                a.offsetParent && a.getAttribute("aria-current") === "location",
+            )
+            .map((a) => a.dataset.toc || a.dataset.nav),
+        sel,
+      );
+      ok(
+        cur.length === 1 && cur[0] === id,
+        `${pg}@${w}x${h} click ${id} → aria-current ${cur}`,
+      );
+    }
+    await p.close();
+  }
 
 await b.close();
 console.log(

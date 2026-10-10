@@ -1,14 +1,12 @@
 (() => {
   const root = document.documentElement;
 
-  // Motion toggle: pauses every loop through --play (root data-motion=off), remembered in localStorage
+  // Motion toggle ("Pause motion", pressed = paused): pauses every loop through --play
+  // (root data-motion=off), remembered in localStorage
   const mt = document.querySelector("[data-motion-toggle]");
-  const ml = JSON.parse(mt.dataset.labels);
   const applyMotion = (off) => {
     root.dataset.motion = off ? "off" : "on";
     mt.setAttribute("aria-pressed", String(off));
-    mt.setAttribute("aria-label", off ? ml.play : ml.pause);
-    mt.title = mt.getAttribute("aria-label");
   };
   let saved = null;
   try {
@@ -75,7 +73,8 @@
   addEventListener("hashchange", openOnHash);
   openOnHash();
 
-  // Scrollspy: a row of sections sharing a top lights up together (data-current); exactly one link gets aria-current
+  // Scrollspy: a row of sections sharing a top lights up together (data-current); exactly one link gets aria-current.
+  // The line sits just under the sticky header, where an anchor jump lands, so a short section still becomes current.
   const spy = (links, key, sectionIds, rowMode) => {
     if (!links.length) return;
     const secs = sectionIds
@@ -101,19 +100,27 @@
         .map((s) => s.id);
     const update = () => {
       if (Date.now() < lock) return;
-      const line = innerHeight * 0.35;
+      const line =
+        document.querySelector("header").getBoundingClientRect().bottom + 24;
       let top = null;
       for (const s of secs) {
         const tp = s.getBoundingClientRect().top;
         if (tp <= line) top = tp;
       }
       const bottom = innerHeight + scrollY >= root.scrollHeight - 2;
-      const row = bottom
+      let row = bottom
         ? rowAt(secs.at(-1).getBoundingClientRect().top)
         : top === null
           ? [secs[0].id]
           : rowAt(top);
-      if (clicked && !row.includes(clicked)) clicked = null;
+      if (clicked && !row.includes(clicked)) {
+        // at the page bottom a clicked section that can't reach the line stays current
+        if (bottom)
+          row = rowAt(
+            document.getElementById(clicked).getBoundingClientRect().top,
+          );
+        else clicked = null;
+      }
       set(row, clicked || (bottom ? row.at(-1) : row[0]));
     };
     links.forEach((a) =>

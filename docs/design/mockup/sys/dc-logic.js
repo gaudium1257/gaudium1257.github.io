@@ -52,19 +52,24 @@ class Component extends DCLogic {
     if (de.scrollHeight <= window.innerHeight + 2) return; // full-height canvas frame: keep the first section
     const secs = ids.map((id) => document.getElementById(id)).filter(Boolean);
     if (!secs.length) return;
-    const line = window.innerHeight * 0.35;
+    const hdr = document.querySelector("header");
+    const line = (hdr ? hdr.getBoundingClientRect().bottom : 0) + 24; // where an anchor jump lands
     let top = null;
     secs.forEach((s) => {
       const tp = s.getBoundingClientRect().top;
       if (tp <= line) top = tp;
     });
     const bottom = window.innerHeight + window.scrollY >= de.scrollHeight - 2;
-    const row = bottom
+    let row = bottom
       ? this.rowAt(secs, secs[secs.length - 1].getBoundingClientRect().top)
       : top === null
         ? [secs[0].id]
         : this.rowAt(secs, top);
-    if (this._clicked && row.indexOf(this._clicked) < 0) this._clicked = null;
+    if (this._clicked && row.indexOf(this._clicked) < 0) {
+      const el = document.getElementById(this._clicked);
+      if (bottom && el) row = this.rowAt(secs, el.getBoundingClientRect().top);
+      else this._clicked = null;
+    }
     const cur = this._clicked || (bottom ? row[row.length - 1] : row[0]);
     const st = this.state || {};
     if ((st.row || []).join() !== row.join() || st.cur !== cur)
@@ -147,7 +152,6 @@ class Component extends DCLogic {
       motion: {
         state: off ? "off" : "on",
         pressed: off ? "true" : "false",
-        label: off ? c.play : c.pause,
         toggle: () => {
           const n = off ? "on" : "off";
           try {

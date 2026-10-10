@@ -14,8 +14,8 @@ html = html
   .replace(/<script type="text\/x-dc"[\s\S]*?<\/script>/, "")
   .replace(/<\/?x-dc>|<\/?helmet>/g, "")
   .replace(
-    "/_blob/81ff300a54f14e8d8bca10753334a92f",
-    "file://" + path.join(here, "moving-poster.flat.css"),
+    /<link rel="stylesheet" href="\/_blob\/\w+">/,
+    `<link rel="stylesheet" href="file://${path.join(here, "moving-poster.flat.css")}">`,
   )
   .replace(
     "/_blob/76760fbe63bd614486cd18b85bb00898",
@@ -34,12 +34,11 @@ html = html
   .replace(/\{\{gates\.\w+\}\}/g, "true")
   .replace(
     /\{\{copy\.\w+\.label\}\}/g,
-    html.includes('lang="ko"') ? "복사" : "Copy",
+    /<html lang="ko"/.test(html) ? "복사" : "Copy",
   )
   .replace(/\{\{copy\.\w+\.done\}\}/g, "false")
   .replace("{{motion.state}}", "on")
   .replace("{{motion.pressed}}", "false")
-  .replace(/\{\{motion\.label\}\}/g, "pause")
   .replace("{{status}}", "");
 const left = html.match(/\{\{[^}]+\}\}/g);
 if (left) console.log("UNFILLED", [...new Set(left)]);

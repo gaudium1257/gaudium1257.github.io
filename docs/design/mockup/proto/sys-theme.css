@@ -1,5 +1,6 @@
 /* "Moving Poster" theme — the same block becomes src/app/globals.css (plus @import "tailwindcss" and the font import). */
 @custom-variant short (@media (max-height: 500px));
+@custom-variant tiny (@media (max-height: 240px)); /* 400% zoom: unpin the header */
 
 @theme {
   --color-*: initial;
@@ -52,6 +53,12 @@
   --text-name-en: 5rem;
   --text-name-en--line-height: 1;
   --text-name-en--letter-spacing: -0.02em;
+
+  --leading-copy: 1.7; /* relation rows, taglines */
+  --leading-prose: 1.75; /* Korean paragraphs */
+  --leading-read: 1.8; /* detail summary */
+  --leading-display: 1.1; /* detail h1 below lg */
+  --tracking-display: -0.03em;
 
   --ease-snap: cubic-bezier(0.7, 0, 0.3, 1);
   --ease-soft: cubic-bezier(0.45, 0, 0.55, 1);
