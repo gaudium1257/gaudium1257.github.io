@@ -22,17 +22,17 @@ S = {
     "fAff": "소속", "vAff": "[학교 이름] [전공] 재학 중",
     "fSoc": "학회", "vSoc": "[학회 이름] · [현재 직책]",
     "fMail": "이메일", "vMail": "[이메일 주소]",
-    "fGh": "GitHub", "vGh": "github.com/[아이디]",
+    "fGh": "GitHub", "vGh": "github.com/gaudium1257",
     "copy": "복사", "copyMail": "이메일 주소 복사", "copyDiscord": "Discord 사용자명 복사",
     "newTab": "(새 탭)", "viewAll": "전체 보기", "viewAllSr": ": 프로젝트 전체 목록",
     "teamHack": "팀 · 해커톤", "period": "[기간]", "date": "[날짜]",
     "p1": "스터디 타이머", "p1tag": "함께 공부하는 시간을 기록하는 웹앱",
     "myRole": "내 역할", "role": "[역할]", "live": "배포 중",
-    "related": "관련", "srAward": "관련 수상: ", "srAct": "관련 대외활동: ", "srProj": "관련 프로젝트: ", "srSoc": "관련 학회: ",
+    "related": "관련", "srAward": "수상: ", "srAct": "대외활동: ", "srProj": "프로젝트: ", "srSoc": "학회: ",
     "award": ("OO 해커톤 ", "대상", ""),  # before, grade word, after
     "act1": "OO 해커톤 참가",
     "details": "자세히 보기", "demo": "데모", "gh": "GitHub", "slides": "발표 자료",
-    "p2": "강의 요약 챗봇", "p2meta": "개인", "p3": "학회 출석 관리 서비스", "p3meta": "학회", "statusPh": "[상태]",
+    "p2": "강의 요약 챗봇", "p2meta": "개인", "p3": "학회 출석 관리 서비스", "p3meta": "학회", "statusPh": "[배포 상태]",
     "oneLine": "[한 줄 소개]", "socName": "[학회 이름]",
     "orgRole": "[주최 기관] · [역할]", "actName": "[대외활동 이름]", "orgRole2": "[기관] · [역할]",
     "awardName": "[수상명]", "organizer": "[주최 기관]",
@@ -74,17 +74,17 @@ S = {
     "fAff": "Affiliation", "vAff": "[Major] student, [University]",
     "fSoc": "Society", "vSoc": "[Society name] · [Current role]",
     "fMail": "Email", "vMail": "[email address]",
-    "fGh": "GitHub", "vGh": "github.com/[username]",
+    "fGh": "GitHub", "vGh": "github.com/gaudium1257",
     "copy": "Copy", "copyMail": "Copy email address", "copyDiscord": "Copy Discord username",
     "newTab": "(opens in a new tab)", "viewAll": "View all", "viewAllSr": " projects",
     "teamHack": "Team · Hackathon", "period": "[Period]", "date": "[Date]",
     "p1": "Study Timer", "p1tag": "A web app for logging study time together",
     "myRole": "My role", "role": "[Role]", "live": "Live",
-    "related": "Related", "srAward": "Related award: ", "srAct": "Related activity: ", "srProj": "Related project: ", "srSoc": "Related society: ",
+    "related": "Related", "srAward": "Award: ", "srAct": "Activity: ", "srProj": "Project: ", "srSoc": "Society: ",
     "award": ("", "Grand Prize", ", OO Hackathon"),
-    "act1": "OO Hackathon — participant",
+    "act1": "Participant, OO Hackathon",
     "details": "Details", "demo": "Demo", "gh": "GitHub", "slides": "Slides",
-    "p2": "Lecture Summary Chatbot", "p2meta": "Personal", "p3": "Society Attendance Manager", "p3meta": "Society", "statusPh": "[Status]",
+    "p2": "Lecture Summary Chatbot", "p2meta": "Personal", "p3": "Society Attendance Manager", "p3meta": "Society", "statusPh": "[Deployment status]",
     "oneLine": "[One-line summary]", "socName": "[Society name]",
     "orgRole": "[Organizer] · [Role]", "actName": "[Activity name]", "orgRole2": "[Organization] · [Role]",
     "awardName": "[Award name]", "organizer": "[Organizer]",
@@ -169,19 +169,21 @@ def a_link(href, text, L, *, ext=False, sr_pre="", sr_post="", weight=500, block
     if ext: inner += (svg("ext", 14, 2) if block else svg("ext", 14, 2).replace("<svg ", '<svg style="margin-left: 4px; vertical-align: -2px" ', 1)) + f'<span class="sr-only">{esc(S[L]["newTab"])}</span>'
     return f'<a href="{href}"{attrs} style="{disp}{pad}font-weight: {weight}; {LINK}{"; " + extra if extra else ""}">{inner}</a>'
 
-def award_html(L, link=None, hit=False, block=False):
+def award_html(L, link=None, hit=False, block=False, sr=True):
     b, g, a = S[L]["award"]
     # nbsp: a trailing normal space is dropped when the link is laid out as a flex container
     b_html = esc(b[:-1]) + "&nbsp;" if b.endswith(" ") else esc(b)
     if link:  # inside a link the rank keeps the link colour; weight carries the emphasis
         t = f'{b_html}<span style="font-weight: 600">{esc(g)}</span>{esc(a)}'
-        return a_link(link, t, L, sr_pre=S[L]["srAward"], block=block, hit=hit)
+        return a_link(link, t, L, sr_pre=S[L]["srAward"] if sr else "", block=block, hit=hit)
     return f'{b_html}<span style="color: var(--color-award); font-weight: 600">{esc(g)}</span>{esc(a)}'
 
 def relation_line(L, links, mobile=False):
     label = f'<span style="{META}; font-weight: 500; margin-right: 8px">{esc(S[L]["related"])}</span>'
-    if mobile:  # flex row of 44px links (no overlapping hit areas); no separators, so none can dangle at a wrap
-        return f'<p style="margin: 4px 0 0; display: flex; flex-wrap: wrap; align-items: center; column-gap: 16px; {SECOND}">{label}{"".join(links)}</p>'
+    if mobile:  # 44px links in their own wrapping box: wrapped links align under the first one, no overlapping hit areas
+        lab = f'<span style="flex: none; display: inline-flex; align-items: center; min-height: 44px; margin-right: 8px; {META}; font-weight: 500">{esc(S[L]["related"])}</span>'
+        return (f'<p style="margin: 4px 0 0; display: flex; align-items: flex-start; {SECOND}">{lab}'
+                f'<span style="flex: 1 1 0; min-width: 0; display: flex; flex-wrap: wrap; column-gap: 16px">{"".join(links)}</span></p>')
     sep = '<span aria-hidden="true" style="color: var(--color-muted); padding: 0 2px"> · </span>'
     return f'<p style="margin: 8px 0 0; {SECOND}">{label}' + sep.join(links) + "</p>"
 
@@ -229,7 +231,7 @@ def page(L, title, body, w, h, mobile=False, scroll_pad=80):
         ".stretch::after{content:'';position:absolute;inset:0}\n"
         ".wordmark{flex:0 0 var(--axis-label)}.strip{margin-left:-12px}\n"
         ".tab{padding:0 12px}.tab .bar{left:12px;right:12px}.tab-m{padding:0 10px}.tab-m .bar{left:10px;right:10px}\n"
-        "@media (max-width:1199px){.wordmark{flex:0 0 auto}.strip{margin-left:0}.tab{padding:0 8px}.tab .bar{left:8px;right:8px}}\n"
+        "@media (max-width:1199px){.wordmark{flex:0 0 136px;overflow:hidden;text-overflow:ellipsis}.strip{margin-left:0}.tab{padding:0 8px}.tab .bar{left:8px;right:8px}}\n"
     )
     width = f"width: {w}px; " if mobile else ""
     doc = f"""<!doctype html>
@@ -252,6 +254,13 @@ def page(L, title, body, w, h, mobile=False, scroll_pad=80):
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{{"accent":{{"editor":"color","default":"#6D28D9","options":["#6D28D9","#7C3AED","#5B21B6","#4F46E5"]}},"$preview":{{"width":{w},"height":{h}}}}}'>
 class Component extends DCLogic {{
+componentDidMount() {{
+this._onFocus = (e) => {{ const a = e.target && e.target.closest ? e.target.closest('header nav a') : null; if (a) a.scrollIntoView({{ block: 'nearest', inline: 'nearest' }}); }};
+document.addEventListener('focusin', this._onFocus);
+}}
+componentWillUnmount() {{
+document.removeEventListener('focusin', this._onFocus);
+}}
 renderVals() {{
 return {{ accent: this.props.accent ?? '#6D28D9' }};
 }}
@@ -307,16 +316,16 @@ def lang_switch(L, kind, mobile, h=44):
 FADE = "-webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 32px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 32px), transparent)"
 HEADER = 'position: sticky; top: 0; z-index: 20; background: rgba(255, 255, 255, 0.92); backdrop-filter: saturate(180%) blur(12px); box-shadow: inset 0 -1px 0 var(--color-line)'
 
-def name_lang(L):
-    """lang attribute for the display name: the EN board shows a placeholder English name."""
-    return "en" if L == "en" else "ko"
+def lang_attr(text, code):
+    """lang attribute only for real values; [placeholders] are written in the page language."""
+    return "" if is_ph(text) else f' lang="{code}"'
 
 def header_desktop(L, kind, active_section, *, home_href, toc_active=None):
     hrefs = [f"{home_href}#{i}" for i in SECTION_IDS]
     tabs = "".join(tab(hrefs[i], S[L]["nav"][i], i == active_section, 64, False) for i in range(8))
     name = S[L]["name"]
     row1 = f"""<div style="max-width: var(--container); margin: 0 auto; padding: 0 var(--gutter); box-sizing: border-box; display: flex; align-items: center; column-gap: var(--axis-gap); min-height: var(--header-h)">
-<a href="{home_href}#about" class="wordmark" lang="{name_lang(L)}" style="min-width: 0; display: inline-flex; align-items: center; min-height: 44px; font-size: var(--text-title); font-weight: 700; letter-spacing: -0.02em; {col(name)}; text-decoration: none; white-space: nowrap">{esc(name)}</a>
+<a href="{home_href}#about" class="wordmark"{lang_attr(name, "ko")} style="min-width: 0; display: inline-flex; align-items: center; min-height: 44px; font-size: var(--text-title); font-weight: 700; letter-spacing: -0.02em; {col(name)}; text-decoration: none; white-space: nowrap">{esc(name)}</a>
 <nav aria-label="{esc(S[L]["navLabel"])}" class="strip" style="flex: 1 1 auto; min-width: 0; overflow-x: auto; scrollbar-width: none; {FADE}">
 <div style="display: flex; gap: 4px; width: max-content; padding-right: 32px; white-space: nowrap">{tabs}</div>
 </nav>
@@ -409,8 +418,8 @@ def p(text, extra="", base=SECOND, margin="2px 0 0"):
     return f'<p style="margin: {margin}; {base}; {col(text)}{"; " + extra if extra else ""}">{esc(text)}</p>'
 
 def live_html(L):
-    return (f'<span style="display: inline-flex; align-items: center; gap: 6px; color: var(--color-live); font-weight: 500">'
-            f'<span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 3px; background: var(--color-live)"></span>{esc(S[L]["live"])}</span>')
+    return (f'<span style="display: inline-flex; align-items: baseline; gap: 6px; color: var(--color-live); font-weight: 500; white-space: nowrap">'
+            f'<span aria-hidden="true" style="align-self: center; width: 6px; height: 6px; border-radius: 3px; background: var(--color-live)"></span>{esc(S[L]["live"])}</span>')
 
 def status_html(L, status):
     return live_html(L) if status == "live" else f'<span style="{MUTED}">{esc(status)}</span>'
@@ -438,14 +447,15 @@ def featured(L, mobile, detail_href):
     if mobile:
         return f'<article>{text}<div style="margin-top: 16px">{img}</div>{links}</article>'
     return (f'<article style="display: flex; flex-wrap: wrap; column-gap: 32px; row-gap: 16px; align-items: flex-start">'
-            f'<div style="flex: 0 1 360px; min-width: 240px">{img}</div><div style="flex: 1 1 320px; min-width: 0">{text}{links}</div></article>')
+            f'<div style="flex: 1 1 300px; max-width: 360px; min-width: 220px">{img}</div><div style="flex: 1 1 280px; min-width: 0">{text}{links}</div></article>')
 
 def index_row(L, key, meta, stack, status, rel_html, detail_href, mobile, first=False, tag="h3", tagline=None):
     """Project row: the whole row is one stretched link; status always sits in the same slot."""
     s = S[L]
     tl = p(tagline or s["oneLine"])
     st = status_html(L, status)
-    rl = (relation_line(L, [rel_html], mobile).replace('<p style="', '<p style="position: relative; z-index: 1; ', 1)) if rel_html else ""
+    links = rel_html if isinstance(rel_html, list) else ([rel_html] if rel_html else [])
+    rl = (relation_line(L, links, mobile).replace('<p style="', '<p style="position: relative; z-index: 1; ', 1)) if links else ""
     if mobile:
         arrow = f'<span aria-hidden="true" style="flex: none; color: var(--color-subtle)">{svg("arrow")}</span>'
         return (f'<li style="position: relative; display: flex; flex-direction: column; {row_pad(first)}">'
@@ -453,18 +463,20 @@ def index_row(L, key, meta, stack, status, rel_html, detail_href, mobile, first=
                 f'{tl}<p style="margin: 2px 0 0; {META}">{esc(meta)} · {st} · {esc(stack)}</p>{rl}'
                 f'<div data-date style="order: -1; {DATE}; margin-bottom: 2px">{esc(s["period"])}</div></li>')
     arrow = f'<span aria-hidden="true" style="position: absolute; right: 0; top: {2 if first else 18}px; color: var(--color-subtle)">{svg("arrow")}</span>'
-    return (f'<li style="position: relative; display: flex; flex-wrap: wrap; column-gap: 24px; row-gap: 4px; padding-right: 40px; {row_pad(first)}">'
+    return (f'<li style="position: relative; display: flex; column-gap: 24px; padding-right: 40px; {row_pad(first)}">'
+            f'<div style="flex: 1 1 0; min-width: 0; display: flex; flex-wrap: wrap; column-gap: 24px; row-gap: 4px">'
             f'<div style="flex: 1 1 280px; min-width: 0">{title_h(tag, s[key], detail_href, stretch=True)}{tl}{rl}</div>'
-            f'<div style="flex: 0 1 200px; min-width: 0; {META}; line-height: 1.6">{esc(meta)} · {st}<br>{esc(stack)}</div>{arrow}'
+            f'<div style="flex: 0 1 200px; min-width: 0; {META}; line-height: 1.6">{esc(meta)} · {st}<br>{esc(stack)}</div></div>{arrow}'
             f'<div data-date style="order: -1; flex: 0 0 var(--date-col); {DATE}; padding-top: 2px">{esc(s["period"])}</div></li>')
 
 def project_rows(L, mobile, detail_href, home_href, tag, include_p1):
     s = S[L]
     rows = []
     if include_p1:
-        rows.append(index_row(L, "p1", s["teamHack"], "Next.js, Supabase", "live", award_html(L, home_href + "#awards", block=mobile),
+        rows.append(index_row(L, "p1", s["teamHack"], "Next.js, Supabase", "live",
+                              [award_html(L, home_href + "#awards", block=mobile), rel(home_href + "#activities", esc(s["act1"]), L, s["srAct"], mobile)],
                               detail_href, mobile, first=True, tag=tag, tagline=s["p1tag"]))
-    rows.append(index_row(L, "p2", s["p2meta"], "FastAPI, OpenAI API", s["statusPh"], "", detail_href, mobile, first=not include_p1, tag=tag))
+    rows.append(index_row(L, "p2", s["p2meta"], "FastAPI, OpenAI API", s["statusPh"], "", detail_href, mobile, first=False, tag=tag))
     rows.append(index_row(L, "p3", s["p3meta"], "React, Firebase", s["statusPh"], rel(home_href + "#society", esc(s["socName"]), L, s["srSoc"], mobile),
                           detail_href, mobile, tag=tag))
     return rows
@@ -493,15 +505,15 @@ def home(L, mobile):
         hero = (f'<section id="about" aria-labelledby="h-about" style="padding: 24px 0 28px">'
                 f'<div style="display: grid; grid-template-columns: 104px minmax(0, 1fr); column-gap: 16px; align-items: end">{photo(L, True)}'
                 f'<div style="min-width: 0"><h1 id="h-about" style="margin: 0; font-size: var(--text-display); line-height: 1.2; font-weight: 700; letter-spacing: -0.03em; {col(name)}">{esc(name)}</h1>'
-                f'<div lang="{alt_lang}" style="{SECOND}; {MUTED}">{esc(s["nameAlt"])}</div>{roles_list(L, True)}</div></div>'
+                f'<div{lang_attr(s["nameAlt"], alt_lang)} style="{SECOND}; {MUTED}">{esc(s["nameAlt"])}</div>{roles_list(L, True)}</div></div>'
                 f'<p style="margin: 20px 0 0; {BODY}; {col(s["intro"])}">{esc(s["intro"])}</p>{hero_facts(L, True)}</section>')
     else:
         hero = (f'<section id="about" aria-labelledby="h-about" style="padding: 64px 0 56px; display: flex; flex-wrap: wrap; align-items: flex-end; column-gap: var(--axis-gap); row-gap: 24px">'
                 f'{photo(L, False)}<div data-axis="content" style="flex: 1 1 520px; min-width: 0">'
                 f'<div style="display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 16px"><h1 id="h-about" style="margin: 0; font-size: var(--text-display); line-height: 1.15; font-weight: 700; letter-spacing: {"-0.02em" if L == "en" else "-0.03em"}; {col(name)}">{esc(name)}</h1>'
-                f'<span lang="{alt_lang}" style="font-size: var(--text-lead); line-height: 1.5; letter-spacing: 0; {MUTED}">{esc(s["nameAlt"])}</span></div>'
+                f'<span{lang_attr(s["nameAlt"], alt_lang)} style="font-size: var(--text-lead); line-height: 1.5; letter-spacing: 0; {MUTED}">{esc(s["nameAlt"])}</span></div>'
                 f'{roles_list(L, False)}<p style="margin: 16px 0 0; max-width: 34em; {BODY}; {col(s["intro"])}">{esc(s["intro"])}</p>{hero_facts(L, False)}</div></section>')
-    projects = featured(L, mobile, detail) + f'<div style="margin-top: {24 if mobile else 32}px">{ul(project_rows(L, mobile, detail, "", "h3", False)).replace("padding-top: 0;", f"padding-top: 16px; {RULE};", 1)}</div>'
+    projects = featured(L, mobile, detail) + f'<div style="margin-top: {24 if mobile else 32}px">{ul(project_rows(L, mobile, detail, "", "h3", False))}</div>'
     act = ul([
         ledger_row(title_h("h3", s["act1"]) + p(s["orgRole"]) + relation_line(L, [rel(detail, esc(s["p1"]), L, s["srProj"], mobile), award_html(L, "#awards", block=mobile)], mobile), esc(s["date"]), first=True, mobile=mobile),
         ledger_row(title_h("h3", s["actName"]) + p(s["orgRole2"]), esc(s["period"]), mobile=mobile),
@@ -515,21 +527,22 @@ def home(L, mobile):
     dot_prev = '<span aria-hidden="true" style="position: relative; flex: none; width: 8px; height: 8px; box-sizing: border-box; border-radius: 4px; border: 1.5px solid var(--color-muted); background: var(--color-bg)"></span>'
     def role_row(dot, role, period):
         if mobile:
-            return (f'<li style="display: flex; flex-wrap: wrap; align-items: center; column-gap: 10px; min-height: 40px">{dot}'
-                    f'<span style="{SECOND}; font-weight: 600; {col(role)}">{esc(role)}</span><span style="{DATE}">{esc(period)}</span></li>')
+            return (f'<li style="display: flex; flex-direction: column; padding: 4px 0 4px 20px; position: relative">'
+                    f'<span style="display: flex; align-items: center; gap: 12px; margin-left: -20px">{dot}<span style="{SECOND}; font-weight: 600; {col(role)}">{esc(role)}</span></span>'
+                    f'<span data-date style="order: -1; {DATE}">{esc(period)}</span></li>')
         return (f'<li style="display: flex; flex-wrap: wrap; align-items: center; column-gap: 24px; min-height: 40px">'
                 f'<div style="flex: 1 1 280px; min-width: 0; display: flex; align-items: center; gap: 12px; margin-left: -20px">{dot}<span style="{SECOND}; font-weight: 600; {col(role)}">{esc(role)}</span></div>'
                 f'<div data-date style="order: -1; flex: 0 0 var(--date-col); {DATE}">{esc(period)}</div></li>')
     line_left = "3.5px" if mobile else "calc(var(--date-col) + 7.5px)"
     roles = (f'<h4 style="margin: 24px 0 8px; {META}; font-weight: 500">{esc(s["roles_h"])}</h4><div style="position: relative">'
-             f'<span aria-hidden="true" style="position: absolute; left: {line_left}; top: 20px; bottom: 20px; width: 1px; background: var(--color-line-strong)"></span>'
+             f'<span aria-hidden="true" style="position: absolute; left: {line_left}; top: {"36px" if mobile else "20px"}; bottom: {"16px" if mobile else "20px"}; width: 1px; background: var(--color-line-strong)"></span>'
              f'<ul role="list" style="margin: 0; padding: 0; list-style: none">{role_row(dot_cur, s["curRole"], s["curPeriod"])}{role_row(dot_prev, s["prevRole"], s["period"])}</ul></div>')
     ev_rows = []
     for i in range(3):
         t = s["evTypes"][i]
         content = title_h("h5", s["evTitles"][i]) + f'<p style="margin: 2px 0 0; {SECOND}; {MUTED}">{esc(s["evRole"])} <span style="font-weight: 500">{esc(s["role"])}</span></p>'
         if mobile:
-            ev_rows.append(ledger_row(content, f'<span style="font-weight: 500; {col(t)}">{esc(t)}</span> · {esc(s["date"])}', mobile=True))
+            ev_rows.append(ledger_row(content, f'{esc(s["date"])} · <span style="font-weight: 500; {col(t)}">{esc(t)}</span>', mobile=True))
         else:
             ev_rows.append(ledger_row(content, esc(s["date"]), extra_date=f'<span style="display: block; font-weight: 500; {col(t)}">{esc(t)}</span>'))
     soc = (title_h("h3", s["socName"]) + f'<p style="margin: 2px 0 0; max-width: 40em; {SECOND}; color: var(--color-ink-2)">{esc(s["socDesc"])}</p>'
@@ -550,7 +563,7 @@ def home(L, mobile):
                 f'<li style="min-width: 0"><div style="{SECOND}; font-weight: 500; color: var(--color-ink)">{t}</div>'
                 f'<a href="{detail}" style="display: inline-flex; align-items: center; min-height: 28px; {META}; {LINK}">{esc(s[k])}</a></li>'
                 for t, k in items)
-            items_ul = f'<ul role="list" style="flex: 1 1 320px; min-width: 0; margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 16px; row-gap: 8px">{lis}</ul>'
+            items_ul = f'<ul role="list" style="flex: 1 1 320px; min-width: 0; margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(176px, 1fr)); column-gap: 16px; row-gap: 8px">{lis}</ul>'
             sk_rows.append(f'<li style="display: flex; flex-wrap: wrap; column-gap: 24px; row-gap: 8px; {row_pad(n == 0)}"><h3 style="flex: 0 0 var(--date-col); margin: 0; padding-top: 2px; {META}; font-weight: 500">{esc(s["skillCats"][ci])}</h3>{items_ul}</li>')
     skills = ul(sk_rows)
     edu = ul([ledger_row(title_h("h3", s["school"]) + p(s["majorDeg"]), esc(s["eduPeriod"]), first=True, mobile=mobile)])
@@ -582,9 +595,9 @@ def footer(L, mobile, contact_links):
         right = (f'<div style="display: flex; flex-wrap: wrap; column-gap: 20px">'
                  + a_link("mailto:", esc(s["vMail"]), L, block=True, extra="overflow-wrap: anywhere")
                  + a_link("https://github.com/gaudium1257", esc(s["gh"]), L, ext=True, block=True) + "</div>")
-    inner_style = "padding: 24px var(--gutter) 32px" if mobile else "width: 100%; max-width: var(--container); margin: 0 auto; padding: 24px var(--gutter) 40px; box-sizing: border-box"
+    inner_style = "padding: 24px var(--gutter) 32px; flex-direction: column; align-items: flex-start !important" if mobile else "width: 100%; max-width: var(--container); margin: 0 auto; padding: 24px var(--gutter) 40px; box-sizing: border-box"
     return (f'<footer style="{RULE}"><div style="{inner_style}; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; column-gap: 24px; row-gap: 8px">'
-            f'<p lang="{name_lang(L)}" style="margin: 0; {META}">{esc(s["footer"])}</p>{right}</div></footer>')
+            f'<p style="margin: 0; {META}">{esc(s["footer"])}</p>{right}</div></footer>')
 
 # --------------------------------------------------------------------------- detail page
 def detail(L, mobile):
@@ -593,9 +606,11 @@ def detail(L, mobile):
     list_href = board("list", L, mobile)
     self_href = board("detail", L, mobile)
     ext_links = "".join(a_link("#", esc(t), L, ext=True, weight=600, block=True, sr_post=" " + s["p1"]) for t in (s["demo"], s["gh"], s["slides"]))
-    deploy = (f'{live_html(L).replace("font-weight: 500", "font-weight: 600")}<span style="{MUTED}; font-weight: 500">&nbsp;·&nbsp;{esc(s["vPlatform"])}</span>')
+    deploy = (f'<span style="white-space: nowrap">{live_html(L).replace("font-weight: 500", "font-weight: 600")}<span style="{MUTED}; font-weight: 500">&nbsp;·</span></span> '
+              f'<span style="{MUTED}; font-weight: 500; white-space: nowrap">{esc(s["vPlatform"])}</span>')
+    n_part, role_part = s["vTeam"].split(" · ")
     cells = [(s["fPeriod"], f'<span style="{col(s["vPeriod"])}; font-variant-numeric: tabular-nums">{esc(s["vPeriod"])}</span>'),
-             (s["fTeam"], f'<span style="{col(s["vTeam"])}">{esc(s["vTeam"])}</span>'),
+             (s["fTeam"], f'<span style="{col(s["vTeam"])}"><span style="white-space: nowrap">{esc(n_part)}&nbsp;·</span> <span style="white-space: nowrap">{esc(role_part)}</span></span>'),
              (s["fStatus"], esc(s["vStatus"])), (s["fDeploy"], deploy)]
     if mobile:
         facts = '<dl style="margin: 24px 0 0">' + "".join(
@@ -641,20 +656,24 @@ def detail(L, mobile):
     stack = f'<dl style="margin: 0">{seq(stack_rows)}</dl>'
     pre, mid, post = s["outcome"]
     outcomes = (f'<ul role="list" style="margin: 0; padding: 0 0 0 18px; list-style: square; {TEXT_CAP}; display: flex; flex-direction: column; gap: 8px">'
-                f'<li style="{BODY}">{esc(pre)}{a_link(home_href + "#awards", esc(mid), L, sr_pre=s["srAward"])}{esc(post)}</li>'
+                f'<li style="{BODY}">{esc(pre)}{a_link(home_href + "#awards", esc(mid), L)}{esc(post)}</li>'
                 f'<li style="{BODY}; {MUTED}">{esc(s["outcomePh"])}</li></ul>')
     pairs = [
         f'<li style="{"padding-top: 0" if i == 0 else "padding-top: 24px; " + RULE}; padding-bottom: {PB24}"><dl style="margin: 0; {TEXT_CAP}">'
-        f'<dt style="{META}; font-weight: 600">{esc(s["problem"])}</dt><dd style="margin: 4px 0 0; {BODY}; {MUTED}">{esc(s["problemPh"])}</dd>'
+        f'<dt style="{META}; font-weight: 600; color: var(--color-ink)">{esc(s["problem"])}</dt><dd style="margin: 4px 0 0; {BODY}; {MUTED}">{esc(s["problemPh"])}</dd>'
         f'<dt style="margin-top: 12px; {META}; font-weight: 600; color: var(--color-ink)">{esc(s["solution"])}</dt><dd style="margin: 4px 0 0; {BODY}; {MUTED}">{esc(s["solutionPh"])}</dd></dl></li>'
         for i in range(2)]
     challenges = f'<ol role="list" style="margin: 0; padding: 0; list-style: none">{seq(pairs)}</ol>'
     def rel_row(kind, link_html, first):
-        return (f'<li style="display: flex; flex-wrap: wrap; align-items: center; column-gap: {8 if mobile else 24}px; min-height: 52px; {"" if first else RULE}">'
-                f'<span style="flex: 0 0 {"var(--fact-label)" if mobile else "var(--date-col)"}; {META}; font-weight: 500">{esc(kind)}</span>'
+        if mobile:
+            return (f'<li style="display: flex; align-items: center; column-gap: 8px; padding: 6px 0; {"" if first else RULE}">'
+                    f'<span style="flex: 0 0 var(--fact-label); {META}; font-weight: 500">{esc(kind)}</span>'
+                    f'<span style="flex: 1 1 0; min-width: 0; display: flex; flex-direction: column"><span data-date style="{DATE}">{esc(s["date"])}</span>{link_html}</span></li>')
+        return (f'<li style="display: flex; align-items: center; column-gap: 24px; min-height: 52px; {"" if first else RULE}">'
+                f'<span style="flex: 0 0 var(--date-col); {META}; font-weight: 500">{esc(kind)}</span>'
                 f'<span style="flex: 1 1 0; min-width: 0">{link_html}</span><span data-date style="{DATE}; margin-left: 16px">{esc(s["date"])}</span></li>')
     related = (f'<ul role="list" style="margin: 0; padding: 0; list-style: none">'
-               + rel_row(s["relAward"], award_html(L, home_href + "#awards", block=True), True)
+               + rel_row(s["relAward"], award_html(L, home_href + "#awards", block=True, sr=False), True)
                + rel_row(s["relAct"], a_link(home_href + "#activities", esc(s["act1"]), L, block=True), False) + "</ul>")
     body = (dsec(0, summary) + dsec(1, contrib, s["contribNote"]) + dsec(2, features) + dsec(3, stack)
             + dsec(4, outcomes) + dsec(5, challenges) + dsec(6, related))
