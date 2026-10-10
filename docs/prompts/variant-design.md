@@ -1,78 +1,111 @@
 # Variant 디자인 요청 프롬프트
 
-[Variant](https://variant.com)에 붙여넣어 포트폴리오 사이트의 1차 디자인 시안을 뽑기 위한 프롬프트입니다.
+[Variant](https://variant.com)에서 포트폴리오 사이트의 1차 디자인 시안을 뽑기 위한 프롬프트입니다.
 
-- Variant는 영어 프롬프트에서 결과가 더 안정적이라 본문은 영어로 썼습니다. 시안에 들어가는 예시 문구는 한국어로 나오게 지정해 두었습니다.
-- **1번(메인 화면)** 을 먼저 넣고 마음에 드는 방향이 나오면, 같은 스레드에서 **2번(프로젝트 상세)** 과 **3번(모바일)** 을 이어서 요청하세요.
-- 예시 내용(홍길동, 가상의 프로젝트)은 화면을 채우기 위한 가짜 데이터입니다. 실제 내용은 구현할 때 `content/`에서 들어갑니다.
-- 고른 시안은 스크린샷이나 내보낸 코드로 전달해 주시면, 그 디자인을 기준으로 구현합니다.
+## 사용법
+
+- **1단계 — 방향 탐색:** 아래 A~G는 레이아웃 구조 자체가 서로 다른 방향입니다. **방향마다 새 스레드**에서 하나씩 넣어야 앞 결과에 끌려가지 않습니다. 마음에 드는 방향 1~2개를 고르세요.
+- **2단계 — 다듬기:** 고른 방향의 스레드에서 "상세 페이지", "모바일" 후속 프롬프트를 이어서 넣습니다.
+- 공통 조건(섹션 구성, 한 번 클릭으로 이동, 가독성, 보라색)은 모든 프롬프트에 짧게만 넣었습니다. 레이아웃·색감·타이포를 구체적으로 못 박으면 시안이 전부 비슷해지기 때문입니다.
+- 본문은 영어(Variant가 더 안정적), 시안 속 문구는 한국어로 나오게 했습니다. 홍길동과 프로젝트들은 화면을 채우기 위한 **가짜 데이터**입니다.
+- 고른 시안은 스크린샷이나 내보낸 코드로 전달해 주세요. 그 디자인을 기준으로 구현합니다.
 
 ---
 
-## 1. 메인 화면 (데스크톱)
+## 1단계 — 방향별 탐색 프롬프트
+
+### A. 벤토 대시보드 — 한 화면 요약
 
 ```text
-Design a personal portfolio website for a Korean university student developer who works on AI and web projects, and runs an academic society that teaches AI and vibe coding and organizes hackathons. The site is bilingual (Korean / English) and this screen shows the Korean version on desktop (1440px wide).
+Personal portfolio website for a Korean university student developer (AI + web projects; runs an academic society that teaches AI and vibe coding and organizes hackathons). Bilingual with a visible KO/EN toggle; show the Korean version, desktop. Sections: 소개, 프로젝트, 대외활동, 수상, 학회, 개발 역량, 학력, 연락처 (GitHub, Email, Instagram, Discord), footer "© 2026 홍길동". Visitors (recruiters, hackathon judges) must reach any section in one click and never face a long scroll. Readable Korean typography, purple as the brand color.
 
-WHO READS IT AND WHY
-Recruiters, hackathon judges and potential collaborators. They skim for 30 seconds, then jump straight to one thing: a specific project, the awards, or contact info. The design must make every section reachable in one click and keep the page short. No endless scrolling.
+Layout concept: a BENTO GRID DASHBOARD. The whole home page fits in about one screen as a grid of tiles in different sizes — a big intro tile, a wide featured-project tile, small tiles for award count, latest society event, skills cloud, contact. Each tile is a summary; clicking it opens that section's full view. No traditional navigation bar — the grid itself is the navigation.
+Style: light, airy lavender surfaces, playful but tidy, large radius tiles, one bold violet accent tile.
 
-NAVIGATION (most important)
-- Persistent navigation that is always visible: either a fixed left sidebar (name, one-line headline, section links, contact icons, language toggle) with content on the right, or a sticky top bar. The current section is highlighted as you scroll (scroll-spy).
-- Sections in this order: 소개, 프로젝트, 대외활동, 수상, 학회, 개발 역량, 학력, 연락처.
-- A "KO / EN" language toggle that is always visible.
-- Each section is compact: show the most important 3–4 items, plus a "전체 보기" link/expander for the rest. Nothing should require a long scroll to get past.
-- Projects can be filtered with chips (전체 · 개인 · 팀 · 해커톤 · 학회) and by tech tag.
-- Items link to each other: a project card shows small chips like "🏆 OO 해커톤 대상" or "학회 해커톤" that link to the related award or activity, and vice versa.
-
-SECTIONS AND CONTENT
-1. 소개: name, one-line headline, 1–2 sentence intro, and 3 quick stats in small tiles (e.g. projects count, awards count, hackathons organized). No large hero image; get to the content fast.
-2. 프로젝트: card grid. Each card has a thumbnail, title, one-line tagline, category badge (개인/팀/해커톤), status badge (배포 중 / 완료 / 진행 중), 3–4 tech tags, period, and related-award chip if any. Clicking a card opens the project detail page.
-3. 대외활동: compact timeline or list. Title, organization, period, role, one line of what was done, links to related projects.
-4. 수상: compact list. Prize level (대상, 최우수상…), competition name, organizer, date, link to the related project.
-5. 학회: society name and short description, my roles over time (e.g. 교육팀장 → 회장), and a small grid/timeline of events I ran: AI 교육, 바이브코딩 교육, 해커톤 — each with date, my role and type badge.
-6. 개발 역량: skills grouped by category (Language, Frontend, Backend, AI/ML, Infra, Tools). Plain tags/icons, no progress bars or percentage ratings. Hovering a skill can show which projects used it.
-7. 학력: school, major, period, status (재학 중 / 졸업).
-8. 연락처: GitHub, Email, Instagram, Discord as clear buttons with icons, and a copy-to-clipboard for the email.
-Footer: "© 2026 홍길동. All rights reserved."
-
-VISUAL STYLE
-- Theme color: purple. Use one primary purple (around #7C3AED) with a tinted neutral palette (very light lavender-gray surfaces, near-black purple-tinted text). Purple for accents, active nav, links and badges; not for large blocks of body text.
-- Readability first: body text 16–17px, line height ~1.7, line length under ~70 characters, clear heading hierarchy, high contrast (WCAG AA), generous whitespace.
-- Typography that works for both Korean and English, e.g. Pretendard.
-- Clean, modern and calm, not flashy. Subtle borders and soft shadows on cards, rounded corners, restrained motion.
-- Light mode. Keep it easy to derive a dark mode later.
-
-SAMPLE CONTENT (fictional placeholder, write it in Korean)
-Name 홍길동, headline "AI와 웹으로 문제를 푸는 개발자". Projects such as "스터디 타이머" (팀 · 해커톤 · Next.js, Supabase), "강의 요약 챗봇" (개인 · Python, FastAPI, OpenAI API), "학회 출석 관리 서비스" (학회 · React, Firebase). Awards such as "OO 해커톤 대상". Society events such as "바이브코딩 입문 교육 (2025-03)", "교내 AI 해커톤 운영 (2025-08)".
+Fictional sample content in Korean: 홍길동, "AI와 웹으로 문제를 푸는 개발자". Projects: 스터디 타이머 (팀·해커톤, Next.js/Supabase), 강의 요약 챗봇 (개인, FastAPI/OpenAI API), 학회 출석 관리 서비스 (학회, React/Firebase). Award: OO 해커톤 대상. Society events: 바이브코딩 입문 교육, 교내 AI 해커톤 운영.
 ```
 
-## 2. 프로젝트 상세 화면 (같은 스레드에서 이어서)
+### B. 탭 앱 — 스크롤 없는 화면 전환
 
 ```text
-Now design the project detail page in the same style, desktop 1440px, Korean.
+Personal portfolio website for a Korean university student developer (AI + web projects; runs an academic society that teaches AI and vibe coding and organizes hackathons). Bilingual with a visible KO/EN toggle; show the Korean version, desktop. Sections: 소개, 프로젝트, 대외활동, 수상, 학회, 개발 역량, 학력, 연락처 (GitHub, Email, Instagram, Discord), footer "© 2026 홍길동". Visitors (recruiters, hackathon judges) must reach any section in one click and never face a long scroll. Readable Korean typography, purple as the brand color.
 
-The persistent navigation stays visible, with a clear "← 프로젝트 목록" back link. The page must be scannable without long scrolling:
-- Header: title, tagline, badges (category, status, deployment status like "배포 중 · Vercel"), period, team size and my role, and primary buttons (GitHub, 데모, 발표 자료).
-- A sticky table of contents (on the side) for: 요약, 핵심 기능, 내가 한 일, 구조, 기술 스택, 문제와 해결, 결과, 배운 점, 관련 항목.
-- 핵심 기능: 3–5 feature cards with a short title and one-sentence description.
-- 내가 한 일: a concise bullet list, visually distinct because it's what recruiters look for.
-- 기술 스택: grouped tags.
-- 문제와 해결: problem → solution pairs.
-- 결과: short bullets (awards, demos, users), each with an optional link.
-- Screenshot gallery that doesn't push other content far down (e.g. a carousel or a compact grid).
-- 관련 항목: chips linking to related awards, activities and society events.
-- Previous / next project links at the bottom.
+Layout concept: it feels like an APP, not a web page. A compact header with the name and a segmented tab bar; only one section is shown at a time inside a fixed-height content area, and switching tabs swaps the content with a smooth transition. The page itself never scrolls; long lists scroll inside their panel or open in a side drawer. Projects show as a list on the left with a live preview pane on the right.
+Style: dark mode, deep violet-black background, soft purple highlights, crisp UI-like components.
+
+Fictional sample content in Korean: 홍길동, "AI와 웹으로 문제를 푸는 개발자". Projects: 스터디 타이머 (팀·해커톤, Next.js/Supabase), 강의 요약 챗봇 (개인, FastAPI/OpenAI API), 학회 출석 관리 서비스 (학회, React/Firebase). Award: OO 해커톤 대상. Society events: 바이브코딩 입문 교육, 교내 AI 해커톤 운영.
 ```
 
-## 3. 모바일 (같은 스레드에서 이어서)
+### C. 에디토리얼 매거진 — 큰 타이포와 목차
 
 ```text
-Now show the main page on mobile (375px wide), same style and content, Korean.
+Personal portfolio website for a Korean university student developer (AI + web projects; runs an academic society that teaches AI and vibe coding and organizes hackathons). Bilingual with a visible KO/EN toggle; show the Korean version, desktop. Sections: 소개, 프로젝트, 대외활동, 수상, 학회, 개발 역량, 학력, 연락처 (GitHub, Email, Instagram, Discord), footer "© 2026 홍길동". Visitors (recruiters, hackathon judges) must reach any section in one click and never face a long scroll. Readable Korean typography, purple as the brand color.
 
-- Navigation collapses into a compact sticky top bar with name, KO/EN toggle and a menu button, and/or a horizontally scrollable row of section tabs that highlights the current section. Every section must stay one tap away.
-- Cards stack in one column; project filter chips scroll horizontally.
-- Long lists stay collapsed behind "전체 보기".
-- Contact buttons are large enough to tap (at least 44px).
-- No horizontal page scrolling anywhere.
+Layout concept: an EDITORIAL MAGAZINE. The hero is a huge typographic name next to a numbered table of contents (01 소개, 02 프로젝트 …) that doubles as the navigation. Asymmetric grid, generous margins, projects presented like magazine features with a large number, title and short deck. A thin sticky index bar appears after scrolling past the hero.
+Style: off-white paper background, near-black text, purple used like ink for numbers, rules and links only. Serif display headlines paired with a clean sans body.
+
+Fictional sample content in Korean: 홍길동, "AI와 웹으로 문제를 푸는 개발자". Projects: 스터디 타이머 (팀·해커톤, Next.js/Supabase), 강의 요약 챗봇 (개인, FastAPI/OpenAI API), 학회 출석 관리 서비스 (학회, React/Firebase). Award: OO 해커톤 대상. Society events: 바이브코딩 입문 교육, 교내 AI 해커톤 운영.
+```
+
+### D. 개발자 툴 — 커맨드 팔레트 / 에디터 느낌
+
+```text
+Personal portfolio website for a Korean university student developer (AI + web projects; runs an academic society that teaches AI and vibe coding and organizes hackathons). Bilingual with a visible KO/EN toggle; show the Korean version, desktop. Sections: 소개, 프로젝트, 대외활동, 수상, 학회, 개발 역량, 학력, 연락처 (GitHub, Email, Instagram, Discord), footer "© 2026 홍길동". Visitors (recruiters, hackathon judges) must reach any section in one click and never face a long scroll. Readable Korean typography, purple as the brand color.
+
+Layout concept: inspired by a CODE EDITOR / DEVELOPER TOOL. A file-tree style explorer on the left (소개.md, projects/, awards/ …), content opens like editor tabs, and a ⌘K command palette lets visitors jump to any project, award or section by typing. A slim status bar at the bottom shows the language toggle and contact links. It must still read as a friendly portfolio, not a fake terminal — body text stays in a readable sans font.
+Style: dark, neutral charcoal with electric purple accents and subtle glow, monospace only for labels and metadata.
+
+Fictional sample content in Korean: 홍길동, "AI와 웹으로 문제를 푸는 개발자". Projects: 스터디 타이머 (팀·해커톤, Next.js/Supabase), 강의 요약 챗봇 (개인, FastAPI/OpenAI API), 학회 출석 관리 서비스 (학회, React/Firebase). Award: OO 해커톤 대상. Society events: 바이브코딩 입문 교육, 교내 AI 해커톤 운영.
+```
+
+### E. 타임라인 중심 — 활동 간 연결을 한눈에
+
+```text
+Personal portfolio website for a Korean university student developer (AI + web projects; runs an academic society that teaches AI and vibe coding and organizes hackathons). Bilingual with a visible KO/EN toggle; show the Korean version, desktop. Sections: 소개, 프로젝트, 대외활동, 수상, 학회, 개발 역량, 학력, 연락처 (GitHub, Email, Instagram, Discord), footer "© 2026 홍길동". Visitors (recruiters, hackathon judges) must reach any section in one click and never face a long scroll. Readable Korean typography, purple as the brand color.
+
+Layout concept: TIMELINE-FIRST. Below a short intro, one horizontal master timeline (by month/semester) plots projects, 대외활동, awards and society events together as colored lanes, so it's visible that a hackathon project led to an award during a society event. Filter toggles turn lanes on and off; clicking an item opens a detail card beside the timeline. Skills, education and contact sit in a compact strip below.
+Style: clean light UI, each lane a different tint of purple/violet/indigo, information-dense but calm.
+
+Fictional sample content in Korean: 홍길동, "AI와 웹으로 문제를 푸는 개발자". Projects: 스터디 타이머 (팀·해커톤, Next.js/Supabase), 강의 요약 챗봇 (개인, FastAPI/OpenAI API), 학회 출석 관리 서비스 (학회, React/Firebase). Award: OO 해커톤 대상. Society events: 바이브코딩 입문 교육, 교내 AI 해커톤 운영.
+```
+
+### F. 플레이풀 — 그라디언트와 하단 독 내비게이션
+
+```text
+Personal portfolio website for a Korean university student developer (AI + web projects; runs an academic society that teaches AI and vibe coding and organizes hackathons). Bilingual with a visible KO/EN toggle; show the Korean version, desktop. Sections: 소개, 프로젝트, 대외활동, 수상, 학회, 개발 역량, 학력, 연락처 (GitHub, Email, Instagram, Discord), footer "© 2026 홍길동". Visitors (recruiters, hackathon judges) must reach any section in one click and never face a long scroll. Readable Korean typography, purple as the brand color.
+
+Layout concept: PLAYFUL AND EXPRESSIVE. A floating dock at the bottom of the screen (like the macOS dock) holds icon buttons for every section and the language toggle. Big friendly intro with a 3D or illustrated avatar, projects as a horizontally swipeable row of large tilted cards, awards as sticker-like badges, society events as colorful event tickets.
+Style: soft purple-to-pink gradients, frosted glass panels, chunky rounded shapes, still with high-contrast readable text.
+
+Fictional sample content in Korean: 홍길동, "AI와 웹으로 문제를 푸는 개발자". Projects: 스터디 타이머 (팀·해커톤, Next.js/Supabase), 강의 요약 챗봇 (개인, FastAPI/OpenAI API), 학회 출석 관리 서비스 (학회, React/Firebase). Award: OO 해커톤 대상. Society events: 바이브코딩 입문 교육, 교내 AI 해커톤 운영.
+```
+
+### G. 자유 탐색 — 구조를 Variant에 맡기기
+
+```text
+Personal portfolio website for a Korean university student developer (AI + web projects; runs an academic society that teaches AI and vibe coding and organizes hackathons). Bilingual with a visible KO/EN toggle; show the Korean version. Sections: 소개, 프로젝트, 대외활동, 수상, 학회, 개발 역량, 학력, 연락처 (GitHub, Email, Instagram, Discord), footer "© 2026 홍길동".
+
+Only three hard requirements: any section is one click away, no long scrolling, readable Korean text. Purple is the brand color, but any shade, mood and layout is welcome. Explore radically different layout ideas rather than a standard sidebar + card grid — surprise me.
+
+Fictional sample content in Korean: 홍길동, "AI와 웹으로 문제를 푸는 개발자". Projects: 스터디 타이머 (팀·해커톤, Next.js/Supabase), 강의 요약 챗봇 (개인, FastAPI/OpenAI API), 학회 출석 관리 서비스 (학회, React/Firebase). Award: OO 해커톤 대상. Society events: 바이브코딩 입문 교육, 교내 AI 해커톤 운영.
+```
+
+---
+
+## 2단계 — 고른 방향 다듬기 (같은 스레드에서 이어서)
+
+### 프로젝트 상세 화면
+
+```text
+Now design the project detail view in exactly this style and layout system, Korean, desktop.
+
+It must be scannable without long scrolling and keep a clear way back to the project list. Include: title, tagline, badges (category, status, "배포 중 · Vercel"), period, team size and my role, buttons (GitHub, 데모, 발표 자료); 요약; 핵심 기능 (3–5 short items); 내가 한 일 (visually emphasized — recruiters look for this); 구조; 기술 스택; 문제와 해결 (problem → solution pairs); 결과; 배운 점; a screenshot gallery that doesn't push content far down; 관련 항목 chips linking to related awards, activities and society events; previous / next project.
+```
+
+### 모바일
+
+```text
+Now show the main page on mobile (375px wide) in exactly this style, Korean.
+
+Every section stays one tap away, the KO/EN toggle stays visible, long lists stay collapsed, tap targets are at least 44px, and there is no horizontal page scrolling.
 ```
