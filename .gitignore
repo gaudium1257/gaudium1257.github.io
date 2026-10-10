@@ -45,4 +45,11 @@ next-env.d.ts
 
 # design mockup generator output (published to the canvas, not the site)
 /docs/design/mockup/design/
-/docs/design/mockup/heights.json
+/docs/design/mockup/design2/
+/docs/design/mockup/proto/sys-*/
+/docs/design/mockup/proto/sys.css
+/docs/design/mockup/proto/node_modules
+/docs/design/mockup/sys/shots*/
+/docs/design/mockup/sys/dcshots/
+/docs/design/mockup/sys/*.css
+/docs/design/mockup/sys/heights.json

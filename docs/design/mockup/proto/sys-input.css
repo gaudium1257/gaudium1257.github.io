@@ -1,0 +1,8 @@
+@import "tailwindcss" source(none);
+@import "./sys-theme.css";
+@source "./sys-home-ko/index.html";
+@source "./sys-home-en/index.html";
+@source "./sys-detail-ko/index.html";
+@source "./sys-detail-en/index.html";
+@source "./sys-list-ko/index.html";
+@source "./sys-list-en/index.html";

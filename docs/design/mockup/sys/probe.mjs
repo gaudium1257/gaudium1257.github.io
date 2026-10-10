@@ -1,0 +1,11 @@
+import { createRequire } from "node:module";
+const require = createRequire("/home/user/gaudium1257.github.io/package.json");
+const { chromium } = require("playwright");
+const [page, w, js] = process.argv.slice(2);
+const b = await chromium.launch();
+const p = await b.newPage({ viewport: { width: +w, height: 900 } });
+await p.emulateMedia({ reducedMotion: "reduce" });
+await p.goto(new URL(`../proto/sys-${page}/index.html`, import.meta.url).href);
+await p.evaluate(() => document.fonts.ready);
+console.log(JSON.stringify(await p.evaluate(js), null, 1));
+await b.close();

@@ -1,0 +1,1104 @@
+#!/usr/bin/env python3
+""""Moving Poster" mockups from one source.
+
+python3 gen.py proto            -> proto/sys-{home,detail,list}-{ko,en}/index.html (static Tailwind pages + vanilla JS)
+python3 gen.py dc <css-blob>    -> design2/project/*.dc.html (12 canvas artboards, same markup, DCLogic state)
+"""
+import html as _h
+import json
+import os
+import sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+SCR = os.path.dirname(HERE)
+PROTO = os.path.join(SCR, "proto")
+FONT_BLOB = "/_blob/76760fbe63bd614486cd18b85bb00898"
+
+MODE = "proto"  # or "dc"
+CTX = {}  # loc, page, mobile
+
+
+def esc(s):
+    return _h.escape(s, quote=True)
+
+
+def cls(*parts):
+    return " ".join(p for p in parts if p)
+
+
+def loc():
+    return CTX["loc"]
+
+
+def t(d):
+    return d[loc()] if isinstance(d, dict) else d
+
+
+def A(proto, dc):
+    """Attribute string that differs between the static page and the canvas artboard."""
+    s = proto if MODE == "proto" else dc
+    return (" " + s) if s else ""
+
+
+# ───────────────────────────── strings ─────────────────────────────
+S = {
+    "ko": dict(
+        skip="본문으로 건너뛰기", nav_label="섹션 바로가기", logo_label="홍길동, 맨 위로", lang_label="언어 선택",
+        motion_pause="움직임 멈추기", motion_play="움직임 다시 재생",
+        nav=dict(about="소개", projects="프로젝트", activities="대외활동", awards="수상", society="학회", skills="개발 역량", education="학력", connect="연락처"),
+        count="{n}개", view_all="전체 보기", view_all_label="프로젝트 전체 보기", featured="대표 프로젝트", related="관련", used_in="사용",
+        copy="복사", copied="복사됨", copy_failed="복사 실패",
+        copy_email_sr=("이메일 주소 ", ""), copy_discord_sr=("Discord 사용자명 ", ""),
+        copied_email="이메일 주소를 복사했습니다.", copied_discord="Discord 사용자명을 복사했습니다.",
+        back_to_top="맨 위로", on_this_page="이 페이지", problem="문제", solution="해결",
+        prev="이전 프로젝트", next="다음 프로젝트", other_projects="다른 프로젝트", all_projects="프로젝트 목록", back_home="홈", new_tab="(새 탭)",
+        present="현재", enrolled="재학 중", live="배포 중",
+        cta_projects="프로젝트 보기", cta_contact="연락하기",
+        photo_tag="증명사진 3:4", photo_label="증명사진 자리 (3:4)",
+        facts=dict(affil="소속", society="학회", email="이메일", github="GitHub"),
+        affil="한국대학교 컴퓨터공학과 재학 중", society_role="THE LAB 교육팀장",
+        f_form="형태", f_period="기간", f_tech="기술",
+        form=dict(personal="개인", team="팀"), category=dict(hackathon="해커톤", club="학회"),
+        kind=dict(project="프로젝트", activity="대외활동", award="수상", society="학회", event="학회 행사"),
+        event_type=dict(seminar="세미나", hackathon="해커톤", education="교육"),
+        society_label="학회",
+        tech_cat={"frontend": "프론트엔드", "backend": "백엔드", "ai-ml": "AI"},
+        contact=dict(email="이메일", github="GitHub", instagram="Instagram", discord="Discord"),
+        footer="© 2026 홍길동",
+        d_sections=dict(summary="요약", contributions="내가 한 일", features="핵심 기능", tech="기술 스택", outcomes="결과", challenges="문제와 해결", related="관련 항목"),
+        d_facts=dict(period="기간", team="팀·역할", status="진행 상태", deploy="배포"),
+        ph=dict(summary="[요약 — 팩트시트]", contrib="[내가 한 일 {n}]", feature="[핵심 기능 {n}]", feature_desc="[설명]", problem="[문제]", solution="[해결]",
+                team="[인원] · [역할]", status="[진행 상태]", platform="[플랫폼]", checked="[확인 시점]", demo="[데모 링크]", github="[GitHub 링크]"),
+        award_outcome_suffix="(OO재단, 2025.05)",
+        title_home="홍길동 포트폴리오", title_detail="스터디 타이머 · 홍길동", title_list="프로젝트 · 홍길동",
+    ),
+    "en": dict(
+        skip="Skip to content", nav_label="Sections", logo_label="Gildong Hong, back to top", lang_label="Language",
+        motion_pause="Pause motion", motion_play="Play motion",
+        nav=dict(about="About", projects="Projects", activities="Activities", awards="Awards", society="Society", skills="Skills", education="Education", connect="Connect"),
+        count="{n}", view_all="View all", view_all_label="View all projects", featured="Featured", related="Related", used_in="Used in",
+        copy="Copy", copied="Copied", copy_failed="Copy failed",
+        copy_email_sr=("", " email address"), copy_discord_sr=("", " Discord username"),
+        copied_email="Email address copied.", copied_discord="Discord username copied.",
+        back_to_top="Back to top", on_this_page="On this page", problem="Problem", solution="Solution",
+        prev="Previous project", next="Next project", other_projects="Other projects", all_projects="All projects", back_home="Home", new_tab="(new tab)",
+        present="Present", enrolled="Enrolled", live="Live",
+        cta_projects="View projects", cta_contact="Contact",
+        photo_tag="ID photo 3:4", photo_label="ID photo slot (3:4)",
+        facts=dict(affil="Affiliation", society="Society", email="Email", github="GitHub"),
+        affil="Computer Science and Engineering, Hankuk University (enrolled)", society_role="THE LAB, Head of Education",
+        f_form="Form", f_period="Period", f_tech="Tech",
+        form=dict(personal="Personal", team="Team"), category=dict(hackathon="Hackathon", club="Club"),
+        kind=dict(project="Project", activity="Activity", award="Award", society="Society", event="Society event"),
+        event_type=dict(seminar="Seminar", hackathon="Hackathon", education="Education"),
+        society_label="Society",
+        tech_cat={"frontend": "Frontend", "backend": "Backend", "ai-ml": "AI"},
+        contact=dict(email="Email", github="GitHub", instagram="Instagram", discord="Discord"),
+        footer="© 2026 Gildong Hong",
+        d_sections=dict(summary="Summary", contributions="What I did", features="Key features", tech="Tech stack", outcomes="Outcomes", challenges="Problems & solutions", related="Related"),
+        d_facts=dict(period="Period", team="Team · role", status="Status", deploy="Deployment"),
+        ph=dict(summary="[Summary — fact sheet]", contrib="[What I did {n}]", feature="[Key feature {n}]", feature_desc="[Description]", problem="[Problem]", solution="[Solution]",
+                team="[Team size] · [Role]", status="[Status]", platform="[Platform]", checked="[Checked on]", demo="[Demo link]", github="[GitHub link]"),
+        award_outcome_suffix="(OO Foundation, 2025.05)",
+        title_home="Gildong Hong — Portfolio", title_detail="Study Timer · Gildong Hong", title_list="Projects · Gildong Hong",
+    ),
+}
+
+
+def s(key):
+    return S[loc()][key]
+
+
+NAV_IDS = ["about", "projects", "activities", "awards", "society", "skills", "education", "connect"]
+
+# ───────────────────────────── content (fictional sample, proto/content.md) ─────────────────────────────
+NAME = {"ko": "홍길동", "en": "Gildong Hong"}
+ROLES = [
+    ("dev", {"ko": "AI·웹 개발", "en": "AI & web development"}),
+    ("education", {"ko": "AI·바이브코딩 교육", "en": "AI & vibe-coding education"}),
+    ("hackathon", {"ko": "해커톤 운영", "en": "Hackathon operations"}),
+]
+INTRO = {
+    "ko": "일상의 불편을 작은 서비스로 풀어내는 개발자입니다. AI와 웹으로 만들고, 학회에서 바이브코딩을 가르칩니다.",
+    "en": "I'm a developer who turns everyday inconveniences into small services. I build with AI and the web, and teach vibe coding in my university society.",
+}
+EMAIL, GITHUB, INSTA, DISCORD = "hong@example.com", "gaudium1257", "gildong.dev", "gildong"
+
+PROJECTS = [
+    dict(id="study-timer", kind="project", title={"ko": "스터디 타이머", "en": "Study Timer"},
+         tagline={"ko": "함께 공부하는 시간을 기록하는 웹앱", "en": "A web app that records time spent studying together"},
+         form="team", category="hackathon", start="2025-03", end="2025-06", live=True, featured=True,
+         tech=[("frontend", "Next.js"), ("backend", "Supabase")], motif="clock"),
+    dict(id="attendance", kind="project", title={"ko": "학회 출석 관리 서비스", "en": "Society Attendance Service"},
+         tagline={"ko": "학회 세션 출석을 QR로 기록", "en": "Records society session attendance by QR"},
+         form=None, category="club", start="2025-01", end="2025-02", live=False, featured=False,
+         tech=[("frontend", "React"), ("backend", "Firebase")], motif="grid"),
+    dict(id="lecture-bot", kind="project", title={"ko": "강의 요약 챗봇", "en": "Lecture Summary Chatbot"},
+         tagline={"ko": "강의 자료를 요약하고 질문에 답하는 챗봇", "en": "A chatbot that summarizes lecture materials and answers questions"},
+         form="personal", category=None, start="2024-09", end="2024-12", live=False, featured=False,
+         tech=[("backend", "FastAPI"), ("ai-ml", "OpenAI API")], motif="bubble"),
+]
+ACTIVITIES = [
+    dict(id="act-oo-hackathon", kind="activity", type="competition", title={"ko": "OO 해커톤 참가", "en": "OO Hackathon (participant)"},
+         org={"ko": "OO재단", "en": "OO Foundation"}, role={"ko": "프론트엔드", "en": "Frontend"}, start="2025-05"),
+    dict(id="act-startup-club", kind="activity", type="community", title={"ko": "교내 창업 동아리", "en": "Campus Startup Club"},
+         org={"ko": "한국대학교", "en": "Hankuk University"}, role={"ko": "기획", "en": "Planning"}, start="2024-03", end="2024-12"),
+]
+AWARDS = [
+    dict(id="award-oo-hackathon", kind="award", title={"ko": "OO 해커톤", "en": "OO Hackathon"}, prize={"ko": "대상", "en": "Grand Prize"},
+         org={"ko": "OO재단", "en": "OO Foundation"}, start="2025-05"),
+    dict(id="award-sw-contest", kind="award", title={"ko": "교내 SW 경진대회", "en": "Campus SW Contest"}, prize={"ko": "우수상", "en": "Excellence Award"},
+         org={"ko": "한국대학교", "en": "Hankuk University"}, start="2024-11"),
+]
+SOCIETY = dict(id="the-lab", kind="society", title="THE LAB",
+               desc={"ko": "AI 교육 · 바이브코딩 교육 · 해커톤 운영", "en": "AI education · Vibe-coding education · Hackathon operations"},
+               roles=[({"ko": "교육팀장", "en": "Head of Education"}, "2025-03", None),
+                      ({"ko": "교육팀원", "en": "Education team member"}, "2024-09", "2025-02")])
+EVENTS = [
+    dict(id="evt-ai-seminar", kind="event", type="seminar", title={"ko": "AI 세미나", "en": "AI Seminar"}, role={"ko": "발표", "en": "Speaker"}, start="2025-11"),
+    dict(id="evt-ai-hackathon", kind="event", type="hackathon", title={"ko": "교내 AI 해커톤 운영", "en": "Campus AI Hackathon operations"}, role={"ko": "운영총괄", "en": "Lead organizer"}, start="2025-08"),
+    dict(id="evt-vibe-intro", kind="event", type="education", title={"ko": "바이브코딩 입문 교육", "en": "Intro to Vibe Coding"}, role={"ko": "강사", "en": "Instructor"}, start="2025-03"),
+]
+SKILLS = [
+    ("frontend", ["Next.js", "React", "TypeScript"]),
+    ("backend", ["FastAPI", "Supabase", "Firebase"]),
+    ("ai-ml", ["OpenAI API"]),
+]
+EDU = dict(school={"ko": "한국대학교", "en": "Hankuk University"}, major={"ko": "컴퓨터공학과", "en": "Computer Science and Engineering"}, start="2024-03")
+EDGES = [("study-timer", "award-oo-hackathon"), ("study-timer", "act-oo-hackathon"), ("act-oo-hackathon", "award-oo-hackathon"), ("attendance", "the-lab")]
+
+INDEX = {x["id"]: x for x in PROJECTS + ACTIVITIES + AWARDS + EVENTS + [SOCIETY]}
+KIND_ORDER = ["project", "award", "activity", "event", "society"]
+
+
+def related(i):
+    out = [b if a == i else a for a, b in EDGES if i in (a, b)]
+    return sorted(out, key=lambda r: KIND_ORDER.index(INDEX[r]["kind"]))
+
+
+def title_of(it):
+    if it["kind"] == "award":
+        return f'{t(it["title"])} {t(it["prize"])}'
+    return t(it["title"])
+
+
+def ym(v):
+    y, m = v.split("-")[:2]
+    return f"{y}.{m}"
+
+
+def period(start, end=None, open_label=None):
+    if end is None and open_label is None:
+        return ym(start)
+    return f"{ym(start)} – {ym(end) if end else open_label}"
+
+
+def form_label(p):
+    parts = []
+    if p["form"]:
+        parts.append(s("form")[p["form"]])
+    if p["category"]:
+        parts.append(s("category")[p["category"]])
+    return " · ".join(parts)
+
+
+# ───────────────────────────── links ─────────────────────────────
+BOARD = {"home": "Main", "detail": "Project", "list": "Projects"}
+
+
+def page_href(page, lc=None, hash_=None):
+    lc = lc or loc()
+    if page == CTX["page"] and lc == loc():
+        return f"#{hash_}" if hash_ else ("#about" if page == "home" else "#main")
+    if MODE == "proto":
+        return f"../sys-{page}-{lc}/index.html" + (f"#{hash_}" if hash_ else "")
+    name = BOARD[page] if page == "home" or not CTX["mobile"] else f"{BOARD[page]}-mobile"
+    if page == "home" and CTX["mobile"]:
+        name = "Mobile"
+    return name + ("-en" if lc == "en" else "") + ".dc.html"
+
+
+def item_href(i):
+    it = INDEX[i]
+    if it["kind"] == "project":
+        return page_href("detail")  # the canvas has one detail sample (Study Timer)
+    target = "society" if it["kind"] == "society" else i
+    return page_href("home", hash_=target)
+
+
+# ───────────────────────────── shape vocabulary ─────────────────────────────
+HOV = "motion-safe:transition-transform motion-safe:duration-700 motion-safe:ease-snap"
+HOV5 = "motion-safe:transition-transform motion-safe:duration-500 motion-safe:ease-snap"
+FC = "forced-colors:bg-[CanvasText]"
+
+KEY = {
+    "dev": "size-3 rounded-full bg-primary",
+    "education": "size-3 bg-ink",
+    "hackathon": "tri size-3.5 bg-primary",
+    "seminar": "h-2 w-3.5 rounded-t-full bg-ink",
+    "study": "size-3 rounded-tl-full bg-primary",
+    "other": "size-3 rotate-45 scale-75 bg-ink",
+}
+KEY_DARK = {
+    "education": "size-3 bg-white",
+    "hackathon": "tri size-3.5 bg-primary-300",
+    "seminar": "h-2 w-3.5 rounded-t-full bg-white",
+}
+
+
+def key_glyph(kind, dark=False):
+    return f'<span aria-hidden="true" class="{cls("shrink-0", (KEY_DARK if dark else KEY)[kind], FC)}"></span>'
+
+
+def kind_mark(c, size="size-12"):
+    """48px collection emblem next to every h2 (64px on the list page). Percent geometry so it scales."""
+    base = f"relative {size} shrink-0 overflow-hidden motion-safe:reveal"
+    m = {
+        "projects": ("bg-ink", '<span class="absolute bottom-[8%] left-[8%] size-2/3 rounded-full bg-primary"></span><span class="absolute right-0 top-0 size-1/3 rounded-bl-full bg-primary-300"></span>'),
+        "activities": ("bg-primary-100", '<span class="tri absolute inset-x-[8%] bottom-0 top-[17%] bg-ink"></span>'),
+        "awards": ("grid place-items-center bg-ink", '<span class="grid size-2/3 place-items-center rounded-full bg-primary"><span class="size-[38%] rounded-full bg-white"></span></span>'),
+        "society": ("bg-white", '<span class="absolute left-0 top-0 size-[58%] bg-ink"></span><span class="absolute bottom-0 right-0 size-[58%] bg-primary"></span>'),
+        "skills": ("grid grid-cols-2 grid-rows-2", '<span class="rounded-br-full bg-ink"></span><span class="rounded-bl-full bg-primary"></span><span class="rounded-tr-full bg-primary-300"></span><span class="rounded-tl-full bg-primary-700"></span>'),
+        "education": ("bg-primary-50", '<span class="absolute inset-x-[8%] top-[17%] h-[42%] rounded-t-full bg-primary"></span><span class="absolute inset-x-[8%] bottom-[17%] h-[17%] bg-ink"></span><span class="absolute bottom-[33%] left-1/4 top-[58%] w-[12%] bg-ink"></span><span class="absolute bottom-[33%] right-1/4 top-[58%] w-[12%] bg-ink"></span>'),
+        "connect": ("", '<span class="absolute left-0 top-[17%] size-2/3 rounded-full bg-ink"></span><span class="absolute right-0 top-[17%] size-2/3 rounded-full bg-primary"></span>'),
+    }[c]
+    return f'<span aria-hidden="true" class="{cls(base, m[0])}">{m[1]}</span>'
+
+
+def kind_mark_sm(kind, dark=False, ref=None):
+    """14px mark of the target's collection, at the start of every relation link."""
+    if kind == "project":
+        return ('<span aria-hidden="true" class="relative size-3.5 shrink-0 bg-white"><span class="absolute inset-[3px] rounded-full bg-primary"></span></span>' if dark
+                else '<span aria-hidden="true" class="relative size-3.5 shrink-0 bg-ink"><span class="absolute inset-[3px] rounded-full bg-primary-300"></span></span>')
+    if kind == "activity":
+        return '<span aria-hidden="true" class="tri size-3.5 shrink-0 bg-ink"></span>'
+    if kind == "award":
+        return '<span aria-hidden="true" class="grid size-3.5 shrink-0 place-items-center rounded-full bg-award"><span class="size-1.5 rounded-full bg-white"></span></span>'
+    if kind == "society":
+        return '<span aria-hidden="true" class="relative size-3.5 shrink-0"><span class="absolute left-0 top-0 size-2 bg-ink"></span><span class="absolute bottom-0 right-0 size-2 bg-primary"></span></span>'
+    if kind == "event":
+        return key_glyph(INDEX[ref]["type"], dark)
+    raise KeyError(kind)
+
+
+def related_links(i, extra="", dark=False):
+    rel = related(i)
+    if not rel:
+        return ""
+    links = []
+    for r in rel:
+        it = INDEX[r]
+        color = "text-white focus-visible:outline-primary-300" if dark else ("text-award" if it["kind"] == "award" else "text-primary")
+        links.append(
+            f'<a href="{item_href(r)}" class="{cls("inline-flex items-center gap-1.5 font-semibold underline-offset-4 hover:underline", color)}">'
+            f'{kind_mark_sm(it["kind"], dark, r)}<span class="sr-only">{s("kind")[it["kind"]]}: </span>{esc(title_of(it))}</a>'
+        )
+    return f'<p class="{cls("flex flex-wrap items-center gap-x-3 gap-y-0.5 text-ui leading-[1.7]", "text-primary-200" if dark else "text-muted", extra)}"><span>{s("related")}</span>{"".join(links)}</p>'
+
+
+def activity_thumb(typ, size="size-14 sm:size-16"):
+    inner = {
+        "competition": f'<span class="tri absolute inset-x-[12%] bottom-0 top-[19%] bg-primary {HOV5} motion-safe:group-hover:-translate-y-[8%]"></span><span class="absolute right-[9%] top-[9%] size-[19%] rounded-full bg-ink"></span>',
+        "community": f'<span class="absolute bottom-0 left-0 size-1/2 bg-ink {HOV5} motion-safe:group-hover:translate-x-1/4"></span><span class="absolute right-0 top-0 size-1/2 rounded-full bg-primary-300"></span><span class="absolute bottom-0 right-0 size-1/2 rounded-tl-full bg-primary"></span>',
+    }[typ]
+    return f'<span aria-hidden="true" class="relative {size} shrink-0 overflow-hidden bg-white">{inner}</span>'
+
+
+def medal_thumb(idx, size="size-14 sm:size-16"):
+    bg, bar = ("bg-ink", "bg-primary-300") if idx % 2 == 0 else ("bg-primary-100", "bg-ink")
+    return (f'<span aria-hidden="true" class="relative grid {size} shrink-0 place-items-center overflow-hidden {bg}">'
+            f'<span class="grid size-[69%] place-items-center rounded-full bg-primary {HOV5} motion-safe:group-hover:scale-110"><span class="size-[36%] rounded-full bg-white"></span></span>'
+            f'<span class="absolute inset-x-0 bottom-0 h-[9%] {bar}"></span></span>')
+
+
+def item_thumb(i, size="size-14 sm:size-16"):
+    it = INDEX[i]
+    if it["kind"] == "award":
+        return medal_thumb(AWARDS.index(it), size)
+    return activity_thumb(it["type"], size)
+
+
+# ───────────────────────────── project covers ─────────────────────────────
+PAL = {
+    "primary": dict(bg="bg-primary", a="bg-white", b="bg-ink", c="bg-primary-300", c2="bg-primary-200", c3="bg-primary-700"),
+    "tint": dict(bg="bg-primary-100", a="bg-ink", b="bg-primary", c="bg-primary-300", c2="bg-primary-200", c3="bg-primary-700"),
+    "ink": dict(bg="bg-ink", a="bg-primary", b="bg-primary-300", c="bg-white", c2="bg-primary-200", c3="bg-primary-700"),
+}
+SIZES = {
+    "feature": "aspect-[16/9] sm:aspect-[16/10] lg:aspect-auto lg:min-h-[400px]",
+    "card": "aspect-[3/1] sm:aspect-auto sm:min-h-[220px]",
+    "hero": "aspect-[16/10] lg:aspect-[4/3]",
+    "thumb": "aspect-[5/2] sm:aspect-[4/3]",
+    "mini": "size-20",
+}
+
+
+def palette_of(p):
+    """Featured = primary; the rest take tint / ink / primary in newest-first order."""
+    if p["featured"]:
+        return "primary"
+    rest = [x for x in PROJECTS if not x["featured"]]
+    return ["tint", "ink", "primary"][rest.index(p) % 3]
+
+
+def m_clock(P, mini, pop):
+    loop = (lambda c: "") if mini else (lambda c: c)
+    ticks = "" if mini else (
+        f'<div class="absolute left-1/2 top-[6%] h-[7%] w-[3%] -translate-x-1/2 {P["b"]}"></div>'
+        f'<div class="absolute bottom-[6%] left-1/2 h-[7%] w-[3%] -translate-x-1/2 {P["b"]}"></div>'
+        f'<div class="absolute left-[6%] top-1/2 h-[3%] w-[7%] -translate-y-1/2 {P["b"]}"></div>'
+        f'<div class="absolute right-[6%] top-1/2 h-[3%] w-[7%] -translate-y-1/2 {P["b"]}"></div>')
+    studiers = "" if mini else (
+        f'<div class="{cls("absolute bottom-[12%] right-[8%] flex w-[34%] items-end gap-[6%]", pop(2))}">'
+        f'<div class="aspect-square flex-1 rounded-full {P["a"]} motion-safe:animate-hop motion-safe:anim-offset-22"></div>'
+        f'<div class="aspect-square flex-1 rounded-full {P["c"]} motion-safe:animate-hop motion-safe:anim-offset-14"></div>'
+        f'<div class="aspect-square flex-1 rounded-full {P["b"]} motion-safe:animate-hop motion-safe:anim-offset-6"></div></div>'
+        f'<div class="absolute bottom-[8%] right-[8%] h-[4%] w-[34%] {P["a"]}"></div>')
+    return (
+        f'<div class="{cls("absolute left-[8%] top-[12%] aspect-square h-[76%]", pop(0))}">'
+        f'<div class="size-full rounded-full {P["a"]} {HOV} motion-safe:group-hover:-translate-x-[6%]">'
+        f'<div class="{cls("absolute inset-0", loop("motion-safe:animate-sweep"))}"><div class="absolute left-1/2 top-0 size-1/2 rounded-tr-full {P["c"]}"></div></div>'
+        f'{ticks}<div class="absolute left-1/2 top-1/2 size-[12%] -translate-1/2 rounded-full {P["b"]}"></div></div></div>'
+        f'<div class="{cls("absolute right-[9%] top-0 aspect-[2/1] w-[26%]", pop(1))}"><div class="size-full rounded-b-full {P["b"]} {HOV} motion-safe:group-hover:translate-y-[12%]"></div></div>'
+        f'{studiers}'
+    )
+
+
+def m_grid(P, mini, pop):
+    fin = f'<div class="col-span-2 row-span-2 grid place-items-center {P["a"]}"><div class="grid size-[64%] place-items-center {P["bg"]}"><div class="size-1/2 {P["a"]}"></div></div></div>'
+    blink = (lambda o: "") if mini else (lambda o: f"motion-safe:animate-blink-step motion-safe:anim-offset-{o}")
+    grid = (
+        f'<div class="{cls("absolute left-1/2 top-1/2 aspect-square h-[72%] -translate-1/2", pop(0))}">'
+        f'<div class="grid size-full grid-cols-5 grid-rows-5 gap-[5%] {HOV} motion-safe:group-hover:rotate-90">'
+        f'{fin}<div class="{P["a"]}"></div>{fin}<div class="col-start-3 row-start-2"></div>'
+        f'<div class="{cls(P["b"], blink(8))}"></div><div></div><div class="rounded-full {P["b"]}"></div><div class="{P["a"]}"></div><div></div>'
+        f'{fin}<div class="{P["b"]}"></div><div></div><div class="{cls(P["a"], blink(2))}"></div><div></div><div class="{P["a"]}"></div><div class="rounded-tl-full {P["b"]}"></div>'
+        f'</div></div>')
+    scan = "" if mini else f'<div class="absolute inset-x-[14%] top-[12%] h-[3%] {P["b"]} [--scan-to:2400%] motion-safe:animate-scan-step motion-safe:anim-offset-17"></div>'
+    return grid + scan
+
+
+def m_bubble(P, mini, pop):
+    st = (lambda o: "") if mini else (lambda o: f"motion-safe:animate-stretch-step motion-safe:anim-offset-{o}")
+    bars = (
+        f'<div class="{cls("absolute left-[10%] top-[16%] flex h-[34%] w-[52%] flex-col justify-between", pop(1))}">'
+        f'<div class="{cls("h-[16%] w-full origin-left", P["b"], st(20))}"></div>'
+        f'<div class="{cls("h-[16%] w-[70%] origin-left", P["c2"], st(12))}"></div>'
+        f'<div class="{cls("h-[16%] w-[86%] origin-left", P["b"], st(9))}"></div>'
+        f'<div class="{cls("h-[16%] w-[56%] origin-left", P["c2"], st(4))}"></div></div>')
+    if mini:
+        bars = (f'<div class="absolute left-[10%] top-[16%] flex h-[34%] w-[52%] flex-col justify-between">'
+                f'<div class="h-[22%] w-full {P["b"]}"></div><div class="h-[22%] w-[70%] {P["c2"]}"></div><div class="h-[22%] w-[86%] {P["b"]}"></div></div>')
+    bubble = (
+        f'<div class="{cls("absolute bottom-[12%] right-[10%] aspect-square h-[52%]", pop(0))}">'
+        f'<div class="relative size-full rounded-full rounded-bl-none {P["a"]} {HOV} motion-safe:group-hover:-translate-x-[10%] motion-safe:group-hover:-translate-y-[6%]">'
+        f'<div class="absolute inset-x-[24%] top-[36%] h-[10%] bg-white"></div><div class="absolute left-[24%] top-[54%] h-[10%] w-[34%] bg-white"></div></div></div>')
+    corner = f'<div class="{cls("absolute bottom-0 left-0 aspect-square h-[30%]", pop(2))}"><div class="size-full rounded-tr-full {P["c3"]}"></div></div>'
+    return bars + bubble + corner
+
+
+MOTIFS = {"clock": m_clock, "grid": m_grid, "bubble": m_bubble}
+
+
+def cover(p, size, gate=None, extra=""):
+    P = PAL[palette_of(p)]
+    mini = size == "mini"
+    # The detail hero cover pops its modules in on load (same easing as the home poster)
+    pop = (lambda d: f"motion-safe:animate-pop motion-safe:anim-delay-{d}" if d else "motion-safe:animate-pop") if size == "hero" else (lambda d: "")
+    inner = MOTIFS[p["motif"]](P, mini, pop)
+    gate_attr = gate_attrs(gate) if gate else ""
+    return f'<div aria-hidden="true"{gate_attr} class="{cls("relative overflow-hidden", P["bg"], SIZES[size], "play-gate" if gate else "", extra)}">{inner}</div>'
+
+
+def gate_attrs(name):
+    return A("data-gate", f'data-gate="{name}" data-inview="{{{{gates.{name}}}}}"')
+
+
+# ───────────────────────────── layout ─────────────────────────────
+def nav_attrs(i, variant):
+    cur_page = CTX["page"]
+    if cur_page != "home":
+        # sub-pages: 프로젝트 is the current section, statically
+        return ' data-current="true" aria-current="true"' if i == "projects" else ""
+    proto = f'data-nav="{i}"' + (' data-current="true" aria-current="location"' if i == "about" else "")
+    dc = f'data-nav="{i}" data-current="{{{{nav.{i}.cur}}}}" aria-current="{{{{nav.{i}.aria}}}}" onClick="{{{{nav.{i}.click}}}}"'
+    return A(proto, dc)
+
+
+def nav_link(i, variant):
+    href = page_href("home", hash_=i) if CTX["page"] != "home" else f"#{i}"
+    label = s("nav")[i]
+    if variant == "bar":
+        return (f'<li><a href="{href}"{nav_attrs(i, variant)} class="group relative flex h-16 items-center px-2 text-ui font-medium text-muted transition-colors hover:text-ink data-[current=true]:text-ink xl:px-3">{label}'
+                f'<span aria-hidden="true" class="absolute inset-x-2 bottom-0 z-10 h-1 origin-left scale-x-0 bg-primary group-data-[current=true]:scale-x-100 motion-safe:transition-transform motion-safe:duration-300 xl:inset-x-3"></span></a></li>')
+    return (f'<li><a href="{href}"{nav_attrs(i, variant)} class="group relative flex h-9 items-center justify-center bg-white text-sm font-medium text-muted transition-colors hover:text-ink data-[current=true]:text-ink md:h-11 md:text-ui short:h-10 short:whitespace-nowrap short:px-3">{label}'
+            f'<span aria-hidden="true" class="absolute inset-x-3 bottom-0 z-10 h-1 scale-x-0 bg-primary group-data-[current=true]:scale-x-100 motion-safe:transition-transform motion-safe:duration-300"></span></a></li>')
+
+
+def motion_toggle():
+    labels = json.dumps({"pause": s("motion_pause"), "play": s("motion_play")}, ensure_ascii=False)
+    attrs = A(f'data-motion-toggle data-labels=\'{labels}\' aria-pressed="false" aria-label="{s("motion_pause")}" title="{s("motion_pause")}"',
+              'aria-pressed="{{motion.pressed}}" aria-label="{{motion.label}}" title="{{motion.label}}" onClick="{{motion.toggle}}"')
+    return (f'<button type="button"{attrs} class="group ml-auto grid size-8 shrink-0 place-items-center border border-line text-ink transition-colors hover:border-ink motion-reduce:hidden lg:ml-3">'
+            f'<span aria-hidden="true" class="flex gap-[3px] group-aria-pressed:hidden"><span class="h-3 w-[3px] bg-current"></span><span class="h-3 w-[3px] bg-current"></span></span>'
+            f'<span aria-hidden="true" class="tri hidden size-3 rotate-90 bg-current group-aria-pressed:block"></span></button>')
+
+
+def lang_toggle():
+    out = []
+    for lc, lab in (("ko", "KO"), ("en", "EN")):
+        cur = ' aria-current="page"' if lc == loc() else ""
+        out.append(f'<a href="{page_href(CTX["page"], lc)}" hreflang="{lc}" lang="{lc}"{cur} class="grid place-items-center px-2.5 text-ink transition-colors hover:bg-primary-50 aria-[current=page]:bg-ink aria-[current=page]:text-white">{lab}</a>')
+    return f'<div role="group" aria-label="{s("lang_label")}" class="flex h-8 shrink-0 border border-ink text-sm font-semibold motion-reduce:ml-auto lg:motion-reduce:ml-3">{"".join(out)}</div>'
+
+
+def header():
+    logo_href = "#about" if CTX["page"] == "home" else page_href("home")
+    logo = (f'<a href="{logo_href}" aria-label="{s("logo_label")}" class="group/logo flex shrink-0 items-center gap-2.5">'
+            f'<span aria-hidden="true" class="grid size-7 grid-cols-2 grid-rows-2">'
+            f'<span class="rounded-tl-full bg-primary motion-safe:transition-transform motion-safe:duration-500 motion-safe:group-hover/logo:rotate-90"></span>'
+            f'<span class="bg-ink"></span>'
+            f'<span class="rounded-full bg-primary-300 motion-safe:transition-transform motion-safe:duration-500 motion-safe:group-hover/logo:scale-75"></span>'
+            f'<span class="tri bg-ink motion-safe:transition-transform motion-safe:duration-500 motion-safe:group-hover/logo:-translate-y-0.5"></span></span>'
+            f'<span class="text-lg font-bold tracking-tight text-ink">{t(NAME)}</span></a>')
+    bar = "".join(nav_link(i, "bar") for i in NAV_IDS)
+    cell = "".join(nav_link(i, "cell") for i in NAV_IDS)
+    return (
+        '<header class="sticky top-0 z-50 bg-white after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-line">'
+        f'<div class="shell flex h-11 items-center gap-3 lg:h-16 lg:gap-4">{logo}'
+        f'<nav aria-label="{s("nav_label")}" class="ml-auto hidden lg:block"><ul class="flex">{bar}</ul></nav>'
+        f'{motion_toggle()}{lang_toggle()}</div>'
+        f'<nav aria-label="{s("nav_label")}" class="border-t border-line lg:hidden"><ul class="grid grid-cols-4 gap-px bg-line md:grid-cols-8 short:flex short:overflow-x-auto short:bg-white">{cell}</ul></nav>'
+        '</header>'
+    )
+
+
+PLINTH = [
+    ("bg-white", '<div class="absolute inset-0 rounded-tl-full bg-ink motion-safe:animate-quarter-step motion-safe:anim-offset-93"></div>'),
+    ("bg-primary", '<div class="absolute inset-[20%] rounded-full bg-white"></div>'),
+    ("bg-primary-50", '<div class="tri absolute inset-x-[8%] bottom-0 top-[12%] bg-primary-300"></div>'),
+    ("bg-ink", '<div class="absolute inset-x-0 bottom-0 aspect-[2/1] rounded-t-full bg-primary-300"></div>'),
+    ("bg-white", '<div class="absolute inset-[10%] overflow-hidden rounded-full bg-primary"><div class="absolute inset-y-0 left-0 w-1/2 bg-ink"></div></div>'),
+    ("grid place-items-center bg-primary-200", '<div class="size-[44%] bg-ink motion-safe:animate-diamond-step motion-safe:anim-offset-39"></div>'),
+    ("bg-white", '<div class="tri-corner absolute inset-0 bg-primary"></div>'),
+    ("bg-primary-100", '<div class="absolute inset-x-0 top-0 aspect-[2/1] rounded-b-full bg-ink"></div>'),
+    ("bg-primary", '<div class="absolute inset-0 rounded-br-full bg-primary-300"></div>'),
+    ("bg-white", '<div class="absolute inset-[22%] rounded-full bg-ink"></div>'),
+    ("bg-primary-50", '<div class="absolute inset-x-[14%] top-[28%] h-[16%] bg-primary"></div><div class="absolute inset-x-[14%] bottom-[28%] h-[16%] bg-ink"></div>'),
+    ("bg-ink", '<div class="tri absolute inset-x-[16%] bottom-0 top-[20%] bg-primary"></div>'),
+    ("bg-white", '<div class="absolute inset-0 rounded-tr-full bg-primary-300"></div>'),
+    ("bg-primary-700", '<div class="absolute inset-[24%] rounded-full bg-primary-200"></div>'),
+    ("bg-primary-50", '<div class="absolute inset-x-[12%] bottom-0 aspect-[2/1] rounded-t-full bg-ink"></div>'),
+    ("bg-primary", '<div class="tri-corner absolute inset-0 rotate-180 bg-primary-300"></div>'),
+    ("bg-white", '<div class="absolute left-[10%] top-1/2 size-[38%] -translate-y-1/2 rounded-full bg-ink"></div><div class="absolute right-[10%] top-1/2 size-[38%] -translate-y-1/2 rounded-full bg-primary"></div>'),
+    ("grid place-items-center bg-primary-300", '<div class="size-1/2 bg-ink"></div>'),
+    ("bg-white", '<div class="absolute inset-x-0 top-0 aspect-[2/1] rounded-b-full bg-primary"></div>'),
+    ("bg-ink", '<div class="absolute inset-0 rounded-bl-full bg-primary"></div>'),
+    ("bg-primary-50", '<div class="absolute inset-[16%] rounded-full bg-primary-300"></div>'),
+    ("bg-primary", '<div class="absolute inset-x-0 bottom-0 aspect-[2/1] rounded-t-full bg-white"></div>'),
+    ("bg-white", '<div class="tri absolute inset-x-[10%] bottom-0 top-[14%] bg-ink"></div>'),
+    ("bg-primary-200", '<div class="absolute inset-0 rounded-tl-full bg-ink"></div>'),
+]
+
+
+def footer():
+    mods = []
+    for n, (bg, shape) in enumerate(PLINTH, 1):
+        hide = "hidden sm:block" if 9 <= n <= 12 else ("hidden lg:block" if n >= 13 else "")
+        mods.append(f'<div class="{cls("relative aspect-square overflow-hidden", bg, hide)}">{shape}</div>')
+    top = "#about" if CTX["page"] == "home" else "#main"
+    glyphs = "".join(key_glyph(k) for k in ("dev", "education", "hackathon", "seminar"))
+    return (
+        '<footer class="border-t border-line">'
+        f'<div class="shell pt-6"><div aria-hidden="true"{gate_attrs("plinth")} class="play-gate grid grid-cols-8 sm:grid-cols-12 lg:grid-cols-24">{"".join(mods)}</div></div>'
+        f'<div class="shell flex flex-wrap items-center gap-x-6 gap-y-3 py-4 text-sm text-muted">'
+        f'<span aria-hidden="true" class="flex items-end gap-1">{glyphs}</span><span>{s("footer")}</span>'
+        f'<a href="{top}" class="ml-auto inline-flex min-h-6 items-center font-semibold text-ink hover:text-primary">{s("back_to_top")}<span aria-hidden="true">&nbsp;↑</span></a></div>'
+        '</footer>'
+    )
+
+
+def copy_button(key, value):
+    pre, post = s(f"copy_{key}_sr")
+    status = s(f"copied_{key}")
+    data = json.dumps({"idle": s("copy"), "done": s("copied"), "fail": s("copy_failed"), "status": status}, ensure_ascii=False)
+    attrs = A(f"data-copy=\"{value}\" data-copy-text='{data}'", f'data-done="{{{{copy.{key}.done}}}}" onClick="{{{{copy.{key}.go}}}}"')
+    label = A("data-copy-label", "")
+    text = s("copy") if MODE == "proto" else f"{{{{copy.{key}.label}}}}"
+    pre_s = f'<span class="sr-only">{pre}</span>' if pre else ""
+    post_s = f'<span class="sr-only">{post}</span>' if post else ""
+    return (f'<button type="button"{attrs} class="relative inline-flex h-7 shrink-0 items-center gap-1.5 border border-line bg-white px-2 text-sm font-semibold text-ink-2 transition-colors after:absolute after:-inset-2 hover:border-ink hover:text-ink data-[done=true]:border-live data-[done=true]:text-live">'
+            '<span aria-hidden="true" class="grid size-3 grid-cols-2 gap-px"><span class="bg-current"></span><span class="bg-current"></span><span class="bg-current"></span><span class="bg-current opacity-30"></span></span>'
+            f'{pre_s}<span{label}>{text}</span>{post_s}</button>')
+
+
+def status_region():
+    if MODE == "proto":
+        return '<p role="status" aria-live="polite" class="sr-only" data-copy-status></p>'
+    return '<p role="status" aria-live="polite" class="sr-only">{{status}}</p>'
+
+
+def ext(href, text, extra=""):
+    return f'<a href="{href}" target="_blank" rel="noopener noreferrer" class="{extra}">{text}<span class="sr-only"> {s("new_tab")}</span></a>'
+
+
+def section_heading(sid, count=None, more=None):
+    c = f'<span class="pt-1 text-ui tabular-nums text-muted">{s("count").format(n=count)}</span>' if count else ""
+    m = (f'<a href="{more}" aria-label="{s("view_all_label")}" class="ml-auto inline-flex min-h-6 items-center text-ui font-semibold text-primary underline-offset-4 hover:underline">'
+         f'{s("view_all")}<span aria-hidden="true">&nbsp;→</span></a>') if more else ""
+    return (f'<div class="flex flex-wrap items-center gap-x-4 gap-y-2">{kind_mark(sid)}'
+            f'<h2 id="{sid}-title" class="text-h2-sm font-bold text-ink lg:text-h2">{s("nav")[sid]}</h2>{c}{m}</div>')
+
+
+SEC = "scroll-mt-32 md:scroll-mt-24 lg:scroll-mt-20"
+
+
+# ───────────────────────────── home ─────────────────────────────
+def poster():
+    pop = "motion-safe:animate-pop"
+    return (
+        '<div class="group/poster mt-6 w-full max-w-[560px] lg:col-span-6 lg:col-start-7 lg:row-span-2 lg:row-start-1 lg:mt-0 lg:justify-self-end">'
+        '<div class="grid aspect-square grid-cols-5 grid-rows-5">'
+        f'<div aria-hidden="true" class="relative overflow-hidden {pop} motion-safe:anim-delay-4"><div class="absolute inset-0 rounded-tl-full bg-ink motion-safe:animate-quarter-step motion-safe:anim-offset-93"></div></div>'
+        f'<div aria-hidden="true" class="relative grid place-items-center {pop} motion-safe:anim-delay-3"><div class="size-[62%] rounded-full bg-primary-300 {HOV} motion-safe:group-hover/poster:translate-x-1/3"></div></div>'
+        f'<div aria-hidden="true" class="relative col-span-2 overflow-hidden {pop}"><div class="absolute inset-0 rounded-t-full bg-primary"></div>'
+        '<div class="absolute bottom-0 left-1/2 aspect-square h-[46%] -translate-x-1/2 rounded-full bg-primary-200 motion-safe:animate-sun-step motion-safe:anim-offset-33"></div></div>'
+        f'<div aria-hidden="true" class="relative overflow-hidden bg-primary-50 {pop} motion-safe:anim-delay-1"><div class="tri-corner absolute inset-0 bg-primary-400 {HOV} motion-safe:group-hover/poster:-translate-x-1/4"></div></div>'
+        f'<div aria-hidden="true" class="relative col-span-2 row-span-2 overflow-hidden bg-primary-50 {pop} motion-safe:anim-delay-2"><div class="absolute inset-[6%] overflow-hidden rounded-full bg-primary {HOV} motion-safe:group-hover/poster:-rotate-45"><div class="absolute inset-y-0 left-0 w-1/2 bg-ink"></div></div></div>'
+        f'<div role="img" aria-label="{s("photo_label")}" class="relative col-span-3 col-start-3 row-span-4 row-start-2 overflow-hidden bg-primary-100">'
+        '<div aria-hidden="true" class="absolute left-1/2 top-[20%] aspect-square w-[34%] -translate-x-1/2 rounded-full bg-primary-300"></div>'
+        '<div aria-hidden="true" class="absolute -bottom-px left-1/2 aspect-[2/1] w-[78%] -translate-x-1/2 rounded-t-full bg-primary-300"></div>'
+        f'<span class="absolute left-3 top-3 bg-white px-2 py-1 text-sm font-medium text-ink-2">{s("photo_tag")}</span></div>'
+        f'<div aria-hidden="true" class="relative col-start-1 row-start-4 overflow-hidden {pop} motion-safe:anim-delay-3"><div class="tri absolute inset-x-[4%] bottom-0 top-[8%] bg-primary-300 {HOV} motion-safe:group-hover/poster:-translate-y-[8%]"></div></div>'
+        f'<div aria-hidden="true" class="relative col-start-2 row-start-4 grid place-items-center bg-primary-200 {pop} motion-safe:anim-delay-1"><div class="size-[44%] bg-ink motion-safe:animate-diamond-step motion-safe:anim-offset-39"></div></div>'
+        f'<div aria-hidden="true" class="relative col-span-2 col-start-1 row-start-5 overflow-hidden bg-ink {pop} motion-safe:anim-delay-2"><div class="absolute inset-y-0 left-0 w-1/2 motion-safe:animate-slide-step motion-safe:anim-offset-27"><div class="absolute inset-0 rounded-t-full bg-primary-300"></div></div></div>'
+        '</div></div>'
+    )
+
+
+LINK_U = "text-ink underline decoration-primary-300 decoration-2 underline-offset-4 hover:decoration-primary"
+
+
+def fact_row(label, dd, dd_cls="text-ink"):
+    return (f'<div class="grid grid-cols-[6.5rem_minmax(0,1fr)] items-center gap-x-4 py-2.5 lg:py-2">'
+            f'<dt class="flex items-center gap-2 text-muted"><span aria-hidden="true" class="size-2 shrink-0 bg-primary"></span>{label}</dt>'
+            f'<dd class="{dd_cls}">{dd}</dd></div>')
+
+
+def hero():
+    legend = "".join(f'<li class="flex items-center gap-2">{key_glyph(k)}{t(lbl)}</li>' for k, lbl in ROLES)
+    if loc() == "ko":
+        h1 = (f'<div class="mt-4 flex flex-wrap items-baseline gap-x-4 gap-y-1 motion-safe:animate-enter motion-safe:anim-delay-1 lg:mt-7">'
+              f'<h1 id="about-title" class="text-name-sm font-bold text-ink sm:text-7xl lg:text-name">{NAME["ko"]}</h1>'
+              f'<p lang="en" class="text-ui text-muted">{NAME["en"]}</p></div>')
+    else:
+        h1 = (f'<div class="mt-4 flex flex-wrap items-baseline gap-x-4 gap-y-1 motion-safe:animate-enter motion-safe:anim-delay-1 lg:mt-7">'
+              f'<h1 id="about-title" class="text-name-en-sm font-bold text-ink sm:text-6xl lg:text-name-en">{NAME["en"]}</h1>'
+              f'<p lang="ko" class="text-ui text-muted">{NAME["ko"]}</p></div>')
+    f = s("facts")
+    facts = (
+        fact_row(f["affil"], s("affil"))
+        + fact_row(f["society"], f'<a href="#society" class="{LINK_U}">{s("society_role")}</a>', "")
+        + fact_row(f["email"], f'<a href="mailto:{EMAIL}" class="{LINK_U} wrap-anywhere">{EMAIL}</a>{copy_button("email", EMAIL)}', "flex flex-wrap items-center gap-x-3 gap-y-1")
+        + fact_row(f["github"], ext(f"https://github.com/{GITHUB}", f"github.com/{GITHUB}", f"{LINK_U} wrap-anywhere"), "")
+    )
+    ctas = (
+        f'<a href="#projects" class="group inline-flex h-12 items-center gap-3 bg-ink pl-5 pr-4 text-ui font-semibold text-white transition-colors hover:bg-primary">{s("cta_projects")}'
+        '<span aria-hidden="true" class="relative size-4"><span class="absolute inset-0 rounded-full bg-primary-300 motion-safe:transition-transform motion-safe:duration-300 motion-safe:group-hover:scale-75"></span></span></a>'
+        f'<a href="#connect" class="group inline-flex h-12 items-center gap-3 border border-ink px-5 text-ui font-semibold text-ink transition-colors hover:bg-primary-50">{s("cta_contact")}'
+        '<span aria-hidden="true" class="size-3 bg-ink motion-safe:transition-transform motion-safe:duration-300 motion-safe:group-hover:rotate-45"></span></a>'
+    )
+    return (
+        f'<section id="about" aria-labelledby="about-title" class="{SEC}">'
+        '<div class="shell grid gap-x-12 pb-10 pt-6 lg:grid-cols-12 lg:grid-rows-[auto_1fr] lg:pb-16 lg:pt-14">'
+        f'<div class="lg:col-span-6"><ul class="{cls("flex flex-wrap gap-x-5 gap-y-2 text-ui font-medium text-ink-2 motion-safe:animate-enter", "lg:gap-x-4 lg:text-sm" if loc() == "en" else "")}">{legend}</ul>{h1}</div>'
+        f'{poster()}'
+        '<div class="mt-7 lg:col-span-6 lg:row-start-2 lg:mt-8 lg:self-end">'
+        f'<p class="max-w-[34rem] text-pretty text-lg leading-[1.75] text-ink-2 motion-safe:animate-enter motion-safe:anim-delay-2 lg:text-lead">{t(INTRO)}</p>'
+        f'<dl class="mt-7 max-w-[34rem] divide-y divide-line border-y border-line text-ui lg:mt-6 motion-safe:animate-enter motion-safe:anim-delay-3">{facts}</dl>'
+        f'<div class="mt-7 flex flex-wrap gap-3 motion-safe:animate-enter motion-safe:anim-delay-4">{ctas}</div>'
+        '</div></div></section>'
+    )
+
+
+def chips(items, extra=""):
+    return f'<ul class="{cls("flex flex-wrap gap-1.5", extra)}">' + "".join(f'<li class="border border-line px-2 text-sm text-ink-2">{esc(x)}</li>' for x in items) + "</ul>"
+
+
+STRETCH = "after:absolute after:inset-0 hover:text-primary focus-visible:outline-none"
+CARD_FOCUS = "has-[[data-stretch]:focus-visible]:outline-2 has-[[data-stretch]:focus-visible]:outline-offset-2 has-[[data-stretch]:focus-visible]:outline-primary"
+
+
+def live_badge():
+    return f'<span class="inline-flex items-center gap-1.5 text-live"><span aria-hidden="true" class="size-2 rounded-full bg-live {FC}"></span>{s("live")}</span>'
+
+
+def project_feature(p):
+    tech = [x for _, x in p["tech"]]
+    dlw = "grid-cols-[3.5rem_minmax(0,1fr)]" if loc() == "ko" else "grid-cols-[4.5rem_minmax(0,1fr)]"
+    badges = (live_badge() if p["live"] else "") + f'<span class="bg-primary-50 px-2 py-0.5 text-primary-700">{s("featured")}</span>'
+    return (
+        f'<article class="group relative mt-6 grid border border-line transition-colors hover:border-ink {CARD_FOCUS} lg:grid-cols-12">'
+        f'{cover(p, "feature", gate="feature", extra="lg:col-span-7")}'
+        '<div class="flex flex-col p-5 sm:p-8 lg:col-span-5 lg:p-10">'
+        f'<div class="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm font-semibold">{badges}</div>'
+        f'<h3 class="mt-4 text-h2-sm font-bold text-ink"><a href="{item_href(p["id"])}" data-stretch class="{STRETCH}">{t(p["title"])}</a></h3>'
+        f'<p class="mt-2 text-base leading-[1.7] text-ink-2">{t(p["tagline"])}</p>'
+        f'<dl class="mt-6 grid {dlw} gap-y-2.5 text-ui">'
+        f'<dt class="text-muted">{s("f_form")}</dt><dd class="text-ink">{form_label(p)}</dd>'
+        f'<dt class="text-muted">{s("f_period")}</dt><dd class="tabular-nums text-ink">{period(p["start"], p["end"])}</dd>'
+        f'<dt class="text-muted">{s("f_tech")}</dt><dd>{chips(tech)}</dd></dl>'
+        f'{related_links(p["id"], "relative z-10 mt-5 border-t border-line pt-4 lg:mt-auto")}'
+        '</div></article>'
+    )
+
+
+def project_card(p, gate):
+    tech = [x for _, x in p["tech"]]
+    return (
+        f'<article class="group relative grid border border-line transition-colors hover:border-ink {CARD_FOCUS} sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">'
+        f'{cover(p, "card", gate=gate)}'
+        '<div class="flex flex-col p-5 sm:p-6">'
+        f'<p class="text-ui font-semibold text-muted">{form_label(p)} · <span class="tabular-nums">{period(p["start"], p["end"])}</span></p>'
+        f'<h3 class="mt-2 text-xl font-bold tracking-tight text-ink"><a href="{item_href(p["id"])}" data-stretch class="{STRETCH}">{t(p["title"])}</a></h3>'
+        f'<p class="mt-1.5 text-ui text-ink-2">{t(p["tagline"])}</p>'
+        f'{chips(tech, "mt-4 sm:mt-auto sm:pt-4")}'
+        f'{related_links(p["id"], "relative z-10 mt-3")}'
+        '</div></article>'
+    )
+
+
+def projects_section():
+    feat = next(p for p in PROJECTS if p["featured"])
+    rest = [p for p in PROJECTS if not p["featured"]][:2]
+    cards = "".join(project_card(p, f"card{n}") for n, p in enumerate(rest, 1))
+    return (
+        f'<section id="projects" aria-labelledby="projects-title" class="{SEC} border-t border-line"><div class="shell py-8 sm:py-10 lg:py-12">'
+        f'{section_heading("projects", count=len(PROJECTS), more=page_href("list"))}'
+        f'{project_feature(feat)}<div class="mt-6 grid gap-6 lg:grid-cols-2">{cards}</div></div></section>'
+    )
+
+
+def entry_row(it, thumb):
+    if it["kind"] == "award":
+        h3 = f'{t(it["title"])} <span class="text-award">{t(it["prize"])}</span>'
+        sub = t(it["org"])
+    else:
+        h3 = t(it["title"])
+        sub = f'{t(it["org"])} · {t(it["role"])}'
+    return (
+        f'<li id="{it["id"]}" class="group flex scroll-mt-36 gap-4 bg-surface p-4 sm:gap-5 sm:p-5 lg:scroll-mt-24">{thumb}'
+        '<div class="min-w-0 flex-1"><div class="flex flex-wrap items-baseline justify-between gap-x-4">'
+        f'<h3 class="text-lg font-bold text-ink">{h3}</h3><span class="text-ui tabular-nums text-muted">{period(it["start"], it.get("end"))}</span></div>'
+        f'<p class="mt-0.5 text-ui text-ink-2">{sub}</p>{related_links(it["id"], "mt-2")}</div></li>'
+    )
+
+
+def activities_awards():
+    acts = "".join(entry_row(a, activity_thumb(a["type"])) for a in ACTIVITIES[:3])
+    aws = "".join(entry_row(a, medal_thumb(n)) for n, a in enumerate(AWARDS[:3]))
+    return (
+        '<div class="border-t border-line"><div class="shell grid gap-x-12 gap-y-10 py-8 sm:py-10 lg:grid-cols-2 lg:py-12">'
+        f'<section id="activities" aria-labelledby="activities-title" class="{SEC}">{section_heading("activities", count=len(ACTIVITIES))}<ul class="mt-6 grid gap-3 lg:mt-7">{acts}</ul></section>'
+        f'<section id="awards" aria-labelledby="awards-title" class="{SEC}">{section_heading("awards", count=len(AWARDS))}<ul class="mt-6 grid gap-3 lg:mt-7">{aws}</ul></section>'
+        '</div></div>'
+    )
+
+
+def has(kind, sel):
+    return f"group-has-[[data-kind={kind}]:hover]/soc:{sel}"
+
+
+def lab_module(kind, first):
+    """THE LAB module for one event type. Hover on a matching event tile rings the module and moves its primitive;
+    the first module also runs its kind's ambient step (hover = translate, step = transform: two properties)."""
+    ring = cls(has(kind, "ring-4"), has(kind, "ring-inset"), has(kind, "ring-white"))
+    if kind == "seminar":
+        amb = "motion-safe:animate-sun-step motion-safe:anim-offset-33" if first else ""
+        return f'<div class="relative overflow-hidden bg-primary {ring}"><div class="{cls("absolute bottom-0 left-1/2 aspect-[2/1] w-[72%] -translate-x-1/2 rounded-t-full bg-primary-300", HOV, "motion-safe:" + has(kind, "-translate-y-[12%]"), amb)}"></div></div>'
+    if kind == "hackathon":
+        amb = "motion-safe:animate-hop motion-safe:anim-offset-9" if first else ""
+        return f'<div class="relative overflow-hidden bg-primary-700 {ring}"><div class="{cls("tri absolute inset-x-[18%] bottom-0 top-[22%] bg-white", HOV, "motion-safe:" + has(kind, "-translate-y-[10%]"), amb)}"></div></div>'
+    if kind == "education":
+        amb = "motion-safe:animate-diamond-step motion-safe:anim-offset-45" if first else ""
+        return f'<div class="relative grid place-items-center overflow-hidden bg-primary-300 {ring}"><div class="{cls("aspect-square h-[46%] bg-ink", HOV, "motion-safe:" + has(kind, "rotate-45"), amb)}"></div></div>'
+    raise KeyError(kind)
+
+
+EVENT_ART = {
+    "seminar": (f'<div class="absolute bottom-0 left-1/2 aspect-[2/1] w-[64%] -translate-x-1/2 rounded-t-full bg-primary"></div>'
+                f'<div class="absolute bottom-0 left-1/2 aspect-[2/1] w-[30%] -translate-x-1/2 rounded-t-full bg-ink {HOV5} motion-safe:group-hover:-translate-y-[30%]"></div>'),
+    "hackathon": (f'<div class="absolute inset-x-[12%] bottom-0 flex h-[70%] items-end gap-[6%]">'
+                  f'<div class="tri h-full flex-[1.3] bg-primary {HOV5} motion-safe:group-hover:-translate-y-[6%]"></div><div class="tri h-[64%] flex-1 bg-ink"></div></div>'),
+    "education": (f'<div class="absolute inset-x-[14%] bottom-0 flex items-end gap-[8%]">'
+                  f'<div class="aspect-square w-[58%] bg-primary"></div><div class="aspect-square w-[30%] bg-ink {HOV5} motion-safe:group-hover:rotate-45"></div></div>'),
+}
+
+
+def event_tile(e):
+    return (
+        f'<li id="{e["id"]}" data-kind="{e["type"]}" class="group grid scroll-mt-36 grid-cols-[7.5rem_minmax(0,1fr)] bg-white sm:flex sm:flex-col lg:scroll-mt-24">'
+        f'<div aria-hidden="true" class="relative min-h-24 overflow-hidden bg-primary-100 sm:min-h-36 sm:flex-1">{EVENT_ART[e["type"]]}</div>'
+        '<div class="p-4 sm:p-5">'
+        f'<p class="flex items-center gap-2 text-sm font-semibold text-primary-700">{key_glyph(e["type"])}{s("event_type")[e["type"]]} · {t(e["role"])}</p>'
+        f'<h3 class="mt-1 text-lg font-bold leading-snug text-ink sm:mt-2">{t(e["title"])}</h3>'
+        f'<p class="mt-1 text-ui tabular-nums text-muted sm:mt-2">{ym(e["start"])}</p></div></li>'
+    )
+
+
+def society_section():
+    types = []
+    for e in EVENTS:
+        if e["type"] not in types:
+            types.append(e["type"])
+    chips_ = "".join(f'<li class="flex items-center gap-1.5 border border-white/30 px-2.5 py-1">{key_glyph(k, dark=True)}{s("event_type")[k]}</li>' for k in types)
+    roles = "".join(f'<div><dt class="text-lg font-bold">{t(r)}</dt><dd class="tabular-nums text-primary-200">{period(a, b, s("present"))}</dd></div>' for r, a, b in SOCIETY["roles"])
+    mods = "".join(lab_module(k, n == 0) for n, k in enumerate(types[:3]))
+    tiles = "".join(event_tile(e) for e in EVENTS[:3])
+    return (
+        f'<section id="society" aria-labelledby="society-title" class="{SEC} bg-surface"><div class="shell py-8 sm:py-10 lg:py-12">'
+        f'{section_heading("society")}'
+        '<div class="group/soc mt-6 grid gap-4 lg:mt-8 xl:grid-cols-12 xl:gap-6">'
+        '<div class="grid overflow-hidden bg-ink text-white sm:grid-cols-[minmax(0,1fr)_8.5rem] xl:col-span-5">'
+        '<div class="p-6 sm:p-8">'
+        f'<p class="text-ui font-medium text-primary-200">{s("society_label")}</p>'
+        f'<h3 class="mt-1 text-4xl font-bold tracking-tight">{SOCIETY["title"]}</h3>'
+        f'<p class="mt-2 text-ui text-primary-200">{t(SOCIETY["desc"])}</p>'
+        f'<ul class="mt-4 flex flex-wrap gap-2 text-sm font-medium">{chips_}</ul>'
+        f'<dl class="mt-6 grid grid-cols-2 gap-x-6 gap-y-3 text-ui">{roles}</dl>'
+        f'{related_links("the-lab", "mt-5 border-t border-white/20 pt-4", dark=True)}'
+        '</div>'
+        f'<div aria-hidden="true"{gate_attrs("lab")} class="play-gate grid h-16 grid-cols-3 sm:h-auto sm:grid-cols-1 sm:grid-rows-3">{mods}</div>'
+        '</div>'
+        f'<ul class="grid gap-4 sm:grid-cols-3 xl:col-span-7">{tiles}</ul>'
+        '</div></div></section>'
+    )
+
+
+PRIM = {"frontend": "", "backend": "rounded-full", "ai-ml": "tri"}
+PRIM_AMB = {"frontend": "motion-safe:animate-diamond-step motion-safe:anim-offset-45", "backend": "motion-safe:animate-pulse-step motion-safe:anim-offset-13", "ai-ml": "motion-safe:animate-hop motion-safe:anim-offset-5"}
+SKILL_COL = [("bg-ink", ("bg-primary-300", "bg-primary")), ("bg-primary", ("bg-white", "bg-ink")), ("bg-primary-200", ("bg-primary", "bg-ink"))]
+
+
+def used_in(names):
+    return [p for p in PROJECTS if any(x in names for _, x in p["tech"])]
+
+
+def skills_section():
+    tiles = []
+    for g, (cat, items) in enumerate(SKILLS):
+        bg, tones = SKILL_COL[g % 3]
+        shown = items[:8]
+        prims = "".join(
+            f'<span class="grid size-8 place-items-center"><span class="{cls("size-6", PRIM[cat], tones[n % 2], PRIM_AMB[cat] if n == 0 else "", (HOV5 + " motion-safe:group-hover:-translate-y-1") if n == 0 else "")}"></span></span>'
+            for n, _ in enumerate(shown))
+        cols = "grid-cols-2 px-1.5" if len(shown) >= 5 else ""
+        projs = used_in(items)
+        links = "".join(
+            f'<a href="{item_href(p["id"])}" class="inline-flex items-center gap-1.5 font-semibold text-primary underline-offset-4 hover:underline">{kind_mark_sm("project")}{t(p["title"])}</a>' for p in projs)
+        chips_ = "".join(f'<li class="bg-white px-2.5 py-0.5 text-primary-900 sm:py-1">{esc(x)}</li>' for x in items)
+        tiles.append(
+            '<li class="group grid grid-cols-[3rem_minmax(0,1fr)] bg-surface sm:grid-cols-[4rem_minmax(0,1fr)] md:grid-cols-[4.5rem_minmax(0,1fr)]">'
+            f'<div aria-hidden="true" class="{cls("grid content-center justify-items-center gap-2 py-4 md:py-5", bg, cols)}">{prims}</div>'
+            '<div class="min-w-0 p-4 md:p-6">'
+            f'<h3 class="text-lg font-bold text-ink">{s("tech_cat")[cat]}</h3>'
+            f'<ul class="mt-2 flex flex-wrap gap-1.5 text-ui font-medium sm:mt-3 sm:gap-2">{chips_}</ul>'
+            f'<p class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-ui leading-[1.7] text-muted sm:mt-3"><span>{s("used_in")}</span>{links}</p>'
+            '</div></li>')
+    return (
+        f'<section id="skills" aria-labelledby="skills-title" class="{SEC} border-t border-line"><div class="shell py-8 sm:py-10 lg:py-12">'
+        f'{section_heading("skills")}<ul{gate_attrs("skills")} class="play-gate mt-6 grid gap-4 lg:mt-8 xl:grid-cols-3">{"".join(tiles)}</ul></div></section>'
+    )
+
+
+def contact_cell(label, value_html, button=""):
+    return (f'<div class="flex min-h-16 flex-col justify-center bg-white px-4 py-3 sm:min-h-20 sm:p-5">'
+            f'<dt class="flex items-center gap-2 text-sm font-medium text-muted"><span aria-hidden="true" class="size-2 shrink-0 bg-primary"></span>{label}</dt>'
+            f'<dd class="mt-0.5 flex items-center justify-between gap-4 text-base font-semibold text-ink"><span class="min-w-0 wrap-anywhere">{value_html}</span>{button}</dd></div>')
+
+
+def edu_connect():
+    c = s("contact")
+    cells = (
+        contact_cell(c["email"], f'<a href="mailto:{EMAIL}" class="hover:text-primary">{EMAIL}</a>', copy_button("email", EMAIL))
+        + contact_cell(c["github"], ext(f"https://github.com/{GITHUB}", f"github.com/{GITHUB}", "hover:text-primary"))
+        + contact_cell(c["instagram"], f'<a href="#" class="hover:text-primary">@{INSTA}</a>')
+        + contact_cell(c["discord"], DISCORD, copy_button("discord", DISCORD))
+    )
+    module = (
+        f'<div aria-hidden="true"{gate_attrs("contact")} class="play-gate grid h-16 grid-cols-3 border-t border-ink lg:h-auto lg:grid-cols-1 lg:grid-rows-3 lg:border-l lg:border-t-0">'
+        '<div class="relative grid place-items-center bg-primary-100"><span class="relative aspect-[3/2] h-[56%]"><span class="absolute left-0 aspect-square h-full rounded-full bg-ink"></span><span class="absolute right-0 aspect-square h-full rounded-full bg-primary"></span></span></div>'
+        '<div class="relative grid place-items-center bg-ink"><span class="aspect-square h-[56%] rounded-tl-full bg-primary-300 motion-safe:animate-quarter-step motion-safe:anim-offset-81"></span></div>'
+        '<div class="relative overflow-hidden bg-primary"><span class="tri absolute inset-x-[22%] bottom-0 top-[24%] bg-white"></span></div>'
+        '</div>'
+    )
+    edu = (
+        f'<section id="education" aria-labelledby="education-title" class="{SEC} xl:col-span-5">{section_heading("education")}'
+        '<div class="group mt-6 flex items-stretch overflow-hidden bg-surface lg:mt-7"><div class="min-w-0 flex-1 p-5 sm:p-6">'
+        f'<h3 class="text-lg font-bold text-ink">{t(EDU["school"])}</h3><p class="mt-0.5 text-ui text-ink-2">{t(EDU["major"])}</p>'
+        f'<p class="mt-1 text-ui tabular-nums text-muted">{period(EDU["start"], None, s("enrolled"))}</p></div>'
+        '<div aria-hidden="true" class="relative flex w-32 shrink-0 items-end gap-1.5 px-4 pt-6 sm:w-44">'
+        f'<span class="h-[62%] flex-1 rounded-t-full bg-primary-300 {HOV5} motion-safe:group-hover:-translate-y-1"></span>'
+        f'<span class="h-[86%] flex-1 rounded-t-full bg-primary {HOV5} motion-safe:group-hover:-translate-y-2"></span>'
+        f'<span class="h-[62%] flex-1 rounded-t-full bg-ink {HOV5} motion-safe:group-hover:-translate-y-1"></span>'
+        '<span class="absolute inset-x-0 bottom-0 h-2 bg-ink"></span></div></div></section>'
+    )
+    con = (
+        f'<section id="connect" aria-labelledby="connect-title" class="{SEC} xl:col-span-7">{section_heading("connect")}'
+        f'<div class="mt-6 grid border border-ink lg:mt-7 lg:grid-cols-[minmax(0,1fr)_6rem]"><dl class="grid gap-px bg-line sm:grid-cols-2">{cells}</dl>{module}</div></section>'
+    )
+    return f'<div class="border-t border-line"><div class="shell grid gap-x-12 gap-y-10 py-8 sm:py-10 lg:py-12 xl:grid-cols-12">{edu}{con}</div></div>'
+
+
+def home_body():
+    return f'<main id="main">{hero()}{projects_section()}{activities_awards()}{society_section()}{skills_section()}{edu_connect()}</main>'
+
+
+# ───────────────────────────── detail ─────────────────────────────
+DETAIL_TOC = ["summary", "contributions", "features", "tech", "outcomes", "challenges", "related"]
+
+
+def toc_attrs(i):
+    proto = f'data-toc="{i}"' + (' aria-current="location"' if i == DETAIL_TOC[0] else "")
+    dc = f'data-toc="{i}" aria-current="{{{{toc.{i}.aria}}}}" onClick="{{{{toc.{i}.click}}}}"'
+    return A(proto, dc)
+
+
+def ph(text, extra=""):
+    return f'<span class="{cls("font-normal text-muted", extra)}">{text}</span>'
+
+
+def bullet_li(content, tone="text-muted"):
+    return f'<li class="flex gap-3 text-base leading-[1.75] {tone}"><span aria-hidden="true" class="mt-[0.65em] size-2 shrink-0 bg-primary"></span><span class="min-w-0">{content}</span></li>'
+
+
+def detail_body():
+    p = PROJECTS[0]
+    pp = s("ph")
+    df = s("d_facts")
+    award = INDEX["award-oo-hackathon"]
+    badges = (
+        live_badge()
+        + f'<span class="bg-primary-50 px-2 py-0.5 text-primary-700">{s("featured")}</span>'
+        + f'<span class="text-muted">{form_label(p)}</span>'
+        + f'<a href="{item_href(award["id"])}" class="inline-flex items-center gap-1.5 text-award underline-offset-4 hover:underline">{kind_mark_sm("award")}<span class="sr-only">{s("kind")["award"]}: </span>{title_of(award)}</a>'
+    )
+    buttons = (
+        f'<a href="#" class="inline-flex h-11 items-center gap-2.5 bg-ink px-4 text-ui font-semibold text-white transition-colors hover:bg-primary"><span aria-hidden="true" class="size-3 rounded-full bg-primary-300"></span>{pp["demo"]}</a>'
+        f'<a href="#" class="inline-flex h-11 items-center gap-2.5 border border-ink px-4 text-ui font-semibold text-ink transition-colors hover:bg-primary-50"><span aria-hidden="true" class="size-3 bg-ink"></span>{pp["github"]}</a>'
+    )
+
+    def fcell(label, val, tab=False):
+        return (f'<div class="border-b border-line py-4 pr-4"><dt class="text-sm text-muted">{label}</dt>'
+                f'<dd class="{cls("mt-0.5 text-ui font-semibold text-ink", "tabular-nums" if tab else "")}">{val}</dd></div>')
+
+    facts = (fcell(df["period"], period(p["start"], p["end"]), True) + fcell(df["team"], ph(pp["team"])) + fcell(df["status"], ph(pp["status"]))
+             + fcell(df["deploy"], f'{s("live")} · {ph(pp["platform"])} · {ph(pp["checked"])}'))
+    hero_ = (
+        '<div class="shell grid gap-x-12 gap-y-8 pb-12 pt-6 lg:grid-cols-12 lg:pb-16 lg:pt-12"><div class="lg:col-span-6">'
+        f'<a href="{page_href("list")}" class="inline-flex min-h-6 items-center text-ui font-semibold text-primary underline-offset-4 hover:underline"><span aria-hidden="true">←&nbsp;</span>{s("all_projects")}</a>'
+        f'<div class="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm font-semibold">{badges}</div>'
+        f'<h1 class="mt-3 text-5xl font-bold leading-[1.1] tracking-[-0.03em] text-ink lg:text-title">{t(p["title"])}</h1>'
+        f'<p class="mt-4 text-pretty text-lead text-ink-2">{t(p["tagline"])}</p>'
+        f'<div class="mt-7 flex flex-wrap gap-3">{buttons}</div>'
+        f'<dl class="mt-8 grid grid-cols-2 border-t border-ink">{facts}</dl>'
+        f'</div><div class="group lg:col-span-6">{cover(p, "hero", gate="hero")}</div></div>'
+    )
+    names = s("d_sections")
+    toc = "".join(
+        f'<li><a href="#{i}"{toc_attrs(i)} class="group flex items-center gap-3 py-2 text-ui text-muted transition-colors hover:text-ink aria-[current=location]:text-ink">'
+        f'<span aria-hidden="true" class="size-2.5 shrink-0 border-2 border-ink group-aria-[current=location]:border-primary group-aria-[current=location]:bg-primary"></span>{names[i]}</a></li>'
+        for i in DETAIL_TOC)
+
+    def sec(i, body):
+        return (f'<section id="{i}" aria-labelledby="{i}-title" class="{SEC}"><h2 id="{i}-title" class="flex items-center gap-3 text-2xl font-bold tracking-tight text-ink">'
+                f'<span aria-hidden="true" class="size-3 shrink-0 bg-ink"></span>{names[i]}</h2>{body}</section>')
+
+    tech_rows = "".join(
+        f'<li class="grid grid-cols-[2.5rem_7rem_minmax(0,1fr)] items-center gap-3 border-b border-line py-3">'
+        f'<span aria-hidden="true" class="grid size-8 place-items-center bg-surface"><span class="{cls("size-5", PRIM[cat], "bg-primary" if n % 2 == 0 else "bg-ink")}"></span></span>'
+        f'<span class="text-sm font-semibold text-muted">{s("tech_cat")[cat]}</span>{chips([name])}</li>'
+        for n, (cat, name) in enumerate(p["tech"]))
+    rel_cards = "".join(
+        f'<li><a href="{item_href(r)}" class="group flex items-center gap-4 border border-line p-4 transition-colors hover:border-ink">{item_thumb(r, "size-12")}'
+        f'<span class="min-w-0"><span class="block text-sm font-semibold text-muted">{s("kind")[INDEX[r]["kind"]]} · <span class="tabular-nums">{ym(INDEX[r]["start"])}</span></span>'
+        f'<span class="block text-ui font-bold text-ink">{title_of(INDEX[r])}</span></span>'
+        f'<span aria-hidden="true" class="ml-auto size-3 shrink-0 bg-ink motion-safe:transition-transform motion-safe:duration-500 motion-safe:group-hover:rotate-45"></span></a></li>'
+        for r in related(p["id"]))
+    outcome = (f'<a href="{item_href(award["id"])}" class="inline-flex items-center gap-1.5 font-semibold text-award underline-offset-4 hover:underline">'
+               f'{kind_mark_sm("award")}<span class="sr-only">{s("kind")["award"]}: </span>{title_of(award)}</a> {s("award_outcome_suffix")}')
+    body = (
+        sec("summary", f'<p class="mt-5 text-lg leading-[1.8]">{ph(pp["summary"])}</p>')
+        + sec("contributions", '<ul class="mt-5 grid gap-3">' + "".join(bullet_li(pp["contrib"].format(n=n)) for n in (1, 2, 3)) + "</ul>")
+        + sec("features", '<dl class="mt-5 divide-y divide-line border-y border-line">' + "".join(
+            f'<div class="grid gap-1 py-5 sm:grid-cols-[12rem_minmax(0,1fr)] sm:gap-8"><dt class="text-base font-bold text-muted">{pp["feature"].format(n=n)}</dt><dd class="text-ui text-muted">{pp["feature_desc"]}</dd></div>'
+            for n in (1, 2, 3)) + "</dl>")
+        + sec("tech", f'<ul class="mt-5 border-t border-line">{tech_rows}</ul>')
+        + sec("outcomes", f'<ul class="mt-5 grid gap-3">{bullet_li(outcome, "text-ink-2")}</ul>')
+        + sec("challenges",
+              '<ul class="mt-5 grid gap-4"><li class="grid gap-3 md:grid-cols-[minmax(0,1fr)_3rem_minmax(0,1fr)]">'
+              f'<div class="bg-surface p-5"><p class="text-sm font-semibold text-muted">{s("problem")}</p><p class="mt-1 text-base leading-[1.75] text-muted">{pp["problem"]}</p></div>'
+              '<div aria-hidden="true" class="grid h-11 place-items-center md:h-auto"><div class="flex rotate-90 items-center gap-1 md:rotate-0">'
+              '<span class="size-3 bg-ink"></span><span class="h-0.5 w-4 bg-ink-2 motion-safe:reveal-x"></span><span class="size-3 rounded-full bg-primary"></span></div></div>'
+              f'<div class="border border-ink p-5"><p class="text-sm font-semibold text-primary-700">{s("solution")}</p><p class="mt-1 text-base leading-[1.75] text-muted">{pp["solution"]}</p></div>'
+              '</li></ul>')
+        + sec("related", f'<ul class="mt-5 grid gap-3 sm:grid-cols-2">{rel_cards}</ul>')
+    )
+    order = PROJECTS
+    i = order.index(p)
+    prev_p, next_p = order[i - 1], order[(i + 1) % len(order)]
+    pager = (
+        f'<nav aria-label="{s("other_projects")}" class="border-t border-line"><div class="shell grid sm:grid-cols-2">'
+        f'<a href="{item_href(prev_p["id"])}" class="group flex items-center gap-4 py-6">{cover(prev_p, "mini", extra="shrink-0")}'
+        f'<span class="min-w-0"><span class="block text-sm text-muted"><span aria-hidden="true">←&nbsp;</span>{s("prev")}</span><span class="block text-lg font-bold text-ink transition-colors group-hover:text-primary">{t(prev_p["title"])}</span></span></a>'
+        f'<a href="{item_href(next_p["id"])}" class="group flex items-center gap-4 border-t border-line py-6 sm:flex-row-reverse sm:border-l sm:border-t-0 sm:pl-6 sm:text-right">{cover(next_p, "mini", extra="shrink-0")}'
+        f'<span class="min-w-0"><span class="block text-sm text-muted">{s("next")}<span aria-hidden="true">&nbsp;→</span></span><span class="block text-lg font-bold text-ink transition-colors group-hover:text-primary">{t(next_p["title"])}</span></span></a>'
+        '</div></nav>'
+    )
+    return (
+        f'<main id="main">{hero_}'
+        '<div class="border-t border-line"><div class="shell grid gap-x-12 py-12 lg:grid-cols-12 lg:py-16">'
+        f'<nav aria-label="{s("on_this_page")}" class="lg:col-span-3"><div class="lg:sticky lg:top-24"><p class="text-sm font-semibold text-muted">{s("on_this_page")}</p>'
+        f'<ul class="mt-3 grid grid-cols-2 gap-x-4 sm:grid-cols-3 lg:grid-cols-1">{toc}</ul></div></nav>'
+        f'<div class="mt-10 min-w-0 space-y-14 lg:col-span-9 lg:mt-0 lg:max-w-[46rem]">{body}</div>'
+        f'</div></div>{pager}</main>'
+    )
+
+
+# ───────────────────────────── list ─────────────────────────────
+def list_body():
+    rows = []
+    for n, p in enumerate(PROJECTS):
+        tech = [x for _, x in p["tech"]]
+        status = live_badge() if p["live"] else ""
+        rows.append(
+            f'<li class="group relative grid gap-5 border-b border-line py-6 transition-colors hover:bg-primary-50/40 {CARD_FOCUS} sm:grid-cols-[12rem_minmax(0,1fr)] lg:grid-cols-[15rem_minmax(0,1fr)_auto] lg:items-center lg:gap-8">'
+            f'{cover(p, "thumb", gate=f"row{n}")}'
+            '<div class="min-w-0">'
+            f'<p class="text-ui font-semibold text-muted">{form_label(p)} · <span class="tabular-nums">{period(p["start"], p["end"])}</span></p>'
+            f'<h2 class="mt-1 text-2xl font-bold tracking-tight text-ink"><a href="{item_href(p["id"])}" data-stretch class="{STRETCH}">{t(p["title"])}</a></h2>'
+            f'<p class="mt-1.5 text-ui text-ink-2">{t(p["tagline"])}</p>{chips(tech, "mt-3")}{related_links(p["id"], "relative z-10 mt-3")}</div>'
+            f'<div class="flex items-center gap-4 text-sm font-semibold sm:col-start-2 lg:col-start-auto lg:flex-col lg:items-end">{status}'
+            '<span aria-hidden="true" class="ml-auto size-4 bg-ink motion-safe:transition-transform motion-safe:duration-500 motion-safe:group-hover:rotate-45 lg:ml-0"></span></div></li>'
+        )
+    return (
+        '<main id="main" class="shell py-10 lg:py-14">'
+        f'<a href="{page_href("home")}" class="inline-flex min-h-6 items-center text-ui font-semibold text-primary underline-offset-4 hover:underline"><span aria-hidden="true">←&nbsp;</span>{s("back_home")}</a>'
+        f'<div class="mt-6 flex items-center gap-4">{kind_mark("projects", "size-16")}<h1 class="text-5xl font-bold tracking-[-0.03em] text-ink">{s("nav")["projects"]}</h1>'
+        f'<span class="pt-2 text-ui tabular-nums text-muted">{s("count").format(n=len(PROJECTS))}</span></div>'
+        f'<ol class="mt-10 border-t border-ink">{"".join(rows)}</ol></main>'
+    )
+
+
+# ───────────────────────────── page shells ─────────────────────────────
+def body_for(page):
+    skip = f'<a href="#main" class="sr-only z-60 bg-ink px-4 py-2 text-ui text-white focus:not-sr-only focus:fixed focus:left-4 focus:top-4">{s("skip")}</a>'
+    main = {"home": home_body, "detail": detail_body, "list": list_body}[page]()
+    return f'{skip}{header()}{main}{footer()}{status_region()}'
+
+
+ROOT_CLS = "scroll-smooth motion-reduce:scroll-auto data-[motion=off]:[--play:paused]"
+TITLES = {"home": "title_home", "detail": "title_detail", "list": "title_list"}
+
+PROTO_JS = open(os.path.join(HERE, "page.js"), encoding="utf8").read()
+DC_JS = open(os.path.join(HERE, "dc-logic.js"), encoding="utf8").read()
+
+
+def render_proto(page, lc):
+    global MODE
+    MODE = "proto"
+    CTX.update(loc=lc, page=page, mobile=False)
+    font = '@font-face{font-family:"Pretendard Variable";src:url("../../design/fonts/PretendardVariable.woff2") format("woff2");font-weight:45 920;font-display:swap}'
+    return (f'<!doctype html>\n<html lang="{lc}" class="{ROOT_CLS}">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n'
+            f'<title>{s(TITLES[page])}</title>\n<style>{font}</style>\n<link rel="stylesheet" href="../sys.css">\n</head>\n<body>\n{body_for(page)}\n<script>\n{PROTO_JS}</script>\n</body>\n</html>\n')
+
+
+def dc_cfg(page):
+    copy = {}
+    if page == "home":
+        copy = {"email": {"value": EMAIL, "status": s("copied_email")}, "discord": {"value": DISCORD, "status": s("copied_discord")}}
+    gates = {"home": ["feature", "card1", "card2", "lab", "skills", "contact", "plinth"], "detail": ["hero", "plinth"], "list": ["row0", "row1", "row2", "plinth"]}[page]
+    return {
+        "nav": NAV_IDS if page == "home" else None,
+        "toc": DETAIL_TOC if page == "detail" else None,
+        "gates": gates, "copy": copy,
+        "copyIdle": s("copy"), "copied": s("copied"), "copyFail": s("copy_failed"),
+        "pause": s("motion_pause"), "play": s("motion_play"),
+    }
+
+
+def render_dc(page, lc, mobile, css_blob, w, h):
+    global MODE
+    MODE = "dc"
+    CTX.update(loc=lc, page=page, mobile=mobile)
+    helmet = ('<style>\n'
+              f'@font-face{{font-family:"Pretendard Variable";src:url({FONT_BLOB}) format("woff2");font-weight:45 920;font-style:normal;font-display:swap}}\n'
+              'body{margin:0}\nhtml{scroll-behavior:smooth}\n@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}\n'
+              '</style>')
+    root = f'<div data-motion="{{{{motion.state}}}}" class="data-[motion=off]:[--play:paused]">{body_for(page)}</div>'
+    js = DC_JS.replace("__CFG__", json.dumps(dc_cfg(page), ensure_ascii=False))
+    props = json.dumps({"$preview": {"width": w, "height": h}})
+    return (f'<!doctype html>\n<html lang="{lc}">\n<head>\n<meta charset="utf-8">\n<title>{s(TITLES[page])}</title>\n<script src="./support.js"></script>\n'
+            f'<link rel="stylesheet" href="{css_blob}">\n</head>\n<body>\n<x-dc>\n<helmet>\n{helmet}\n</helmet>\n{root}\n</x-dc>\n'
+            f"<script type=\"text/x-dc\" data-dc-script data-props='{props}'>\n{js}</script>\n</body>\n</html>\n")
+
+
+BOARDS = [  # file, page, loc, mobile
+    ("Main.dc.html", "home", "ko", False), ("Project.dc.html", "detail", "ko", False), ("Projects.dc.html", "list", "ko", False),
+    ("Mobile.dc.html", "home", "ko", True), ("Project-mobile.dc.html", "detail", "ko", True), ("Projects-mobile.dc.html", "list", "ko", True),
+    ("Main-en.dc.html", "home", "en", False), ("Project-en.dc.html", "detail", "en", False), ("Projects-en.dc.html", "list", "en", False),
+    ("Mobile-en.dc.html", "home", "en", True), ("Project-mobile-en.dc.html", "detail", "en", True), ("Projects-mobile-en.dc.html", "list", "en", True),
+]
+BOARD_TITLES = {
+    ("home", "ko", False): "홈 · 1440", ("detail", "ko", False): "프로젝트 상세 · 1440", ("list", "ko", False): "프로젝트 목록 · 1440",
+    ("home", "ko", True): "홈 · 390", ("detail", "ko", True): "프로젝트 상세 · 390", ("list", "ko", True): "프로젝트 목록 · 390",
+    ("home", "en", False): "Home · 1440", ("detail", "en", False): "Project detail · 1440", ("list", "en", False): "All projects · 1440",
+    ("home", "en", True): "Home · 390", ("detail", "en", True): "Project detail · 390", ("list", "en", True): "All projects · 390",
+}
+
+
+def main():
+    if sys.argv[1] == "proto":
+        for page in ("home", "detail", "list"):
+            for lc in ("ko", "en"):
+                d = os.path.join(PROTO, f"sys-{page}-{lc}")
+                os.makedirs(d, exist_ok=True)
+                with open(os.path.join(d, "index.html"), "w", encoding="utf8") as f:
+                    f.write(render_proto(page, lc))
+        print("proto pages written")
+        return
+    if sys.argv[1] == "dc":
+        css_blob, out = sys.argv[2], sys.argv[3]
+        heights = json.load(open(os.path.join(HERE, "heights.json")))
+        os.makedirs(os.path.join(out, "project"), exist_ok=True)
+        boards, order = {}, []
+        x_desk = {"home": 0, "detail": 1520, "list": 3040}
+        x_mob = {"home": 4560, "detail": 5030, "list": 5500}
+        row_h = max(heights.values()) + 420
+        for fname, page, lc, mobile in BOARDS:
+            w = 390 if mobile else 1440
+            h = heights[f"{page}-{lc}-{w}"]
+            with open(os.path.join(out, "project", fname), "w", encoding="utf8") as f:
+                f.write(render_dc(page, lc, mobile, css_blob, w, h))
+            e = {"x": (x_mob if mobile else x_desk)[page], "y": 0 if lc == "ko" else row_h, "w": w, "h": h, "title": BOARD_TITLES[(page, lc, mobile)]}
+            if not mobile:
+                e["expand"] = "fill"
+            e["is_interactive"] = True
+            boards[fname] = e
+            order.append(fname)
+        canvas = {
+            "v": 3, "createdOnFiles": {"v": 1, "at": "2026-10-10T07:30:00Z"}, "title": "홍길동 포트폴리오", "launch": {"view": "canvas"}, "pages": [],
+            "boards": boards, "order": order,
+            "notes": {
+                "title": {"x": 0, "y": -300, "text": "한국어 — 홈 · 프로젝트 상세 · 전체 목록 · 모바일", "kind": "title1", "maxW": 5890},
+                "english": {"x": 0, "y": row_h - 300, "text": "English — Home · Project detail · All projects · Mobile", "kind": "title1", "maxW": 5890},
+            },
+            "designSystems": [],
+        }
+        with open(os.path.join(out, "project", "canvas.json"), "w", encoding="utf8") as f:
+            json.dump(canvas, f, ensure_ascii=False, indent=1)
+        print("dc boards written", out)
+
+
+if __name__ == "__main__":
+    main()
