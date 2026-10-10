@@ -1,0 +1,12 @@
+{
+  "name": { "ko": "TODO 이름", "en": "TODO Name" },
+  "headline": { "ko": "TODO 한 줄 소개", "en": "TODO headline" },
+  "intro": { "ko": "TODO 1–2문장 자기소개", "en": "TODO 1–2 sentence intro" },
+  "about": [],
+  "connect": {
+    "github": "https://github.com/gaudium1257",
+    "email": "todo@example.com",
+    "instagram": "https://www.instagram.com/TODO",
+    "discord": "TODO"
+  }
+}
