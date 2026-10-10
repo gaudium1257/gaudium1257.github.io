@@ -14,6 +14,13 @@ HOLE = "@@ACCENT@@"  # becomes {{accent}}
 S = {
   "ko": {
     "nav": ["소개", "프로젝트", "대외활동", "수상", "학회", "개발 역량", "학력", "연락처"],
+    "yearPh": "[연도]", "now": "현재", "sample": "[예시 배치]", "sampleShort": "[예시]",
+    "laneCounts": ["3", "2", "2", "행사 3"], "kindAct": "대외활동", "kindProj": "프로젝트", "kindRole": "학회 직책", "kindEvent": "학회 행사", "kindAward": "수상",
+    "mapCaption": "기록 연표 (시간순)", "plateLabel": "기간 도판", "jan": "1월", "dec": "12월",
+    "mxCat": "분류", "mxTech": "기술", "mxUsed": "사용", "mxUnused": "사용 안 함", "mxCaption": "기술별 사용 프로젝트",
+    "legend": {"p": "3건 · [연도]–[연도]", "a": "2건 · [연도]–[연도]", "w": "2건 · [연도]–[연도]", "s": "행사 3건 · [연도]–현재", "k": "기술 6개 · 프로젝트 3개"},
+    "legendShort": {"p": "3건", "a": "2건", "w": "2건", "s": "행사 3건", "k": "기술 6개"},
+    "usage": "프로젝트 {n}개 중 {k}개에서 사용",
     "navLabel": "섹션", "langLabel": "언어", "skip": "본문으로 건너뛰기",
     "photoAria": "프로필 사진 자리 (준비 중)", "photoCap": "[증명사진 3:4]",
     "name": "홍길동", "nameAlt": "[영문 이름]",
@@ -66,6 +73,13 @@ S = {
   },
   "en": {
     "nav": ["About", "Projects", "Activities", "Awards", "Society", "Skills", "Education", "Contact"],
+    "yearPh": "[Year]", "now": "Now", "sample": "[Sample layout]", "sampleShort": "[Sample]",
+    "laneCounts": ["3", "2", "2", "3 events"], "kindAct": "Activity", "kindProj": "Project", "kindRole": "Society role", "kindEvent": "Society event", "kindAward": "Award",
+    "mapCaption": "Record timeline (by date)", "plateLabel": "period plate", "jan": "Jan", "dec": "Dec",
+    "mxCat": "Category", "mxTech": "Tool", "mxUsed": "Used in", "mxUnused": "Not used", "mxCaption": "Tools by project",
+    "legend": {"p": "3 projects · [Year]–[Year]", "a": "2 activities · [Year]–[Year]", "w": "2 awards · [Year]–[Year]", "s": "3 events · [Year]–now", "k": "6 tools · 3 projects"},
+    "legendShort": {"p": "3", "a": "2", "w": "2", "s": "3 events", "k": "6 tools"},
+    "usage": "Used in {k} of {n} projects",
     "navLabel": "Sections", "langLabel": "Language", "skip": "Skip to content",
     "photoAria": "Profile photo placeholder", "photoCap": "[ID photo 3:4]",
     "name": "[English name]", "nameAlt": "홍길동",
@@ -158,16 +172,21 @@ def svg(kind, size=16, sw=1.75):
     }[kind]
     return f'<svg width="{size}" height="{size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="{sw}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{paths}</svg>'
 
-def a_link(href, text, L, *, ext=False, sr_pre="", sr_post="", weight=500, block=False, extra="", hit=False, trailing=""):
+def a_link(href, text, L, *, ext=False, sr_pre="", sr_post="", weight=500, block=False, extra="", hit=False, trailing="", glyph_kind=""):
     """Purple text link. block=True gives a 44px-tall inline-flex target."""
     disp = "display: inline-flex; align-items: center; gap: 4px; min-height: 44px; " if block else ""
     pad = "padding: 13px 0; " if hit else ""  # enlarges inline hit area without moving layout
     attrs = ' target="_blank" rel="noopener noreferrer"' if ext else ""
-    inner = (f'<span class="sr-only">{esc(sr_pre)}</span>' if sr_pre else "") + (f"<span>{text}</span>" if block else text)
+    gl = ""
+    if glyph_kind:  # type glyph of the link target (project bar / activity outline / award diamond / society dot)
+        gl = (glyph(glyph_kind).replace('style="', 'style="margin-right: 2px; ', 1) if block
+              else f'<span style="display: inline-block; margin-right: 6px; vertical-align: -1px; line-height: 0">{glyph(glyph_kind)}</span>')
+    inner = (f'<span class="sr-only">{esc(sr_pre)}</span>' if sr_pre else "") + gl + (f"<span>{text}</span>" if block else text)
     if sr_post: inner += f'<span class="sr-only">{esc(sr_post)}</span>'
     inner += trailing
     if ext: inner += (svg("ext", 14, 2) if block else svg("ext", 14, 2).replace("<svg ", '<svg style="margin-left: 4px; vertical-align: -2px" ', 1)) + f'<span class="sr-only">{esc(S[L]["newTab"])}</span>'
-    return f'<a href="{href}"{attrs} style="{disp}{pad}font-weight: {weight}; {LINK}{"; " + extra if extra else ""}">{inner}</a>'
+    nw = "white-space: nowrap; " if (glyph_kind and not block) else ""
+    return f'<a href="{href}"{attrs} style="{disp}{pad}{nw}font-weight: {weight}; {LINK}{"; " + extra if extra else ""}">{inner}</a>'
 
 def award_html(L, link=None, hit=False, block=False, sr=True):
     b, g, a = S[L]["award"]
@@ -175,7 +194,7 @@ def award_html(L, link=None, hit=False, block=False, sr=True):
     b_html = esc(b[:-1]) + "&nbsp;" if b.endswith(" ") else esc(b)
     if link:  # inside a link the rank keeps the link colour; weight carries the emphasis
         t = f'{b_html}<span style="font-weight: 600">{esc(g)}</span>{esc(a)}'
-        return a_link(link, t, L, sr_pre=S[L]["srAward"] if sr else "", block=block, hit=hit)
+        return a_link(link, t, L, sr_pre=S[L]["srAward"] if sr else "", block=block, hit=hit, glyph_kind="w")
     return f'{b_html}<span style="color: var(--color-award); font-weight: 600">{esc(g)}</span>{esc(a)}'
 
 def relation_line(L, links, mobile=False):
@@ -197,6 +216,284 @@ def slot(label, aria, ratio="16 / 10", extra=""):
             f'background: var(--color-slot); border: 1px solid var(--color-line); display: flex; align-items: center; justify-content: center; '
             f'{META}; font-weight: 500{"; " + extra if extra else ""}">{esc(label)}</div>')
 
+# --------------------------------------------------------------------------- graphic layer: "Chronicle Ruler" + period plate
+# Shape = content type: project = solid bar, activity = outlined bar, award = brown diamond, society = dot / band.
+# Every mark comes from a content field (here: the SAMPLE placement, labelled as a sample on the board).
+D = 46  # months in the sample domain: m0 = January of the first year, m46 = now
+SAMPLE = {"p2": (5, 10), "p3": (15, 21), "p1": (27, 32), "act2": (1, 9), "act1": (31, 32),
+          "awd2": 20, "awd1": 31.5, "role_prev": (10, 26), "role_cur": (26, 46), "ev": [13, 29, 40], "years": [0, 12, 24, 36]}
+PROJECT_ORDER = ["p2", "p3", "p1"]  # timeline order (period.start)
+RELS = {"p1": ["awd1", "act1"], "act1": ["p1", "awd1"], "awd1": ["p1", "act1"], "p3": ["society"]}
+TECH_USE = {"Next.js": "p1", "React": "p3", "FastAPI": "p2", "Supabase": "p1", "Firebase": "p3", "OpenAI API": "p2"}
+
+SVG_A = 'aria-hidden="true" focusable="false"'
+NS = 'vector-effect="non-scaling-stroke"'
+F_MARK = "fill: var(--color-mark)"
+F_FILL = "fill: var(--color-mark-fill); stroke: var(--color-mark)"
+F_AWARD = "fill: var(--color-award)"
+
+def pct(m):
+    return f"{m / D * 100:.3f}%"
+
+def glyph(kind, box="inline"):
+    """Type glyph. inline = 10x10 (inside links), legend = 20x10 (legend rows, section lines)."""
+    if box == "inline":
+        w, body = 10, {
+            "p": f'<rect x="0" y="2.5" width="10" height="5" style="{F_MARK}"></rect>',
+            "a": f'<rect x="0.5" y="3" width="9" height="4" style="{F_FILL}; stroke-width: 1" {NS}></rect>',
+            "w": f'<path d="M5 0l5 5-5 5-5-5z" style="{F_AWARD}"></path>',
+            "s": f'<circle cx="5" cy="5" r="4" style="{F_MARK}"></circle>',
+        }[kind]
+    else:
+        w, body = 20, {
+            "p": f'<rect x="0" y="1" width="20" height="8" style="{F_MARK}"></rect>',
+            "a": f'<rect x="0.75" y="1.75" width="18.5" height="6.5" style="{F_FILL}; stroke-width: 1.5" {NS}></rect>',
+            "w": f'<path d="M10 0l5 5-5 5-5-5z" style="{F_AWARD}"></path>',
+            "s": f'<rect x="0" y="4" width="20" height="2" style="{F_MARK}"></rect><circle cx="10" cy="5" r="4" style="{F_MARK}; stroke: #FFFFFF; stroke-width: 1.5" {NS}></circle>',
+            "k": "".join(f'<rect x="{5 + dx}" y="{dy}" width="4" height="4" style="{F_MARK}"></rect>' for dx in (0, 6) for dy in (0, 6)),
+        }[kind]
+    return f'<svg class="gx" width="{w}" height="10" viewBox="0 0 {w} 10" {SVG_A} style="display: inline-block; flex: none">{body}</svg>'
+
+def micro_track(kind, span, W):
+    """Row's own mark on the shared time scale (fixed-width px coordinates)."""
+    def x(m): return round(m / D * W)
+    track = (f'<rect class="t" x="0" y="9" width="{W}" height="1" style="fill: var(--color-track)"></rect>'
+             + "".join(f'<rect class="t" x="{x(m)}" y="6" width="1" height="3" style="fill: var(--color-mark-empty)"></rect>' for m in SAMPLE["years"][1:])
+             + f'<rect x="{W - 1}" y="0" width="1" height="10" style="fill: var(--color-ink)"></rect>')
+    if kind in ("p", "a"):
+        a, b = span
+        w = max(8, x(b) - x(a))
+        x0 = min(max(round((a + b) / 2 / D * W) - w // 2, 0), W - 1 - w) if x(b) - x(a) < 8 else x(a)
+        mark = (f'<rect x="{x0}" y="2" width="{w}" height="6" style="{F_MARK}"></rect>' if kind == "p"
+                else f'<rect class="o" x="{x0 + 0.5}" y="2.5" width="{w - 1}" height="5" style="{F_FILL}; stroke-width: 1" {NS}></rect>')
+    elif kind == "w":
+        cx = min(max(x(span), 5), W - 5)
+        mark = f'<path d="M{cx} 0l5 5-5 5-5-5z" style="{F_AWARD}"></path>'
+    else:
+        cx = min(max(x(span), 4), W - 5)
+        mark = f'<circle cx="{cx}" cy="5" r="3" style="{F_MARK}"></circle>'
+    return f'<svg class="gx" width="{W}" height="10" viewBox="0 0 {W} 10" {SVG_A}>{track}{mark}</svg>'
+
+def _bar(m0, m1, y, h, kind, extra=""):
+    if m1 - m0 <= 1:  # too short to read as a bar: draw a centred 2h-wide bar
+        mid = (m0 + m1) / 2
+        inner = (f'<rect x="{-h}" y="{y}" width="{2 * h}" height="{h}" style="{F_MARK}"></rect>' if kind == "p"
+                 else f'<rect class="o" x="{-h + 0.75}" y="{y + 0.75}" width="{2 * h - 1.5}" height="{h - 1.5}" style="{F_FILL}; stroke-width: 1.5" {NS}></rect>')
+        return f'<svg x="{pct(mid)}" y="0" width="1" height="1" overflow="visible"{extra}>{inner}</svg>'
+    if kind == "p":
+        return f'<rect x="{pct(m0)}" y="{y}" width="{pct(m1 - m0)}" height="{h}" style="{F_MARK}"{extra}></rect>'
+    return f'<rect class="o" x="{pct(m0)}" y="{y + 0.75}" width="{pct(m1 - m0)}" height="{h - 1.5}" style="{F_FILL}; stroke-width: 1.5" {NS}{extra}></rect>'
+
+def _diamond(m, cy, r=7):
+    return f'<svg x="{pct(m)}" y="0" width="1" height="1" overflow="visible"><path d="M0 {cy - r}l{r} {r}-{r} {r}-{r}-{r}z" style="{F_AWARD}"></path></svg>'
+
+def _vline(m, y0, y1, style, w=1, cls=""):
+    c = f' class="{cls}"' if cls else ""
+    return f'<rect{c} x="{pct(m)}" y="{y0}" width="{w}" height="{y1 - y0}" transform="translate({-w / 2} 0)" style="{style}"></rect>'
+
+def _mk(ln, ch, title, body):
+    chattr = f' data-ch="{ch}"' if ch else ""
+    return f'<g class="mk" data-ln="{ln}"{chattr}><title>{esc(title)}</title>{body}</g>'
+
+def hero_map(L, mobile):
+    """기록 연표: every project, activity, award, society role/event on one time scale; stitches = relations."""
+    s = S[L]
+    lanes = [12, 36, 60, 84] if mobile else [14, 42, 70, 98]
+    H = 96 if mobile else 112
+    bh, dr, er = (8, 6, 4) if mobile else (10, 7, 5)
+    yp, ya, yw, ys = lanes
+    def b(lane_y): return lane_y - bh / 2
+    grid = "".join(_vline(m, 0, H, "fill: var(--color-track)", cls="t") for m in SAMPLE["years"][1:])
+    base = f'<rect class="t" x="0" y="{H - 1}" width="100%" height="1" style="fill: var(--color-track)"></rect>'
+    now = f'<rect x="100%" y="0" width="1" height="{H}" transform="translate(-1 0)" style="fill: var(--color-ink)"></rect>'
+    st = "fill: var(--color-mark-link)"
+    stitches = f'<g data-ch="a">{_vline(SAMPLE["awd1"], yp, yw, st, 1.5)}</g>'  # stitches join dated marks only
+    marks = [
+        _mk("p", "", f'{s["p2"]} · {s["period"]}', _bar(*SAMPLE["p2"], b(yp), bh, "p")),
+        _mk("p", "b", f'{s["p3"]} · {s["period"]}', _bar(*SAMPLE["p3"], b(yp), bh, "p")),
+        _mk("p", "a", f'{s["p1"]} · {s["period"]}', _bar(*SAMPLE["p1"], b(yp), bh, "p")),
+        _mk("a", "", f'{s["actName"]} · {s["period"]}', _bar(*SAMPLE["act2"], b(ya), bh, "a")),
+        _mk("a", "a", f'{s["act1"]} · {s["date"]}', _bar(*SAMPLE["act1"], b(ya), bh, "a")),
+        _mk("s", "b", f'{s["prevRole"]} · {s["period"]}',
+            f'<rect x="{pct(SAMPLE["role_prev"][0])}" y="{ys - 1}" width="{pct(SAMPLE["role_prev"][1] - SAMPLE["role_prev"][0])}" height="2" style="{F_MARK}"></rect>'),
+        _mk("s", "b", f'{s["curRole"]} · {s["curPeriod"]}',
+            f'<rect x="{pct(SAMPLE["role_cur"][0])}" y="{ys - 2}" width="{pct(SAMPLE["role_cur"][1] - SAMPLE["role_cur"][0])}" height="4" style="{F_MARK}"></rect>'),
+    ]
+    sep = _vline(SAMPLE["role_cur"][0], ys - bh / 2, ys + bh / 2, "fill: var(--color-mark-empty)", 1, cls="t")
+    dots = "".join(_mk("s", "", f'{s["evTitles"][i]} · {s["date"]}',
+                       f'<circle class="sep" cx="{pct(m)}" cy="{ys}" r="{er}" style="{F_MARK}; stroke: #FFFFFF; stroke-width: 2" {NS}></circle>')
+                   for i, m in enumerate(SAMPLE["ev"]))
+    award_t = "".join(S[L]["award"])
+    diamonds = (_mk("w", "", f'{s["awardName"]} · {s["date"]}', _diamond(SAMPLE["awd2"], yw, dr))
+                + _mk("w", "a", f'{award_t} · {s["date"]}', _diamond(SAMPLE["awd1"], yw, dr)))
+    svg = (f'<svg class="gx" width="100%" height="{H}" {SVG_A}>{grid}{base}{stitches}{sep}{"".join(marks)}{dots}{diamonds}{now}</svg>')
+    years = [m for m in SAMPLE["years"]] if not mobile else SAMPLE["years"][:3]
+    axis = "".join(f'<span style="position: absolute; left: calc({pct(m)} + 4px); top: 2px; {DATE}">{esc(s["yearPh"])}</span>' for m in years)
+    axis += f'<span style="position: absolute; right: 0; top: 2px; {META}; font-weight: 500; color: var(--color-ink)">{esc(s["now"])}</span>'
+    plot = f'<div aria-hidden="true" style="position: relative; min-width: 0">{svg}<div style="position: relative; height: 24px">{axis}</div></div>'
+    names = [s["nav"][1], s["nav"][2], s["nav"][3], s["nav"][4]]
+    kinds = ["p", "a", "w", "s"]
+    hrefs = ["#projects", "#activities", "#awards", "#society"]
+    if mobile:
+        rows = "".join(f'<div style="height: 24px; display: flex; align-items: center; {META}; font-weight: 500; white-space: nowrap">{esc(n)}</div>' for n in names)
+        legend = f'<div aria-hidden="true">{rows}<div style="height: 24px; display: flex; align-items: center; {META}">{esc(s["sampleShort"])}</div></div>'
+        cols = "72px minmax(0, 1fr)"; gap = "8px"
+    else:  # lanes are labelled directly (no swatch/count legend); each label jumps to its section
+        rows = "".join(
+            f'<a class="lg" data-ln="{k}" href="{h}" style="height: 28px; display: flex; align-items: center; {META}; font-weight: 500; text-decoration: none; white-space: nowrap">{esc(n)}</a>'
+            for k, n, h in zip(kinds, names, hrefs))
+        legend = f'<div>{rows}<div style="height: 24px; display: flex; align-items: center; {META}">{esc(s["sample"])}</div></div>'
+        cols = "var(--axis-label) minmax(0, 1fr)"; gap = "var(--axis-gap)"
+    title_of = {"p1": s["p1"], "p2": s["p2"], "p3": s["p3"], "act1": s["act1"], "act2": s["actName"], "awd1": award_t, "awd2": s["awardName"], "society": s["socName"]}
+    def start(v): return v[0] if isinstance(v, tuple) else v
+    entries = [("p2", s["kindProj"], s["period"]), ("p3", s["kindProj"], s["period"]), ("p1", s["kindProj"], s["period"]),
+               ("act2", s["kindAct"], s["period"]), ("act1", s["kindAct"], s["date"]), ("awd2", s["kindAward"], s["date"]), ("awd1", s["kindAward"], s["date"])]
+    rows_c = [(start(SAMPLE[k]), kind, title_of[k], d, " · ".join(title_of[r] for r in RELS.get(k, []))) for k, kind, d in entries]
+    rows_c += [(SAMPLE["role_prev"][0], s["kindRole"], s["prevRole"], s["period"], ""), (SAMPLE["role_cur"][0], s["kindRole"], s["curRole"], s["curPeriod"], "")]
+    rows_c += [(m, s["kindEvent"], s["evTitles"][i], s["date"], "") for i, m in enumerate(SAMPLE["ev"])]
+    rows_c.sort(key=lambda r: r[0])
+    ol = "".join(f'<li>{esc(k)} · {esc(t)} · {esc(d)}{(" · " + esc(s["related"]) + ": " + esc(r)) if r else ""}</li>' for _, k, t, d, r in rows_c)
+    cap = f'<figcaption class="sr-only">{esc(s["mapCaption"])}<ol>{ol}</ol></figcaption>'
+    style = (f"flex: 0 0 100%; margin: {'24px 0 0' if mobile else '0'}; display: grid; grid-template-columns: {cols}; column-gap: {gap}")
+    return f'<figure class="cmap" data-graphic="map" style="{style}">{legend}{plot}{cap}</figure>'
+
+def plate(L, W, H, compact=False, marks=True):
+    """기간 도판: the project's active months (white cells) + what it led to (award / activity marks) on a purple field."""
+    s = S[L]
+    p = 24 if (W >= 320 and H >= 160) else 16
+    g = 4 if W >= 320 else 3
+    c = min(22, (W - 2 * p - 11 * g) // 12)
+    months = H >= 120
+    label_h = 24 if H >= 160 else 18
+    rows_bottom = H - p - (label_h if months else 0)
+    top = rows_bottom - c
+    gw = 12 * c + 11 * g
+    x0 = (W - gw) // 2  # centre the 12-month grid
+    active = range(3, 8)  # Apr–Aug (sample)
+    cells = []
+    for i in range(12):
+        x = x0 + i * (c + g)
+        if i in active:
+            cells.append(f'<rect x="{x}" y="{top}" width="{c}" height="{c}" style="fill: var(--color-plate-ink)"></rect>')
+        else:
+            cells.append(f'<rect x="{x + 0.5}" y="{top + 0.5}" width="{c - 1}" height="{c - 1}" style="fill: none; stroke: var(--color-plate-cell); stroke-width: 1" {NS}></rect>')
+    col8 = x0 + 7 * (c + g) + c // 2
+    cy = top - 16
+    r = 5 if W < 320 else 7
+    ah = 6 if W < 320 else 8
+    aw = c
+    diamond = f'<path d="M{col8 + 0.5} {cy - r}l{r} {r}-{r} {r}-{r}-{r}z" style="fill: var(--color-award); stroke: var(--color-plate-ink); stroke-width: 1.5" {NS}></path>'
+    act_y = cy - r - 4 - ah
+    act = f'<rect x="{col8 + 0.5 - aw / 2 + 0.75}" y="{act_y + 0.75}" width="{aw - 1.5}" height="{ah - 1.5}" style="fill: none; stroke: var(--color-plate-ink); stroke-width: 1.5" {NS}></rect>'
+    stitch = f'<rect x="{col8}" y="{act_y + ah}" width="1" height="{top - act_y - ah}" style="fill: var(--color-plate-ink)"></rect>'
+    mk = f"{stitch}{act}{diamond}" if marks else ""
+    svg = f'<svg viewBox="0 0 {W} {H}" width="100%" height="100%" {SVG_A} style="position: absolute; inset: 0">{"".join(cells)}{mk}</svg>'
+    ysz = 30 if months else 17
+    year = (f'<span style="position: absolute; left: {x0 / W * 100:.3f}%; top: {p / H * 100:.3f}%; font-size: {ysz}px; line-height: 1; font-weight: 600; '
+            f'letter-spacing: -0.02em; color: var(--color-plate-ink); font-variant-numeric: tabular-nums">{esc(s["yearPh"])}</span>')
+    mlabels = ""
+    if months:
+        lb = f"bottom: {p / H * 100:.3f}%; font-size: var(--text-meta); line-height: {label_h - 4}px; color: var(--color-plate-ink-2); letter-spacing: 0"
+        grid_right = x0 + gw
+        mlabels = (f'<span style="position: absolute; left: {x0 / W * 100:.3f}%; {lb}">{esc(s["jan"])}</span>'
+                   f'<span style="position: absolute; right: {(W - grid_right) / W * 100:.3f}%; {lb}">{esc(s["dec"])}</span>')
+    award_t = "".join(s["award"])
+    aria = f'{s["p1"]} {s["plateLabel"]}: {s["period"]}' + (f' · {s["related"]}: {award_t} · {s["act1"]}' if marks else "")
+    return (f'<div role="img" data-graphic="cover" aria-label="{esc(aria)}" style="forced-color-adjust: none; position: relative; width: 100%; aspect-ratio: {W} / {H}; '
+            f'border-radius: var(--radius-md); background: var(--color-plate); overflow: hidden">{svg}{year}{mlabels}</div>')
+
+def role_band(L, mobile):
+    s = S[L]
+    a, b = SAMPLE["role_prev"][0], 46
+    span = b - a
+    dots = "".join(f'<circle cx="{(m - a) / span * 100:.3f}%" cy="5" r="4" style="{F_MARK}"></circle>'
+                   f'<rect x="{(m - a) / span * 100:.3f}%" y="9" width="1" height="7" transform="translate(-0.5 0)" style="fill: var(--color-mark-empty)"></rect>' for m in SAMPLE["ev"])
+    strip = f'<svg class="gx" width="100%" height="16" {SVG_A}>{dots}</svg>'
+    seg = "display: block; height: 20px; box-sizing: border-box; padding: 0 8px; font-size: var(--text-meta); font-weight: 500; letter-spacing: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis"
+    prev = (f'<li style="flex: {SAMPLE["role_prev"][1] - a} 1 0; min-width: 0; display: flex; flex-direction: column; gap: 6px">'
+            f'<span style="{seg}; line-height: 17px; background: var(--color-mark-fill); border: 1.5px solid var(--color-mark); color: var(--color-mark)">{esc(s["prevRole"])}</span>'
+            f'<span style="{DATE}">{esc(s["period"])}</span></li>')
+    cur = (f'<li style="flex: {b - SAMPLE["role_cur"][0]} 1 0; min-width: 0; display: flex; flex-direction: column; gap: 6px">'
+           f'<span style="{seg}; line-height: 20px; background: var(--color-mark); color: var(--color-plate-ink)">{esc(s["curRole"])}</span>'
+           f'<span style="{DATE}">{esc(s["curPeriod"])}</span></li>')
+    return (f'<h4 style="margin: 24px 0 8px; {META}; font-weight: 500">{esc(s["roles_h"])}</h4>'
+            f'<ol role="list" data-graphic="roles" style="display: flex; gap: 2px; margin: 0; padding: 0; list-style: none">{prev}{cur}</ol>')
+
+def skills_matrix(L, detail_href):
+    s = S[L]
+    head = (f'<th scope="col" style="width: calc(var(--date-col) + 24px)"><span class="sr-only">{esc(s["mxCat"])}</span></th>'
+            f'<th scope="col" style="width: 168px"><span class="sr-only">{esc(s["mxTech"])}</span></th>'
+            + "".join(f'<th scope="col" style="padding: 0 8px 8px; vertical-align: bottom; text-align: center; font-weight: 500">'
+                      f'<a href="{detail_href}" style="{META}; {LINK}; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; padding: 4px 0">{esc(s[k])}</a></th>'
+                      for k in PROJECT_ORDER))
+    body = []
+    for ci, items in SKILLS:
+        grp = []
+        for j, (t, _k) in enumerate(items):
+            rule = f"border-top: 1px solid var(--color-line); " if j == 0 else ""
+            cat = (f'<th scope="rowgroup" rowspan="{len(items)}" style="{rule}text-align: left; vertical-align: top; padding-top: 8px; {META}; font-weight: 500">{esc(s["skillCats"][ci])}</th>'
+                   if j == 0 else "")
+            cells = "".join(
+                (f'<td style="{rule}text-align: center; height: 36px; padding: 0"><a href="{detail_href}" style="display: inline-flex; width: 40px; height: 36px; align-items: center; justify-content: center">'
+                 f'<svg class="gx" width="12" height="12" viewBox="0 0 12 12" {SVG_A}><rect width="12" height="12" style="{F_MARK}"></rect></svg><span class="sr-only">{esc(s["mxUsed"])}: {esc(s[k])}</span></a></td>')
+                if TECH_USE[t] == k else
+                (f'<td style="{rule}text-align: center; height: 36px; padding: 0"><svg class="gx" width="4" height="4" viewBox="0 0 4 4" {SVG_A} style="display: block; margin: 0 auto"><rect width="4" height="4" style="fill: var(--color-mark-empty)"></rect></svg>'
+                 f'<span class="sr-only">{esc(s["mxUnused"])}</span></td>')
+                for k in PROJECT_ORDER)
+            grp.append(f'<tr>{cat}<th scope="row" style="{rule}text-align: left; padding: 0 8px 0 0; {SECOND}; font-weight: 500; color: var(--color-ink)">{t}</th>{cells}</tr>')
+        body.append(f'<tbody>{"".join(grp)}</tbody>')
+    return (f'<div style="overflow-x: auto"><table class="mx" style="width: 100%; border-collapse: collapse; table-layout: fixed">'
+            f'<caption class="sr-only">{esc(s["mxCaption"])}</caption><thead><tr>{head}</tr></thead>{"".join(body)}</table></div>')
+
+def usage_strip(tech, this=None, size=10):
+    """One slot per project in timeline order; filled if the tech is used there; this project underlined."""
+    out, x = [], 0
+    for k in PROJECT_ORDER:
+        if TECH_USE.get(tech) == k:
+            out.append(f'<rect x="{x}" y="0" width="{size}" height="{size}" style="{F_MARK}"></rect>')
+        else:
+            out.append(f'<rect x="{x + 3}" y="3" width="4" height="4" style="fill: var(--color-mark-empty)"></rect>')
+        if this == k:
+            out.append(f'<rect x="{x}" y="{size + 2}" width="{size}" height="2" style="fill: var(--color-ink)"></rect>')
+        x += size + 4
+    w = x - 4
+    return f'<svg class="gx" width="{w}" height="14" viewBox="0 0 {w} 14" {SVG_A} style="display: inline-block; flex: none">{"".join(out)}</svg>'
+
+def context_strip(L):
+    """Detail 관련 항목: where this project sits in the whole record, and what it led to."""
+    s = S[L]
+    H = 52
+    grid = "".join(_vline(m, 0, H, "fill: var(--color-track)", cls="t") for m in SAMPLE["years"][1:])
+    now = f'<rect x="100%" y="0" width="1" height="{H}" transform="translate(-1 0)" style="fill: var(--color-ink)"></rect>'
+    track = f'<rect x="0" y="38" width="100%" height="2" style="fill: var(--color-track)"></rect>'
+    ghosts = "".join(f'<rect x="{pct(SAMPLE[k][0])}" y="36" width="{pct(SAMPLE[k][1] - SAMPLE[k][0])}" height="6" style="fill: var(--color-mark-ghost)"></rect>' for k in ("p2", "p3"))
+    this = f'<rect x="{pct(SAMPLE["p1"][0])}" y="34" width="{pct(SAMPLE["p1"][1] - SAMPLE["p1"][0])}" height="10" style="{F_MARK}"></rect>'
+    stitch = _vline(SAMPLE["awd1"], 6, 34, "fill: var(--color-mark-link)", 1.5)
+    act = _bar(*SAMPLE["act1"], 2, 8, "a")
+    dia = _diamond(SAMPLE["awd1"], 20, 7)
+    svg = f'<svg class="gx" width="100%" height="{H}" {SVG_A}>{grid}{track}{ghosts}{stitch}{this}{act}{dia}{now}</svg>'
+    axis = "".join(f'<span style="position: absolute; left: calc({pct(m)} + 4px); top: 2px; {DATE}">{esc(s["yearPh"])}</span>' for m in SAMPLE["years"][:3])
+    axis += f'<span style="position: absolute; right: 0; top: 2px; {META}; font-weight: 500; color: var(--color-ink)">{esc(s["now"])}</span>'
+    return (f'<div aria-hidden="true" data-graphic="context" style="position: relative; margin-bottom: 16px">{svg}'
+            f'<div style="position: relative; height: 20px">{axis}</div></div>')
+
+def list_scale(L, mobile):
+    s = S[L]
+    W = 96 if mobile else 136
+    ticks = "".join(f'<rect x="{round(m / D * W)}" y="19" width="1" height="5" style="fill: var(--color-mark-empty)"></rect>' for m in SAMPLE["years"])
+    svg = f'<svg class="gx" width="{W}" height="24" viewBox="0 0 {W} 24" {SVG_A} style="position: absolute; inset: 0">{ticks}<rect x="0" y="23" width="{W}" height="1" style="fill: var(--color-mark-empty)"></rect></svg>'
+    lab = f"font-size: var(--text-meta); line-height: 16px; color: var(--color-muted); letter-spacing: 0"
+    cell = (f'<div style="position: relative; flex: 0 0 {W}px; height: 24px">{svg}<span style="position: absolute; left: 0; top: 0; {lab}">{esc(s["yearPh"])}</span>'
+            f'<span style="position: absolute; right: 0; top: 0; {lab}; font-weight: 500; color: var(--color-ink)">{esc(s["now"])}</span></div>')
+    style = "display: flex; justify-content: flex-end; margin-bottom: 8px" if mobile else "display: flex; column-gap: 24px; margin-bottom: 8px"
+    return f'<div aria-hidden="true" data-graphic="scale" style="{style}">{cell}</div>'
+
+def section_legend(L, kind, mobile):
+    s = S[L]
+    txt = s["legendShort" if mobile else "legend"][kind]
+    if mobile:
+        return f'<span aria-hidden="true" style="display: inline-flex; align-items: center">{glyph(kind, "legend")}</span>'
+    return f'<p style="margin: 8px 0 0; display: flex; align-items: center; gap: 8px; {META}; font-variant-numeric: tabular-nums">{glyph(kind, "legend")}{esc(txt)}</p>'
 # --------------------------------------------------------------------------- page shell
 def tokens(mobile):
     t = {
@@ -213,6 +510,9 @@ def tokens(mobile):
         "--radius-sm": "4px", "--radius-md": "8px", "--container": "1200px", "--gutter": "20px" if mobile else "40px",
         "--axis-label": "216px", "--axis-gap": "56px", "--date-col": "136px", "--fact-label": "88px" if mobile else "96px",
         "--header-h": "48px" if mobile else "64px", "--subnav-h": "44px",
+        "--color-mark": "var(--color-primary)", "--color-mark-fill": "#EDE9FE", "--color-mark-ghost": "#DDD6FE", "--color-mark-link": "#8B5CF6",
+        "--color-track": "var(--color-line)", "--color-mark-empty": "var(--color-line-strong)", "--color-plate": "var(--color-primary)",
+        "--color-plate-ink": "#FFFFFF", "--color-plate-ink-2": "#EDE9FE", "--color-plate-cell": "#C4B5FD",
     }
     return "; ".join(f"{k}: {v}" for k, v in t.items())
 
@@ -232,6 +532,11 @@ def page(L, title, body, w, h, mobile=False, scroll_pad=80):
         ".wordmark{flex:0 0 var(--axis-label)}.strip{margin-left:-12px}\n"
         ".tab{padding:0 12px}.tab .bar{left:12px;right:12px}.tab-m{padding:0 10px}.tab-m .bar{left:10px;right:10px}\n"
         "@media (max-width:1199px){.wordmark{flex:0 0 136px;overflow:hidden;text-overflow:ellipsis}.strip{margin-left:0}.tab{padding:0 8px}.tab .bar{left:8px;right:8px}}\n"
+        ".gx{display:block;overflow:visible}.gx .mk{transition:opacity .12s}\n"
+        ".cmap:has(.mk:hover) .mk{opacity:.3}.cmap:has([data-ch~=a]:hover) [data-ch~=a],.cmap:has([data-ch~=b]:hover) [data-ch~=b]{opacity:1}\n"
+        ".cmap:has(.lg[data-ln=p]:is(:hover,:focus-visible)) .mk:not([data-ln=p]),.cmap:has(.lg[data-ln=a]:is(:hover,:focus-visible)) .mk:not([data-ln=a]),.cmap:has(.lg[data-ln=w]:is(:hover,:focus-visible)) .mk:not([data-ln=w]),.cmap:has(.lg[data-ln=s]:is(:hover,:focus-visible)) .mk:not([data-ln=s]){opacity:.3}\n"
+        ".mx tbody tr:hover>*{background:var(--color-primary-soft)}\n"
+        "@media (prefers-reduced-motion:reduce){.gx .mk{transition:none}}@media (forced-colors:active){.gx *{fill:CanvasText;stroke:CanvasText}.gx .o{fill:Canvas}.gx .sep{stroke:Canvas}.gx .t{fill:GrayText}}\n"
     )
     width = f"width: {w}px; " if mobile else ""
     doc = f"""<!doctype html>
@@ -398,14 +703,17 @@ def photo(L, mobile):
             f'<svg width="{icon}" height="{icon}" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="{2 if mobile else 1.5}" stroke-linecap="round" aria-hidden="true"><circle cx="20" cy="14" r="7"></circle><path d="M6 36c1.5-7.5 7.2-12 14-12s12.5 4.5 14 12"></path></svg>'
             f'<figcaption style="{META}; font-weight: 500; white-space: nowrap">{esc(S[L]["photoCap"])}</figcaption></figure>')
 
-def ledger_row(content, date, first=False, extra_date="", mobile=False):
-    """One dated row. DOM order: content first (heading-first for AT); the date is shown first via order:-1."""
+def ledger_row(content, date, first=False, extra_date="", mobile=False, track=None):
+    """One dated row. DOM order: content first (heading-first for AT); the date is shown first via order:-1.
+    track = (kind, span): the row's own mark on the shared time scale, under the date."""
     if mobile:
+        tr = micro_track(track[0], track[1], 96) if track else ""
         return (f'<li style="display: flex; flex-direction: column; {row_pad(first)}"><div>{content}</div>'
-                f'<div data-date style="order: -1; {DATE}; margin-bottom: 2px">{date}{extra_date}</div></li>')
+                f'<div data-date style="order: -1; display: flex; align-items: center; justify-content: space-between; gap: 12px; {DATE}; margin-bottom: 2px"><span>{date}{extra_date}</span>{tr}</div></li>')
+    tr = micro_track(track[0], track[1], 136).replace('class="gx"', 'class="gx" style="margin-top: 6px"', 1) if track else ""
     return (f'<li style="display: flex; flex-wrap: wrap; column-gap: 24px; row-gap: 4px; {row_pad(first)}">'
             f'<div style="flex: 1 1 320px; min-width: 0">{content}</div>'
-            f'<div data-date style="order: -1; flex: 0 0 var(--date-col); {DATE}; padding-top: 2px">{date}{extra_date}</div></li>')
+            f'<div data-date style="order: -1; flex: 0 0 var(--date-col); {DATE}; padding-top: 2px">{date}{extra_date}{tr}</div></li>')
 
 def title_h(tag, text, link=None, stretch=False, size_var="--text-title", track="-0.01em", margin="0", link_extra=""):
     style = f"margin: {margin}; font-size: var({size_var}); line-height: 1.45; font-weight: 600; letter-spacing: {track}; {col(text)}"
@@ -424,13 +732,13 @@ def live_html(L):
 def status_html(L, status):
     return live_html(L) if status == "live" else f'<span style="{MUTED}">{esc(status)}</span>'
 
-def rel(href, text, L, sr_pre, mobile):
-    return a_link(href, text, L, sr_pre=sr_pre, block=mobile)
+def rel(href, text, L, sr_pre, mobile, kind=""):
+    return a_link(href, text, L, sr_pre=sr_pre, block=mobile, glyph_kind=kind)
 
 # --------------------------------------------------------------------------- home sections
 def featured(L, mobile, detail_href):
     s = S[L]
-    rl = relation_line(L, [award_html(L, "#awards", block=mobile), rel("#activities", esc(s["act1"]), L, s["srAct"], mobile)], mobile)
+    rl = relation_line(L, [award_html(L, "#awards", block=mobile), rel("#activities", esc(s["act1"]), L, s["srAct"], mobile, "a")], mobile)
     links = f'''<div style="display: flex; flex-wrap: wrap; column-gap: 20px; margin-top: {8 if mobile else 16}px">
 {a_link(detail_href, esc(s["details"]), L, sr_post=": " + s["p1"], weight=600, block=True, trailing=svg("arrow", 14, 2))}
 {a_link("#", esc(s["demo"]), L, ext=True, sr_post=" " + s["p1"], block=True)}
@@ -443,13 +751,14 @@ def featured(L, mobile, detail_href):
             + f'<p style="margin: 12px 0 0; {SECOND}; {MUTED}">{esc(s["myRole"])} {esc(s["role"])}</p>'
             + f'<p style="margin: 4px 0 0; {META}">Next.js, Supabase</p>'
             + f'<p style="margin: 8px 0 0; {META}">{live_html(L)}</p>' + rl + "</div>")
-    img = slot(s["img"], f'{s["p1"]} {s["imgAria"]}')
+    img = plate(L, 350, 219, marks=False) if mobile else plate(L, 360, 225, marks=False)
     if mobile:
         return f'<article>{text}<div style="margin-top: 16px">{img}</div>{links}</article>'
     return (f'<article style="display: flex; flex-wrap: wrap; column-gap: 32px; row-gap: 16px; align-items: flex-start">'
             f'<div style="flex: 1 1 300px; max-width: 360px; min-width: 220px">{img}</div><div style="flex: 1 1 280px; min-width: 0">{text}{links}</div></article>')
 
 def index_row(L, key, meta, stack, status, rel_html, detail_href, mobile, first=False, tag="h3", tagline=None):
+    span = SAMPLE[key]
     """Project row: the whole row is one stretched link; status always sits in the same slot."""
     s = S[L]
     tl = p(tagline or s["oneLine"])
@@ -461,28 +770,30 @@ def index_row(L, key, meta, stack, status, rel_html, detail_href, mobile, first=
         return (f'<li style="position: relative; display: flex; flex-direction: column; {row_pad(first)}">'
                 f'<div style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px">{title_h(tag, s[key], detail_href, stretch=True)}{arrow}</div>'
                 f'{tl}<p style="margin: 2px 0 0; {META}">{esc(meta)} · {st} · {esc(stack)}</p>{rl}'
-                f'<div data-date style="order: -1; {DATE}; margin-bottom: 2px">{esc(s["period"])}</div></li>')
+                f'<div data-date style="order: -1; display: flex; align-items: center; justify-content: space-between; gap: 12px; {DATE}; margin-bottom: 2px"><span>{esc(s["period"])}</span>{micro_track("p", span, 96)}</div></li>')
     arrow = f'<span aria-hidden="true" style="position: absolute; right: 0; top: {2 if first else 18}px; color: var(--color-subtle)">{svg("arrow")}</span>'
     return (f'<li style="position: relative; display: flex; column-gap: 24px; padding-right: 40px; {row_pad(first)}">'
             f'<div style="flex: 1 1 0; min-width: 0; display: flex; flex-wrap: wrap; column-gap: 24px; row-gap: 4px">'
             f'<div style="flex: 1 1 280px; min-width: 0">{title_h(tag, s[key], detail_href, stretch=True)}{tl}{rl}</div>'
             f'<div style="flex: 0 1 200px; min-width: 0; {META}; line-height: 1.6">{esc(meta)} · {st}<br>{esc(stack)}</div></div>{arrow}'
-            f'<div data-date style="order: -1; flex: 0 0 var(--date-col); {DATE}; padding-top: 2px">{esc(s["period"])}</div></li>')
+            f'<div data-date style="order: -1; flex: 0 0 var(--date-col); {DATE}; padding-top: 2px">{esc(s["period"])}{micro_track("p", span, 136).replace('class="gx"', 'class="gx" style="margin-top: 6px"', 1)}</div></li>')
 
 def project_rows(L, mobile, detail_href, home_href, tag, include_p1):
     s = S[L]
     rows = []
     if include_p1:
         rows.append(index_row(L, "p1", s["teamHack"], "Next.js, Supabase", "live",
-                              [award_html(L, home_href + "#awards", block=mobile), rel(home_href + "#activities", esc(s["act1"]), L, s["srAct"], mobile)],
+                              [award_html(L, home_href + "#awards", block=mobile), rel(home_href + "#activities", esc(s["act1"]), L, s["srAct"], mobile, "a")],
                               detail_href, mobile, first=True, tag=tag, tagline=s["p1tag"]))
-    rows.append(index_row(L, "p2", s["p2meta"], "FastAPI, OpenAI API", s["statusPh"], "", detail_href, mobile, first=False, tag=tag))
-    rows.append(index_row(L, "p3", s["p3meta"], "React, Firebase", s["statusPh"], rel(home_href + "#society", esc(s["socName"]), L, s["srSoc"], mobile),
+    # newest first (résumé convention): p3 (started later) before p2
+    rows.append(index_row(L, "p3", s["p3meta"], "React, Firebase", s["statusPh"], rel(home_href + "#society", esc(s["socName"]), L, s["srSoc"], mobile, "s"),
                           detail_href, mobile, tag=tag))
+    rows.append(index_row(L, "p2", s["p2meta"], "FastAPI, OpenAI API", s["statusPh"], "", detail_href, mobile, first=False, tag=tag))
     return rows
 
-def section(L, sid, idx, content, mobile, view_all=None):
+def section(L, sid, idx, content, mobile, view_all=None, legend=None):
     s = S[L]
+    lg = section_legend(L, legend, mobile) if legend else ""
     va = ""
     if view_all:
         va = (f'<a href="{view_all}" style="display: inline-flex; align-items: center; gap: 4px; min-height: 44px; {"" if mobile else "margin-top: 8px; "}'
@@ -490,10 +801,11 @@ def section(L, sid, idx, content, mobile, view_all=None):
               f'<span class="sr-only">{esc(s["viewAllSr"])}</span>{svg("arrow", 14, 2)}</a>')
     h = f'<h2 id="h-{sid}" style="{H2}">{esc(s["nav"][idx])}</h2>'
     if mobile:
-        head = f'<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; margin-bottom: 8px">{h}{va}</div>'
+        head = (f'<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; margin-bottom: 8px">'
+                f'<div style="display: flex; align-items: center; gap: 12px; min-width: 0">{h}{lg}</div>{va}</div>')
         return f'<section id="{sid}" aria-labelledby="h-{sid}" style="{RULE}; padding: 24px 0 32px">{head}{content}</section>'
     return (f'<section id="{sid}" aria-labelledby="h-{sid}" style="{RULE}; padding: 40px 0; display: flex; flex-wrap: wrap; column-gap: var(--axis-gap); row-gap: 16px">'
-            f'<div data-axis="label" style="flex: 0 0 var(--axis-label); min-width: 0">{h}{va}</div>'
+            f'<div data-axis="label" style="flex: 0 0 var(--axis-label); min-width: 0">{h}{lg}{va}</div>'
             f'<div data-axis="content" style="flex: 1 1 560px; min-width: 0">{content}</div></section>')
 
 def home(L, mobile):
@@ -506,21 +818,21 @@ def home(L, mobile):
                 f'<div style="display: grid; grid-template-columns: 104px minmax(0, 1fr); column-gap: 16px; align-items: end">{photo(L, True)}'
                 f'<div style="min-width: 0"><h1 id="h-about" style="margin: 0; font-size: var(--text-display); line-height: 1.2; font-weight: 700; letter-spacing: -0.03em; {col(name)}">{esc(name)}</h1>'
                 f'<div{lang_attr(s["nameAlt"], alt_lang)} style="{SECOND}; {MUTED}">{esc(s["nameAlt"])}</div>{roles_list(L, True)}</div></div>'
-                f'<p style="margin: 20px 0 0; {BODY}; {col(s["intro"])}">{esc(s["intro"])}</p>{hero_facts(L, True)}</section>')
+                f'<p style="margin: 20px 0 0; {BODY}; {col(s["intro"])}">{esc(s["intro"])}</p>{hero_facts(L, True)}{hero_map(L, True)}</section>')
     else:
-        hero = (f'<section id="about" aria-labelledby="h-about" style="padding: 64px 0 56px; display: flex; flex-wrap: wrap; align-items: flex-end; column-gap: var(--axis-gap); row-gap: 24px">'
+        hero = (f'<section id="about" aria-labelledby="h-about" style="padding: 64px 0 48px; display: flex; flex-wrap: wrap; align-items: flex-end; column-gap: var(--axis-gap); row-gap: 24px">'
                 f'{photo(L, False)}<div data-axis="content" style="flex: 1 1 520px; min-width: 0">'
                 f'<div style="display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 16px"><h1 id="h-about" style="margin: 0; font-size: var(--text-display); line-height: 1.15; font-weight: 700; letter-spacing: {"-0.02em" if L == "en" else "-0.03em"}; {col(name)}">{esc(name)}</h1>'
                 f'<span{lang_attr(s["nameAlt"], alt_lang)} style="font-size: var(--text-lead); line-height: 1.5; letter-spacing: 0; {MUTED}">{esc(s["nameAlt"])}</span></div>'
-                f'{roles_list(L, False)}<p style="margin: 16px 0 0; max-width: 34em; {BODY}; {col(s["intro"])}">{esc(s["intro"])}</p>{hero_facts(L, False)}</div></section>')
+                f'{roles_list(L, False)}<p style="margin: 16px 0 0; max-width: 34em; {BODY}; {col(s["intro"])}">{esc(s["intro"])}</p>{hero_facts(L, False)}</div>{hero_map(L, False)}</section>')
     projects = featured(L, mobile, detail) + f'<div style="margin-top: {24 if mobile else 32}px">{ul(project_rows(L, mobile, detail, "", "h3", False))}</div>'
     act = ul([
-        ledger_row(title_h("h3", s["act1"]) + p(s["orgRole"]) + relation_line(L, [rel(detail, esc(s["p1"]), L, s["srProj"], mobile), award_html(L, "#awards", block=mobile)], mobile), esc(s["date"]), first=True, mobile=mobile),
-        ledger_row(title_h("h3", s["actName"]) + p(s["orgRole2"]), esc(s["period"]), mobile=mobile),
+        ledger_row(title_h("h3", s["act1"]) + p(s["orgRole"]) + relation_line(L, [rel(detail, esc(s["p1"]), L, s["srProj"], mobile, "p"), award_html(L, "#awards", block=mobile)], mobile), esc(s["date"]), first=True, mobile=mobile, track=("a", SAMPLE["act1"])),
+        ledger_row(title_h("h3", s["actName"]) + p(s["orgRole2"]), esc(s["period"]), mobile=mobile, track=("a", SAMPLE["act2"])),
     ])
     awd = ul([
-        ledger_row(f'<h3 style="{TITLE}">{award_html(L)}</h3>' + p(s["organizer"]) + relation_line(L, [rel(detail, esc(s["p1"]), L, s["srProj"], mobile), rel("#activities", esc(s["act1"]), L, s["srAct"], mobile)], mobile), esc(s["date"]), first=True, mobile=mobile),
-        ledger_row(title_h("h3", s["awardName"]) + p(s["organizer"]), esc(s["date"]), mobile=mobile),
+        ledger_row(f'<h3 style="{TITLE}">{award_html(L)}</h3>' + p(s["organizer"]) + relation_line(L, [rel(detail, esc(s["p1"]), L, s["srProj"], mobile, "p"), rel("#activities", esc(s["act1"]), L, s["srAct"], mobile, "a")], mobile), esc(s["date"]), first=True, mobile=mobile, track=("w", SAMPLE["awd1"])),
+        ledger_row(title_h("h3", s["awardName"]) + p(s["organizer"]), esc(s["date"]), mobile=mobile, track=("w", SAMPLE["awd2"])),
     ])
     # society: roles hang their dot in the gutter so role text sits on the same axis as every title
     dot_cur = '<span aria-hidden="true" style="position: relative; flex: none; width: 8px; height: 8px; border-radius: 4px; background: var(--color-primary)"></span>'
@@ -538,15 +850,15 @@ def home(L, mobile):
              f'<span aria-hidden="true" style="position: absolute; left: {line_left}; top: {"36px" if mobile else "20px"}; bottom: {"16px" if mobile else "20px"}; width: 1px; background: var(--color-line-strong)"></span>'
              f'<ul role="list" style="margin: 0; padding: 0; list-style: none">{role_row(dot_cur, s["curRole"], s["curPeriod"])}{role_row(dot_prev, s["prevRole"], s["period"])}</ul></div>')
     ev_rows = []
-    for i in range(3):
+    for i in (2, 1, 0):  # newest first
         t = s["evTypes"][i]
         content = title_h("h5", s["evTitles"][i]) + f'<p style="margin: 2px 0 0; {SECOND}; {MUTED}">{esc(s["evRole"])} <span style="font-weight: 500">{esc(s["role"])}</span></p>'
         if mobile:
-            ev_rows.append(ledger_row(content, f'{esc(s["date"])} · <span style="font-weight: 500; {col(t)}">{esc(t)}</span>', mobile=True))
+            ev_rows.append(ledger_row(content, f'{esc(s["date"])} · <span style="font-weight: 500; {col(t)}">{esc(t)}</span>', mobile=True, track=("s", SAMPLE["ev"][i])))
         else:
-            ev_rows.append(ledger_row(content, esc(s["date"]), extra_date=f'<span style="display: block; font-weight: 500; {col(t)}">{esc(t)}</span>'))
+            ev_rows.append(ledger_row(content, esc(s["date"]), extra_date=f'<span style="display: block; font-weight: 500; {col(t)}">{esc(t)}</span>', track=("s", SAMPLE["ev"][i])))
     soc = (title_h("h3", s["socName"]) + f'<p style="margin: 2px 0 0; max-width: 40em; {SECOND}; color: var(--color-ink-2)">{esc(s["socDesc"])}</p>'
-           + relation_line(L, [rel(detail, esc(s["p3"]), L, s["srProj"], mobile)], mobile) + roles
+           + relation_line(L, [rel(detail, esc(s["p3"]), L, s["srProj"], mobile, "p")], mobile) + role_band(L, mobile)
            + f'<h4 style="margin: 24px 0 8px; {META}; font-weight: 500">{esc(s["events_h"])}</h4>' + ul(ev_rows))
     # skills: desktop = 3-column grid per category; mobile = one row per tech (name left, project right)
     sk_rows = []
@@ -565,7 +877,7 @@ def home(L, mobile):
                 for t, k in items)
             items_ul = f'<ul role="list" style="flex: 1 1 320px; min-width: 0; margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(176px, 1fr)); column-gap: 16px; row-gap: 8px">{lis}</ul>'
             sk_rows.append(f'<li style="display: flex; flex-wrap: wrap; column-gap: 24px; row-gap: 8px; {row_pad(n == 0)}"><h3 style="flex: 0 0 var(--date-col); margin: 0; padding-top: 2px; {META}; font-weight: 500">{esc(s["skillCats"][ci])}</h3>{items_ul}</li>')
-    skills = ul(sk_rows)
+    skills = ul(sk_rows) if mobile else skills_matrix(L, detail)
     edu = ul([ledger_row(title_h("h3", s["school"]) + p(s["majorDeg"]), esc(s["eduPeriod"]), first=True, mobile=mobile)])
     lab = "var(--fact-label)" if mobile else "var(--date-col)"
     def crow(label, value, button=""):
@@ -578,11 +890,11 @@ def home(L, mobile):
                + crow("Discord", f'<span style="display: inline-flex; align-items: center; min-height: 44px; {MUTED}">{esc(s["discord"])}</span>', copy_btn(s["copyDiscord"], L))
                + "</dl>")
     body_sections = (hero
-        + section(L, "projects", 1, projects, mobile, view_all=board("list", L, mobile))
-        + section(L, "activities", 2, act, mobile)
-        + section(L, "awards", 3, awd, mobile)
-        + section(L, "society", 4, soc, mobile)
-        + section(L, "skills", 5, skills, mobile)
+        + section(L, "projects", 1, projects, mobile, view_all=board("list", L, mobile), legend="p")
+        + section(L, "activities", 2, act, mobile, legend="a")
+        + section(L, "awards", 3, awd, mobile, legend="w")
+        + section(L, "society", 4, soc, mobile, legend="s")
+        + section(L, "skills", 5, skills, mobile, legend="k")
         + section(L, "education", 6, edu, mobile)
         + section(L, "connect", 7, contact, mobile))
     hdr = header_mobile(L, "home", 0, home_href="") if mobile else header_desktop(L, "home", 0, home_href="")
@@ -628,10 +940,10 @@ def detail(L, mobile):
                     + f'<p style="margin: 0; max-width: 40em; font-size: var(--text-lead); line-height: 1.6; letter-spacing: -0.01em; color: var(--color-ink-2)">{esc(s["p1tag"])}</p></div>'
                     + f'<div style="display: flex; flex-wrap: wrap; column-gap: 24px; margin-top: {12 if mobile else 20}px">{ext_links}</div>' + facts)
     if mobile:
-        top = f'<div style="padding: 16px 0 32px">{back}<div style="margin-top: 8px">{head_content}</div></div>'
+        top = f'<div style="padding: 16px 0 32px">{back}<div style="margin-top: 8px">{plate(L, 350, 136)}</div><div style="margin-top: 16px">{head_content}</div></div>'
     else:
         top = (f'<div style="padding: 56px 0 40px; display: flex; flex-wrap: wrap; column-gap: var(--axis-gap); row-gap: 16px">'
-               f'<div data-axis="label" style="flex: 0 0 var(--axis-label); min-width: 0">{back}</div>'
+               f'<div data-axis="label" style="flex: 0 0 var(--axis-label); min-width: 0">{back}<div style="margin-top: 24px; width: var(--axis-label)">{plate(L, 216, 135)}</div></div>'
                f'<div data-axis="content" style="flex: 1 1 560px; min-width: 0">{head_content}</div></div>')
     TEXT_CAP = "max-width: 40em"
     def dsec(i, content, note=""):
@@ -651,12 +963,14 @@ def detail(L, mobile):
                 f'<div style="margin-top: 24px">{ul(feat_rows)}</div>')
     stack_rows = [
         f'<div style="display: flex; flex-wrap: wrap; align-items: baseline; column-gap: {8 if mobile else 24}px; {row_pad(i == 0)}">'
-        f'<dt style="flex: 0 0 {"var(--fact-label)" if mobile else "var(--date-col)"}; {META}; font-weight: 500">{esc(k)}</dt><dd style="margin: 0; {SECOND}; {col(v)}">{esc(v)}</dd></div>'
+        f'<dt style="flex: 0 0 {"var(--fact-label)" if mobile else "var(--date-col)"}; {META}; font-weight: 500">{esc(k)}</dt>'
+        f'<dd style="margin: 0; display: flex; align-items: center; flex-wrap: wrap; column-gap: 16px; row-gap: 2px; {SECOND}; {col(v)}"><span style="display: inline-block; min-width: 96px">{esc(v)}</span>'
+        + ("" if is_ph(v) else f'{usage_strip(v, this="p1")}<span style="{META}">{esc(s["usage"].format(n=3, k=1))}</span>') + '</dd></div>'
         for i, (k, v) in enumerate(s["stackRows"])]
     stack = f'<dl style="margin: 0">{seq(stack_rows)}</dl>'
     pre, mid, post = s["outcome"]
     outcomes = (f'<ul role="list" style="margin: 0; padding: 0 0 0 18px; list-style: square; {TEXT_CAP}; display: flex; flex-direction: column; gap: 8px">'
-                f'<li style="{BODY}">{esc(pre)}{a_link(home_href + "#awards", esc(mid), L)}{esc(post)}</li>'
+                f'<li style="{BODY}; list-style: none; position: relative"><svg class="gx" width="8" height="8" viewBox="0 0 8 8" {SVG_A} style="position: absolute; left: -17px; top: 10px"><path d="M4 0l4 4-4 4-4-4z" style="fill: var(--color-award)"></path></svg>{esc(pre)}{a_link(home_href + "#awards", esc(mid), L)}{esc(post)}</li>'
                 f'<li style="{BODY}; {MUTED}">{esc(s["outcomePh"])}</li></ul>')
     pairs = [
         f'<li style="{"padding-top: 0" if i == 0 else "padding-top: 24px; " + RULE}; padding-bottom: {PB24}"><dl style="margin: 0; {TEXT_CAP}">'
@@ -674,7 +988,8 @@ def detail(L, mobile):
                 f'<span style="flex: 1 1 0; min-width: 0">{link_html}</span><span data-date style="{DATE}; margin-left: 16px">{esc(s["date"])}</span></li>')
     related = (f'<ul role="list" style="margin: 0; padding: 0; list-style: none">'
                + rel_row(s["relAward"], award_html(L, home_href + "#awards", block=True, sr=False), True)
-               + rel_row(s["relAct"], a_link(home_href + "#activities", esc(s["act1"]), L, block=True), False) + "</ul>")
+               + rel_row(s["relAct"], a_link(home_href + "#activities", esc(s["act1"]), L, block=True, glyph_kind="a"), False) + "</ul>")
+    related = context_strip(L) + related
     body = (dsec(0, summary) + dsec(1, contrib, s["contribNote"]) + dsec(2, features) + dsec(3, stack)
             + dsec(4, outcomes) + dsec(5, challenges) + dsec(6, related))
     def pn(label, title, align_right, forward):
@@ -705,14 +1020,14 @@ def listing(L, mobile):
           f'<p style="margin: 8px 0 0; {META}">{esc(s["listCount"])}</p>')
     if mobile:
         content = (f'<div style="padding: 16px 0 24px">{back}<div style="margin-top: 8px">{h1}</div></div>'
-                   f'<div style="{RULE}; padding: 24px 0 32px">{ul(rows)}</div>')
+                   f'<div style="{RULE}; padding: 24px 0 32px">{list_scale(L, True)}{ul(rows)}</div>')
         hdr = header_mobile(L, "list", 1, home_href=home_href)
     else:
         content = (f'<div style="padding: 56px 0 32px; display: flex; flex-wrap: wrap; column-gap: var(--axis-gap); row-gap: 16px">'
                    f'<div data-axis="label" style="flex: 0 0 var(--axis-label); min-width: 0">{back}</div>'
                    f'<div data-axis="content" style="flex: 1 1 560px; min-width: 0">{h1}</div></div>'
                    f'<div style="display: flex; flex-wrap: wrap; column-gap: var(--axis-gap); {RULE}; padding: 32px 0 40px"><div style="flex: 0 0 var(--axis-label)"></div>'
-                   f'<div data-axis="content" style="flex: 1 1 560px; min-width: 0">{ul(rows)}</div></div>')
+                   f'<div data-axis="content" style="flex: 1 1 560px; min-width: 0">{list_scale(L, False)}{ul(rows)}</div></div>')
         hdr = header_desktop(L, "list", 1, home_href=home_href)
     return f'{hdr}\n{main_open(mobile)}{content}</main>\n{footer(L, mobile, contact_links=True)}'
 
