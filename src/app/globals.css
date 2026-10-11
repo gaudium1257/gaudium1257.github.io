@@ -1,38 +1,110 @@
 @import "tailwindcss";
 
-/*
- * Design tokens. Placeholder values only — the final palette, type scale and
- * spacing come from the chosen design. Components must use these tokens
- * (e.g. `bg-primary`, `text-muted`), never raw hex values, so the theme can be
- * changed in one place.
- */
-:root {
-  --background: #ffffff;
-  --foreground: #1a1523;
-  --muted: #6b6578;
-  --primary: #7c3aed;
-  --primary-foreground: #ffffff;
+/* "Clean Stack" theme — docs/design/README.md. Tokens only: components use bg-primary, text-muted…, never raw hex. */
+
+@custom-variant tiny (@media (max-height: 240px)); /* 400% zoom: unpin the header */
+
+@theme {
+  --color-*: initial;
+  --color-white: #ffffff;
+  --color-ink: #1c1626; /* headings, values */
+  --color-ink-2: #3b3546; /* paragraphs */
+  --color-muted: #5d5670; /* labels, dates, [placeholders] — 6.9:1 on white, 6.3:1 on surface */
+  --color-line: #e5e0ee; /* separators, static chip borders */
+  --color-edge: #8f88a1; /* interactive tech-node borders: 3.4:1 on white (WCAG 1.4.11) */
+  --color-surface: #f6f4fa; /* panels built from code data (stack map, repo card), media slots */
+  --color-primary: #6d28d9; /* links, selected node, focus — 7.1:1 on white */
+  --color-primary-50: #f5f3ff; /* count badge, filter bar, pressed */
+  --color-primary-100: #ede9fe; /* matched chip in a filtered list */
+  --color-primary-700: #5b21b6; /* text on primary-50/100, link hover */
+  --color-award: #8a3b0b; /* prize words */
+  --color-live: #15803d; /* "배포 중" dot + text */
+  /* GitHub language-ratio bar (measured bytes): names and % are always printed, colour is supplementary */
+  --color-lang-1: #5b21b6;
+  --color-lang-2: #8b5cf6;
+  --color-lang-3: #c4b5fd;
+  --color-lang-4: #3b3546;
+
+  --font-sans:
+    "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
+    system-ui, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+
+  /* type scale (px): 14 meta · 15 ui · 16 body · 19 lead · 22 h3 · 28 h2 · 34/44 detail title · 36/48 name */
+  --text-xs: initial; /* floor = text-sm (14px) */
+  --text-ui: 0.9375rem;
+  --text-ui--line-height: 1.6;
+  --text-lead: 1.1875rem;
+  --text-lead--line-height: 1.7;
+  --text-h3: 1.375rem;
+  --text-h3--line-height: 1.35;
+  --text-h3--letter-spacing: -0.01em;
+  --text-h2: 1.75rem;
+  --text-h2--line-height: 1.25;
+  --text-h2--letter-spacing: -0.02em;
+  --text-title-sm: 2.125rem;
+  --text-title-sm--line-height: 1.2;
+  --text-title-sm--letter-spacing: -0.025em;
+  --text-title: 2.75rem;
+  --text-title--line-height: 1.15;
+  --text-title--letter-spacing: -0.03em;
+  --text-name-sm: 2.25rem;
+  --text-name-sm--line-height: 1.1;
+  --text-name-sm--letter-spacing: -0.03em;
+  --text-name: 3rem;
+  --text-name--line-height: 1.05;
+  --text-name--letter-spacing: -0.03em;
+
+  --leading-copy: 1.7; /* taglines, relation rows */
+  --leading-prose: 1.75; /* Korean paragraphs */
+
+  /* radius by role, not one radius on everything */
+  --radius-tag: 0.25rem; /* static labels: tech chips, event type, copy button */
+  --radius-node: 0.375rem; /* interactive tech nodes, buttons, media slots */
+  --radius-panel: 0.75rem; /* panels built from code data: stack map, repo card */
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0f0b16;
-    --foreground: #ede9f6;
-    --muted: #a39cb3;
-    --primary: #a78bfa;
-    --primary-foreground: #0f0b16;
+@utility shell {
+  width: 100%;
+  max-width: 77.5rem;
+  margin-inline: auto;
+  padding-inline: 1rem;
+  @variant sm {
+    padding-inline: 1.5rem;
+  }
+  @variant lg {
+    padding-inline: 2.5rem;
   }
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-muted: var(--muted);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
+@layer base {
+  html {
+    word-break: keep-all;
+    overflow-wrap: break-word;
+    -webkit-font-smoothing: antialiased;
+    font-synthesis: none;
+    color-scheme: light;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    background-color: var(--color-white);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  a,
+  button,
+  summary {
+    touch-action: manipulation;
+  }
+  img {
+    background-color: var(--color-surface); /* tint while a capture loads */
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
 }

@@ -8,11 +8,11 @@ import type { Dictionary } from "@/i18n/dictionaries";
  */
 export const sections = [
   { id: "about", label: "about" },
+  { id: "skills", label: "skills" },
   { id: "projects", label: "projects" },
   { id: "activities", label: "activities" },
   { id: "awards", label: "awards" },
   { id: "society", label: "society" },
-  { id: "skills", label: "skills" },
   { id: "education", label: "education" },
   { id: "connect", label: "connect" },
 ] as const satisfies readonly { id: string; label: keyof Dictionary["nav"] }[];

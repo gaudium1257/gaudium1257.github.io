@@ -32,7 +32,7 @@ content/                    ← all portfolio data (JSON), validated by src/cont
   activities/<id>.json      대외활동
   awards/<id>.json          수상경력
   society/<id>.json         학회 (roles + events: 교육 / 해커톤 / 세미나)
-  skills.json               개발 역량 (names must match projects' techStack)
+  skills.json               기술 스택 (names must match projects' techStack)
   education.json            학력
 src/content/schema.ts       zod schemas (single source of truth)
 src/content/collect.ts      reads + validates content, builds the global id index and relation graph

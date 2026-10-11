@@ -19,11 +19,12 @@ export function getContent(): Content {
   return content;
 }
 
-/** Related items of `id`, in both directions, with their kind and title. */
+/** Related items of `id`, in both directions, with their kind, title and (awards) prize. */
 export function getRelated(id: string) {
-  const { relations, index } = getContent();
+  const { relations, index, awards } = getContent();
   return [...(relations.get(id) ?? [])].map((rid) => ({
     id: rid,
     ...index.get(rid)!,
+    prize: awards.find((a) => a.id === rid)?.prize,
   }));
 }
