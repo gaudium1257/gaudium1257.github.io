@@ -2,17 +2,19 @@
   "items": [
     {
       "id": "korea-university",
-      "school": { "ko": "고려대학교", "en": "Korea University" }
+      "school": { "ko": "고려대학교", "en": "Korea University" },
+      "period": { "start": "2026-03", "end": null }
     }
   ],
   "career": [
     {
-      "id": "the-hack-campus-korea-university",
+      "id": "the-hackathon-campus-korea-university",
       "organization": {
-        "ko": "The Hack : Campus 고려대학교 지부",
-        "en": "The Hack : Campus, Korea University chapter"
+        "ko": "THE해커톤CAMPUS 고려대학교 지부",
+        "en": "THE해커톤CAMPUS, Korea University chapter"
       },
-      "role": { "ko": "운영진", "en": "Organizing team" }
+      "role": { "ko": "운영진", "en": "Organizing team" },
+      "period": { "start": "2026-09", "end": null }
     }
   ]
 }
