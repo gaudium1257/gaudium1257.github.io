@@ -188,7 +188,7 @@ export const Project = z.object({
 export type Project = z.infer<typeof Project>;
 
 // ---------------------------------------------------------------------------
-// Activities (대외활동)
+// Activities (활동)
 // ---------------------------------------------------------------------------
 
 export const ActivityType = z.enum([
@@ -234,47 +234,6 @@ export const Award = z.object({
 export type Award = z.infer<typeof Award>;
 
 // ---------------------------------------------------------------------------
-// Society (학회 활동) — AI · 바이브코딩 교육 · 해커톤 운영
-// ---------------------------------------------------------------------------
-
-export const SocietyEventType = z.enum([
-  "education",
-  "hackathon",
-  "seminar",
-  "study",
-  "project",
-  "other",
-]);
-
-export const Society = z.object({
-  id: Id,
-  name: Localized,
-  description: Localized,
-  period: Period,
-  url: z.url().optional(),
-  /** Positions held over time, e.g. 회장, 교육팀장. */
-  roles: z.array(z.object({ title: Localized, period: Period })).min(1),
-  events: z
-    .array(
-      z.object({
-        id: Id,
-        type: SocietyEventType,
-        title: Localized,
-        date: DateString,
-        myRole: Localized,
-        description: Localized,
-        /** Only when the number is actually known. */
-        participants: z.number().int().positive().optional(),
-        links: z.array(Link).default([]),
-        related: Related,
-      }),
-    )
-    .default([]),
-  related: Related,
-});
-export type Society = z.infer<typeof Society>;
-
-// ---------------------------------------------------------------------------
 // Skills (개발 역량)
 // ---------------------------------------------------------------------------
 
@@ -301,7 +260,7 @@ export const Skills = z.object({
 export type Skills = z.infer<typeof Skills>;
 
 // ---------------------------------------------------------------------------
-// Education (학력)
+// Education & career (학력 및 경력사항)
 // ---------------------------------------------------------------------------
 
 export const EducationStatus = z.enum([
@@ -320,8 +279,21 @@ export const Education = z.object({
         school: Localized,
         major: Localized.optional(),
         degree: Localized.optional(),
-        status: EducationStatus,
-        period: Period,
+        /** Leave out when the owner hasn't said. */
+        status: EducationStatus.optional(),
+        period: Period.optional(),
+        details: z.array(Localized).default([]),
+      }),
+    )
+    .default([]),
+  /** 경력: positions held, e.g. a club's organizing team. */
+  career: z
+    .array(
+      z.object({
+        id: Id,
+        organization: Localized,
+        role: Localized,
+        period: Period.optional(),
         details: z.array(Localized).default([]),
       }),
     )

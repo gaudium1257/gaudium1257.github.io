@@ -1,6 +1,6 @@
 ---
 name: add-content
-description: Add or update portfolio content (projects, activities, awards, society, skills, education, profile) from a project fact sheet or from the owner's answers, without inventing anything. Use whenever the user pastes a fact sheet / JSON from docs/prompts/project-fact-sheet.md, or says "프로젝트 추가", "수상 추가", "대외활동 추가", "학회 활동 추가", "내용 수정".
+description: Add or update portfolio content (projects, activities, awards, skills, education & career, profile) from a project fact sheet or from the owner's answers, without inventing anything. Use whenever the user pastes a fact sheet / JSON from docs/prompts/project-fact-sheet.md, or says "프로젝트 추가", "수상 추가", "활동 추가", "경력 추가", "내용 수정".
 ---
 
 # add-content
@@ -12,11 +12,10 @@ Content is the owner's public record. **Nothing goes in that the owner or a fact
 | Kind               | File                                                                              | Schema      |
 | ------------------ | --------------------------------------------------------------------------------- | ----------- |
 | Project            | `content/projects/<id>.json` (+ fact sheet in `content/sources/projects/<id>.md`) | `Project`   |
-| 대외활동           | `content/activities/<id>.json`                                                    | `Activity`  |
+| 활동               | `content/activities/<id>.json`                                                    | `Activity`  |
 | 수상               | `content/awards/<id>.json`                                                        | `Award`     |
-| 학회               | `content/society/<id>.json` (events inside `events[]`)                            | `Society`   |
 | 개발 역량          | `content/skills.json`                                                             | `Skills`    |
-| 학력               | `content/education.json`                                                          | `Education` |
+| 학력 및 경력사항   | `content/education.json` (`items` = 학력, `career` = 경력)                        | `Education` |
 | 자기소개 / connect | `content/profile.json`                                                            | `Profile`   |
 
 Schemas: `src/content/schema.ts` — read it before writing JSON. Ids are global kebab-case and must equal the file name.
@@ -28,7 +27,7 @@ Schemas: `src/content/schema.ts` — read it before writing JSON. Ids are global
 3. Save the JSON to `content/projects/<id>.json`. The post-edit hook validates it; fix any schema errors by asking or by correcting obvious format mistakes only (never by changing facts).
 4. Run the `content-fact-checker` subagent on the pair. Resolve every finding: remove unsupported claims or ask the user — do not reword them to sound safer.
 5. Images: if the fact sheet lists candidates and the user provides files, copy to `public/images/projects/<id>/` and set `thumbnail` / `screenshots` with real alt text.
-6. Relations: map section 12 of the fact sheet ("관련 대외활동·수상·학회") to existing ids and fill `related` (one side is enough; the loader links both ways). If the target doesn't exist yet, offer to add it.
+6. Relations: map section 12 of the fact sheet ("관련 활동·수상·경력") to existing ids and fill `related` (one side is enough; the loader links both ways). If the target doesn't exist yet, offer to add it.
 7. Skills: for each `techStack` item not in `content/skills.json` (validator warns), ask whether to add it to 개발 역량 and under which group. Keep spelling identical.
 8. Ask whether it should be `featured`.
 
@@ -37,8 +36,9 @@ Schemas: `src/content/schema.ts` — read it before writing JSON. Ids are global
 Interview with short, concrete questions — only the fields the schema needs, both languages. Offer an English translation for the owner to approve rather than asking them to write it. Examples:
 
 - 수상: 대회/상 이름, 상 등급, 주최, 날짜(YYYY-MM), 관련 프로젝트, 증빙 링크
-- 대외활동: 활동명, 기관, 유형, 기간, 역할, 한 일, 관련 프로젝트
-- 학회: 학회명·소개, 기간, 직책(기간별), 행사(교육/해커톤/세미나: 날짜, 내 역할, 설명, 참가자 수는 아는 경우만)
+- 활동: 활동명, 기관, 유형, 기간, 역할, 한 일, 관련 프로젝트
+- 학력: 학교, 전공, 학위, 재학 상태, 기간 (모르는 항목은 비워 둠)
+- 경력: 기관·단체, 역할, 기간 (모르는 항목은 비워 둠)
 
 Numbers (participants, users, ranks) only when the owner states them.
 

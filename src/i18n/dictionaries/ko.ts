@@ -2,17 +2,15 @@
 const ko = {
   meta: {
     title: "포트폴리오",
-    description:
-      "프로젝트, 대외활동, 수상경력, 학회 활동을 모은 포트폴리오입니다.",
+    description: "프로젝트, 활동, 수상, 학력과 경력을 모은 포트폴리오입니다.",
   },
   nav: {
     about: "소개",
     skills: "기술 스택",
     projects: "프로젝트",
-    activities: "대외활동",
+    activities: "활동",
     awards: "수상",
-    society: "학회",
-    education: "학력",
+    education: "학력 및 경력사항",
     connect: "연락처",
   },
   common: {
@@ -43,9 +41,8 @@ const ko = {
     facts: { affiliation: "소속", email: "이메일", github: "GitHub" },
   },
   skills: {
-    help: "숫자는 그 기술을 쓴 프로젝트 수예요. 숙련도가 아니에요. 기술을 누르면 그 기술로 만든 프로젝트만 보여요.",
+    help: "기술을 누르면 그 기술로 만든 프로젝트만 보여요.",
     unrecorded: "점선은 아직 프로젝트에 기록되지 않은 기술이에요.",
-    srCount: "프로젝트 {n}개: {names}",
     srNone: "기록된 프로젝트 없음",
     label: "기술 스택",
     linkSr: "이 기술을 쓴 프로젝트 보기",
@@ -65,7 +62,7 @@ const ko = {
   projects: {
     viewAll: "프로젝트 {n}개 모두 보기",
     listLink: "프로젝트 목록",
-    filterStatus: "{tech} 사용 프로젝트 {n}개",
+    filterStatus: "{tech} 사용 프로젝트",
     filterClear: "필터 해제",
     filterLabel: "기술로 거르기",
     provenance: "별과 최근 커밋은 {date} 기준 GitHub 값이에요.",
@@ -87,23 +84,12 @@ const ko = {
   kind: {
     project: "프로젝트",
     award: "수상",
-    activity: "대외활동",
-    society: "학회",
-    "society-event": "학회 행사",
-  },
-  society: {
-    roles: "역할",
-    events: "행사",
-    eventType: {
-      education: "교육",
-      hackathon: "해커톤",
-      seminar: "세미나",
-      study: "스터디",
-      project: "프로젝트",
-      other: "기타",
-    },
+    activity: "활동",
   },
   education: {
+    school: "학력",
+    career: "경력",
+    careerLine: "{organization} {role}",
     status: {
       enrolled: "재학 중",
       graduated: "졸업",
