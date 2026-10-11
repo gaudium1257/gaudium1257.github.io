@@ -452,13 +452,7 @@ export default async function ProjectPage({
             </p>
           </div>
           <div className="min-w-0 lg:col-span-7 lg:row-span-2 lg:row-start-2">
-            <TechList
-              project={p}
-              dict={dict}
-              locale={locale}
-              usage={ctx.usage}
-              link
-            />
+            <TechList project={p} dict={dict} locale={locale} link />
             {buttons.length > 0 && (
               <div className="mt-6 flex flex-wrap gap-3">
                 {buttons.map((l) => (

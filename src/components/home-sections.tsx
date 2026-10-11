@@ -214,12 +214,7 @@ export function Identity({ content, dict, locale }: Props) {
 
 const HOME_LIMIT = 5; // featured first; the rest live on the list page
 
-export function ProjectsSection({
-  content,
-  dict,
-  locale,
-  usage,
-}: Props & { usage: Map<string, Content["projects"]> }) {
+export function ProjectsSection({ content, dict, locale }: Props) {
   const all = [...content.projects].sort((a, b) =>
     a.featured === b.featured ? 0 : a.featured ? -1 : 1,
   );
@@ -261,7 +256,6 @@ export function ProjectsSection({
                 project={p}
                 dict={dict}
                 locale={locale}
-                usage={usage}
                 featured={p.id === featuredId}
                 onHome
               />
