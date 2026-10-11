@@ -4,7 +4,7 @@
 
 ## 사용법
 
-1. 포트폴리오에 넣을 프로젝트 폴더에서 Claude Code 세션을 엽니다.
+1. 포트폴리오에 넣을 프로젝트 폴더에서 Claude Code 세션을 엽니다. 한 프로젝트가 여러 저장소로 나뉘어 있으면(예: 앱 · 관리자 웹 · 서버) 그 저장소들을 한 상위 폴더에 모아 두고 상위 폴더에서 엽니다. 팩트시트와 JSON은 **프로젝트 하나에 하나씩** 나옵니다.
 2. 아래 `--- 프롬프트 시작 ---`부터 `--- 프롬프트 끝 ---`까지 전부 복사해서 붙여넣습니다.
 3. Claude가 조사를 마치고 **질문 목록**을 주면 답합니다. 모르는 건 "모름"이라고 답하면 됩니다(빈칸은 지어내지 않고 비워 둡니다).
 4. 마지막에 나오는 **① 팩트시트(Markdown)** 와 **② JSON** 을 이 포트폴리오 저장소의 Claude 세션에 붙여넣고 "프로젝트 추가해줘"라고 하면 `add-content` 스킬이 검증 후 사이트에 반영합니다.
@@ -51,6 +51,7 @@
 - **문제 해결 기록:** 커밋 메시지(`fix`, `refactor`, `perf` 등), 이슈/PR(`gh`가 있으면 `gh issue list --state all`, `gh pr list --state all`), 문서의 트러블슈팅 기록
 - **이미지 후보:** 저장소 안의 스크린샷·로고·데모 GIF 경로(`git ls-files | grep -iE '\.(png|jpe?g|gif|webp|svg)$'`)
 - **원격 저장소:** `git remote -v` (공개/비공개는 사용자에게 확인)
+- **여러 저장소(하나면 건너뜀):** 현재 폴더 아래에 git 저장소가 여러 개면(`find . -maxdepth 3 -name .git`) 각각을 위 항목대로 조사하고, 팩트시트에 저장소별로 내 기여를 나눠 적는다. 내 커밋이 없는 저장소는 기여에 넣지 않는다.
 
 ### 2단계 — 팩트시트 초안 + 질문 목록
 
@@ -58,7 +59,7 @@
 
 질문 목록에는 최소한 아래를 넣되, 코드로 이미 확인한 건 묻지 마:
 
-- 이 프로젝트를 만든 계기와 맥락(개인 / 팀 / 해커톤 / 수업 / 학회 / 대외활동 / 업무 / 연구 중 무엇인지, 행사·수업 이름)
+- 이 프로젝트를 만든 계기와 맥락(개인 / 팀 / 해커톤 / 수업 / 학회·동아리 / 업무 / 연구 / 오픈소스 중 무엇인지, 행사·수업·단체 이름)
 - 팀 인원과 내 역할(직함·담당 영역), 팀원 이름을 공개해도 되는지
 - 1단계에서 추정한 "내가 한 일" 목록이 맞는지, 빠지거나 틀린 게 있는지
 - 결과: 수상, 실제 사용자·참가자 수, 발표·시연, 출시 여부 — 근거가 될 링크가 있는지
@@ -94,7 +95,7 @@
 # <프로젝트 이름> 팩트시트
 
 - 조사일: YYYY-MM-DD
-- 저장소: <remote URL 또는 "비공개"> / 기준 커밋: <short hash>
+- 저장소: <remote URL 또는 "비공개"> / 기준 커밋: <short hash> (여러 개면 줄마다 하나씩)
 - 내 git 신원: <name <email>>
 
 ## 1. 개요
@@ -168,6 +169,8 @@
   - `deployment.status`: live(URL 접속 확인됨), not-deployed, discontinued, unknown
   - `techStack[].category`: language, frontend, backend, mobile, ai-ml, data, database, infra, tooling, other
   - `links[].type`: github, demo, docs, video, slides, article, store, certificate, other
+- 저장소가 여러 개면 `github` 링크를 저장소마다 하나씩 넣고 `label`(`{ "ko": "관리자 웹", "en": "Admin web" }`처럼)을 붙인다. **첫 번째 `github` 링크가 대표 저장소**로 카드와 상세 머리에 나오니, 내 기여가 가장 큰 저장소를 맨 앞에 둔다.
+- 기술 이름은 저장소가 달라도 같은 표기로 쓴다(포트폴리오의 기술 스택과 필터가 이름으로 묶는다). 예: `React Native`, `TypeScript`, `Vite`.
 - 분량: `tagline` ko 40자 / en 80자 이내, `summary` 2–4문장, `highlights` 최대 3개(카드에 보일 핵심), `contributions`·`features`는 항목당 한 문장.
 - 문체: ko는 "~를 구현했습니다"처럼 서술형 문장, 목록 항목은 "~ 구현", "~ 설계"처럼 명사형으로 통일. en은 과거형 동사로 시작(Built, Designed, Implemented…).
 - 확인 안 된 값은 넣지 않는다: 선택 필드(`architecture`, `deployment.platform`, `deployment.url`, `deployment.checkedAt`)는 키를 빼고, 배열 필드(`outcomes`, `challenges`, `learnings`, `links`)는 `[]`로 둔다. `team.size`를 모르면 `null`.
