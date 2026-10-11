@@ -4,12 +4,12 @@
     "en": "Taeho Kim"
   },
   "headline": {
-    "ko": "앱·웹 프론트엔드 개발, 게임 봇과 강화학습 실험",
-    "en": "Front-end developer for apps and web consoles, building game bots with reinforcement learning"
+    "ko": "직접 만들어 돌려 보며 이해하는 프론트엔드 개발자",
+    "en": "Front-end developer who learns by building things and running them firsthand"
   },
   "intro": {
-    "ko": "커머스 서비스 SHOWROOMZ 팀에서 React Native 앱과 판매자·관리자용 React 웹 콘솔을 만들고 있습니다. 봇 대결 대회를 앞두고 규칙을 예측해 시뮬레이터, 봇, 강화학습 모델을 직접 만들어 보기도 했습니다.",
-    "en": "I build the React Native app and the React web consoles for sellers and admins on the SHOWROOMZ commerce team. Ahead of a bot competition, I predicted its rules and built my own simulator, bots and reinforcement learning model."
+    "ko": "서비스를 쓰는 사람의 화면과 운영하는 사람의 도구를 함께 만들며, 기능이 실제로 쓰이는 흐름을 끝까지 따라갑니다. 답이 정해지지 않은 문제 앞에서는 직접 실험할 환경부터 만들고, 돌려 보며 눈으로 확인해서 이해합니다.",
+    "en": "I build both the screens people use and the tools the people running a service rely on, and I follow each feature through to how it is actually used. When a problem has no set answer, I start by building a place to experiment, then learn by running it and seeing the results."
   },
   "about": [],
   "avatar": "/images/profile/taeho-kim.jpg",
