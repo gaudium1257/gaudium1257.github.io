@@ -1,0 +1,22 @@
+{
+  "name": {
+    "ko": "김태호",
+    "en": "Taeho Kim"
+  },
+  "headline": {
+    "ko": "앱·웹 프론트엔드 개발, 게임 봇과 강화학습 실험",
+    "en": "Front-end developer for apps and web consoles, building game bots with reinforcement learning"
+  },
+  "intro": {
+    "ko": "커머스 서비스 SHOWROOMZ 팀에서 React Native 앱과 판매자·관리자용 React 웹 콘솔을 만들고 있습니다. 봇 대결 대회를 앞두고 규칙을 예측해 시뮬레이터, 봇, 강화학습 모델을 직접 만들어 보기도 했습니다.",
+    "en": "I build the React Native app and the React web consoles for sellers and admins on the SHOWROOMZ commerce team. Ahead of a bot competition, I predicted its rules and built my own simulator, bots and reinforcement learning model."
+  },
+  "about": [],
+  "avatar": "/images/profile/taeho-kim.jpg",
+  "connect": {
+    "github": "https://github.com/gaudium1257",
+    "email": "twehokim@gmail.com",
+    "instagram": "https://www.instagram.com/tweho_k",
+    "discord": "gaudium1257"
+  }
+}

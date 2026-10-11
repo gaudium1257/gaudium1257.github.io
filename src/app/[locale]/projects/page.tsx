@@ -1,0 +1,116 @@
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { Empty } from "@/components/home-sections";
+import { FilterBar } from "@/components/project-filter";
+import { ProjectEntry } from "@/components/project-entry";
+import { StackRows } from "@/components/tech";
+import { cx, LINK } from "@/components/ui";
+import { getContent } from "@/content/load";
+import { hasLocale } from "@/i18n/config";
+import { getDictionary } from "@/i18n/dictionaries";
+import { fill } from "@/lib/format";
+import { snapshotDate } from "@/lib/github";
+import { techUsage } from "@/lib/tech";
+
+export async function generateMetadata({
+  params,
+}: PageProps<"/[locale]/projects">): Promise<Metadata> {
+  const { locale } = await params;
+  if (!hasLocale(locale)) return {};
+  return { title: getDictionary(locale).nav.projects };
+}
+
+export default async function ProjectsPage({
+  params,
+}: PageProps<"/[locale]/projects">) {
+  const { locale } = await params;
+  if (!hasLocale(locale)) notFound();
+  const dict = getDictionary(locale);
+  const { projects } = getContent();
+  const usage = techUsage(projects);
+  const byCat = new Map<string, Set<string>>();
+  for (const p of projects)
+    for (const g of p.techStack) {
+      const set = byCat.get(g.category) ?? new Set<string>();
+      g.items.forEach((n) => set.add(n));
+      byCat.set(g.category, set);
+    }
+  const groups = [...byCat].map(([category, names]) => ({
+    category:
+      category as (typeof projects)[number]["techStack"][number]["category"],
+    names: [...names],
+  }));
+  const list = [...projects].sort((a, b) =>
+    b.period.start.localeCompare(a.period.start),
+  );
+
+  return (
+    <main id="main" className="shell py-8 lg:py-12">
+      <a
+        href={`/${locale}/`}
+        className={cx(
+          "inline-flex min-h-6 items-center text-ui font-medium",
+          LINK,
+        )}
+      >
+        {dict.projects.backHome}
+      </a>
+      <h1 className="mt-5 flex items-baseline gap-3 text-title-sm font-bold text-ink sm:text-title">
+        {dict.nav.projects}
+        {list.length > 0 && (
+          <span className="text-lead font-semibold text-muted tabular-nums">
+            {fill(dict.common.count, { n: list.length })}
+          </span>
+        )}
+      </h1>
+      {list.length ? (
+        <>
+          <section aria-labelledby="filter-title" className="mt-6">
+            <h2 id="filter-title" className="text-ui font-semibold text-ink-2">
+              {dict.projects.filterLabel}
+            </h2>
+            <div className="mt-2 rounded-panel bg-surface px-3 py-1 sm:px-5">
+              <StackRows
+                groups={groups}
+                usage={usage}
+                dict={dict}
+                locale={locale}
+                unrecorded={false}
+                onHome={false}
+              />
+            </div>
+          </section>
+          <FilterBar
+            template={dict.projects.filterStatus}
+            clearLabel={dict.projects.filterClear}
+          />
+          <ol
+            data-project-list
+            className="mt-4 divide-y divide-line border-t border-line"
+          >
+            {list.map((p) => (
+              <ProjectEntry
+                key={p.id}
+                project={p}
+                dict={dict}
+                locale={locale}
+                usage={usage}
+                heading="h2"
+                onHome={false}
+              />
+            ))}
+          </ol>
+          {snapshotDate && (
+            <p className="mt-4 border-t border-line pt-4 text-ui text-muted">
+              {fill(dict.projects.provenance, {
+                date: snapshotDate.replaceAll("-", "."),
+              })}
+            </p>
+          )}
+        </>
+      ) : (
+        <Empty dict={dict} />
+      )}
+    </main>
+  );
+}

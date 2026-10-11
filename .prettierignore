@@ -1,0 +1,9 @@
+node_modules
+.next
+out
+package-lock.json
+next-env.d.ts
+AGENTS.md
+
+# third-party skills installed with `npx skills add` (kept byte-identical to skills-lock.json)
+.agents
