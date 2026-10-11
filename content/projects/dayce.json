@@ -242,5 +242,63 @@
   ],
   "related": ["next-contest-2026"],
   "tags": ["mobile", "calendar", "diary", "offline", "vibe-coding"],
-  "featured": true
+  "featured": true,
+  "screenshots": [
+    {
+      "src": "/images/projects/dayce/01-month-view.png",
+      "alt": {
+        "ko": "2026년 5월 월 보기: 여러 날 일정과 반복 일정",
+        "en": "Month view for May 2026 with multi-day and recurring events"
+      },
+      "kind": "mobile"
+    },
+    {
+      "src": "/images/projects/dayce/02-drag-select.png",
+      "alt": {
+        "ko": "길게 눌러 끌어서 5월 11일~14일을 선택하는 모습",
+        "en": "Long-pressing and dragging to select May 11–14"
+      },
+      "kind": "mobile"
+    },
+    {
+      "src": "/images/projects/dayce/03-event-form.png",
+      "alt": {
+        "ko": "선택한 기간이 채워진 일정 추가 화면",
+        "en": "Event form filled in with the selected range"
+      },
+      "kind": "mobile"
+    },
+    {
+      "src": "/images/projects/dayce/04-day-view.png",
+      "alt": {
+        "ko": "5월 31일 일 보기: 종일 일정 배너와 시간표",
+        "en": "Day view for May 31 with an all-day banner and timeline"
+      },
+      "kind": "mobile"
+    },
+    {
+      "src": "/images/projects/dayce/05-add-sheet.png",
+      "alt": {
+        "ko": "일정과 일기 중 무엇을 추가할지 고르는 시트",
+        "en": "Sheet for choosing whether to add an event or a diary entry"
+      },
+      "kind": "mobile"
+    },
+    {
+      "src": "/images/projects/dayce/06-diary-form.png",
+      "alt": {
+        "ko": "기분을 고르는 일기 작성 화면",
+        "en": "Diary form with a mood picker"
+      },
+      "kind": "mobile"
+    },
+    {
+      "src": "/images/projects/dayce/07-unsaved-dialog.png",
+      "alt": {
+        "ko": "저장하지 않고 나갈 때 뜨는 경고창",
+        "en": "Warning shown when leaving without saving"
+      },
+      "kind": "mobile"
+    }
+  ]
 }
