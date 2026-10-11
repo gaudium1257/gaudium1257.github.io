@@ -15,7 +15,7 @@ html = html
   .replace(/<\/?x-dc>|<\/?helmet>/g, "")
   .replace(
     /<link rel="stylesheet" href="\/_blob\/\w+">/,
-    `<link rel="stylesheet" href="file://${path.join(here, "moving-poster.flat.css")}">`,
+    `<link rel="stylesheet" href="file://${path.join(here, "clean-stack.flat.css")}">`,
   )
   .replace(
     "/_blob/76760fbe63bd614486cd18b85bb00898",
@@ -31,14 +31,19 @@ html = html
   .replace(/\{\{toc\.(\w+)\.aria\}\}/g, (m, id) =>
     id === firstToc ? "location" : "false",
   )
-  .replace(/\{\{gates\.\w+\}\}/g, "true")
+  .replace(/\{\{toc\.(\w+)\.cur\}\}/g, (m, id) =>
+    id === firstToc ? "true" : "false",
+  )
+  .replace(/\{\{tech\.\w+\.cur\}\}/g, "false")
+  .replace(/\{\{match\.\w+\}\}/g, "false")
+  .replace(/\{\{proj\.\w+\}\}/g, "true")
+  .replace("{{filter.show}}", "false")
+  .replace("{{filter.text}}", "")
   .replace(
     /\{\{copy\.\w+\.label\}\}/g,
     /<html lang="ko"/.test(html) ? "복사" : "Copy",
   )
   .replace(/\{\{copy\.\w+\.done\}\}/g, "false")
-  .replace("{{motion.state}}", "on")
-  .replace("{{motion.pressed}}", "false")
   .replace("{{status}}", "");
 const left = html.match(/\{\{[^}]+\}\}/g);
 if (left) console.log("UNFILLED", [...new Set(left)]);

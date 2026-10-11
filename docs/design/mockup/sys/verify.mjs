@@ -1,4 +1,4 @@
-// node verify.mjs — spec §11 checks 5, 7, 9, 10, 12 + the code gate, on proto/sys-*/index.html
+// node verify.mjs — every objective check of the "Clean Stack" mockup, on proto/sys-*/index.html
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
@@ -12,15 +12,12 @@ const proto = path.resolve(
   path.dirname(new URL(import.meta.url).pathname),
   "../proto",
 );
-const url = (pg) => "file://" + path.join(proto, `sys-${pg}`, "index.html");
-const PAGES = [
-  "home-ko",
-  "home-en",
-  "detail-ko",
-  "detail-en",
-  "list-ko",
-  "list-en",
-];
+const url = (pg, q = "") =>
+  "file://" + path.join(proto, `sys-${pg}`, "index.html") + q;
+const PAGES = ["home", "detail", "detail2", "list"].flatMap((p) => [
+  `${p}-ko`,
+  `${p}-en`,
+]);
 const fails = [];
 const ok = (cond, msg) => {
   if (!cond) fails.push(msg);
@@ -32,12 +29,13 @@ for (const pg of PAGES) {
   const html = fs
     .readFileSync(path.join(proto, `sys-${pg}`, "index.html"), "utf8")
     .replace(/<script>[\s\S]*?<\/script>/, "")
-    .replace(/<style>[\s\S]*?<\/style>/, "");
+    .replace(/<style>[\s\S]*?<\/style>/, "")
+    .replace(/<meta name="theme-color"[^>]*>/, "");
   const classes = [...html.matchAll(/class="([^"]*)"/g)].flatMap((m) =>
     m[1].split(/\s+/),
   );
   ok(
-    !/#[0-9a-fA-F]{3,8}\b/.test(html.replace(/href="#[^"]*"/g, "")),
+    !/#[0-9a-fA-F]{3,8}\b/.test(html.replace(/href="[^"]*"/g, "")),
     `${pg}: raw hex in markup`,
   );
   ok(!/\sstyle=/.test(html), `${pg}: inline style`);
@@ -46,33 +44,20 @@ for (const pg of PAGES) {
     !classes.some((c) => /gradient|blur|backdrop|(^|:)shadow-/.test(c)),
     `${pg}: gradient/blur/shadow`,
   );
-  const ungated = classes.filter(
-    (c) =>
-      (/(^|:)transition-transform$/.test(c) ||
-        /(^|:)(group-[^:]*?:|peer-[^:]*?:)?hover:-?(rotate|translate|scale)/.test(
-          c,
-        ) ||
-        /group-hover[^:]*:-?(rotate|translate|scale)/.test(c) ||
-        /group-has-[^ ]*:-?(rotate|translate|scale)/.test(c)) &&
-      !/^motion-(safe|on):/.test(c),
+  const motion = classes.filter((c) =>
+    /(^|:)(animate-|transition-transform|transition-all)|hover:-?(rotate|translate|scale)/.test(
+      c,
+    ),
   );
-  ok(
-    !ungated.length,
-    `${pg}: ungated transforms ${[...new Set(ungated)].slice(0, 5)}`,
-  );
-  const anims = classes.filter(
-    (c) => /(^|:)animate-/.test(c) && !/^motion-(safe|on):/.test(c),
-  );
-  ok(!anims.length, `${pg}: ungated animations ${anims.slice(0, 3)}`);
+  ok(!motion.length, `${pg}: motion classes ${[...new Set(motion)]}`);
 }
 
 const b = await chromium.launch();
 
-// ── 7. axe
+// ── axe
 for (const pg of PAGES)
   for (const w of [1440, 390]) {
     const p = await b.newPage({ viewport: { width: w, height: 900 } });
-    await p.emulateMedia({ reducedMotion: "reduce" });
     await p.goto(url(pg));
     await p.addScriptTag({ content: AXE });
     const v = await p.evaluate(async () =>
@@ -98,329 +83,349 @@ for (const pg of PAGES)
     await p.close();
   }
 
-// ── 5. current section (home)
-for (const pg of ["home-ko", "home-en"])
-  for (const w of [1440, 390]) {
-    const p = await b.newPage({
-      viewport: { width: w, height: w > 1000 ? 900 : 844 },
-    });
-    await p.emulateMedia({ reducedMotion: "reduce" });
+// ── layout floor: no horizontal scroll, type >= 14px, long paragraphs >= 15px / 1.6, no animations at all
+for (const pg of PAGES)
+  for (const w of [320, 375, 390, 768, 1024, 1280, 1440]) {
+    const p = await b.newPage({ viewport: { width: w, height: 900 } });
     await p.goto(url(pg));
-    const ids = [
-      "about",
-      "projects",
-      "activities",
-      "awards",
-      "society",
-      "skills",
-      "education",
-      "connect",
-    ];
-    const state = () =>
-      p.evaluate(() => {
-        const vis = [...document.querySelectorAll("header nav a")].filter(
+    const r = await p.evaluate(() => {
+      const small = [],
+        low = [];
+      for (const el of document.querySelectorAll("body *")) {
+        const cs = getComputedStyle(el);
+        if (cs.display === "none" || el.closest(".sr-only,[aria-hidden=true]"))
+          continue;
+        const own = [...el.childNodes].some(
+          (n) => n.nodeType === 3 && n.textContent.trim(),
+        );
+        if (!own || !el.offsetParent) continue;
+        const fs_ = parseFloat(cs.fontSize);
+        if (fs_ < 14) small.push(el.textContent.trim().slice(0, 20));
+        if (
+          ["P", "LI", "DD"].includes(el.tagName) &&
+          el.innerText.length > 40
+        ) {
+          const lh =
+            cs.lineHeight === "normal" ? 1.2 * fs_ : parseFloat(cs.lineHeight);
+          if (fs_ < 15 || lh < 1.6 * fs_ - 0.01)
+            low.push(el.innerText.slice(0, 24));
+        }
+      }
+      return {
+        over: document.documentElement.scrollWidth - innerWidth,
+        small,
+        low,
+        anims: document.getAnimations().length,
+      };
+    });
+    ok(r.over <= 0, `${pg}@${w}: horizontal overflow ${r.over}px`);
+    ok(!r.small.length, `${pg}@${w}: text < 14px ${r.small.slice(0, 3)}`);
+    ok(!r.low.length, `${pg}@${w}: long text < 15px/1.6 ${r.low.slice(0, 3)}`);
+    ok(!r.anims, `${pg}@${w}: ${r.anims} animations running`);
+    await p.close();
+  }
+
+// ── first screen: the 3:4 photo is fully visible; nav + KO/EN reachable without scrolling
+for (const pg of ["home-ko", "home-en"])
+  for (const [w, h] of [
+    [1440, 900],
+    [390, 844],
+    [375, 667],
+  ]) {
+    const p = await b.newPage({ viewport: { width: w, height: h } });
+    await p.goto(url(pg));
+    const r = await p.evaluate(() => {
+      const ph = document
+        .querySelector('#about [role="img"]')
+        .getBoundingClientRect();
+      const nav = [...document.querySelectorAll("header nav a")].filter(
+        (a) => a.offsetParent,
+      );
+      const hit = nav.filter((a) => {
+        const q = a.getBoundingClientRect();
+        const e = document.elementFromPoint(
+          q.left + q.width / 2,
+          q.top + q.height / 2,
+        );
+        return e && (e === a || a.contains(e)) && q.bottom <= innerHeight;
+      }).length;
+      return {
+        ratio: ph.width / ph.height,
+        inside: ph.top >= 0 && ph.bottom <= innerHeight,
+        nav: nav.length,
+        hit,
+        hdr: document.querySelector("header").getBoundingClientRect().height,
+      };
+    });
+    ok(Math.abs(r.ratio - 0.75) < 0.01, `${pg}@${w}: photo ratio ${r.ratio}`);
+    ok(r.inside, `${pg}@${w}x${h}: photo not on the first screen`);
+    ok(r.nav === 8 && r.hit === 8, `${pg}@${w}: nav ${r.hit}/${r.nav}`);
+    ok(r.hdr <= (w >= 1024 ? 66 : 120), `${pg}@${w}: header ${r.hdr}px`);
+    await p.close();
+  }
+
+// ── scrollspy: exactly one current link (nav on home, TOC on detail pages), clicked entry wins
+for (const [pg, sel, key] of [
+  ["home-ko", "header nav a[data-nav]", "nav"],
+  ["home-en", "header nav a[data-nav]", "nav"],
+  ["detail-ko", "a[data-toc]", "toc"],
+  ["detail2-en", "a[data-toc]", "toc"],
+])
+  for (const [w, h] of [
+    [1440, 900],
+    [390, 844],
+    [1920, 1200],
+  ]) {
+    const p = await b.newPage({ viewport: { width: w, height: h } });
+    await p.goto(url(pg));
+    const ids = await p.evaluate(
+      ([sel, key]) =>
+        [...document.querySelectorAll(sel)]
+          .filter((a) => a.offsetParent)
+          .map((a) => a.dataset[key]),
+      [sel, key],
+    );
+    const cur = () =>
+      p.evaluate((sel) => {
+        const vis = [...document.querySelectorAll(sel)].filter(
           (a) => a.offsetParent,
         );
         return {
           aria: vis
-            .filter((a) => a.hasAttribute("aria-current"))
-            .map((a) => a.dataset.nav),
-          cur: vis
+            .filter((a) => a.getAttribute("aria-current") === "location")
+            .map((a) => a.dataset.nav || a.dataset.toc),
+          data: vis
             .filter((a) => a.dataset.current === "true")
-            .map((a) => a.dataset.nav),
+            .map((a) => a.dataset.nav || a.dataset.toc),
         };
-      });
-    for (const id of ids) {
-      await p.evaluate((id) => {
-        document.getElementById(id).scrollIntoView();
-      }, id);
-      await p.waitForTimeout(120);
-      const s = await state();
-      const atBottom = await p.evaluate(
-        () =>
-          innerHeight + scrollY >= document.documentElement.scrollHeight - 2,
-      );
-      ok(
-        s.aria.length === 1,
-        `${pg}@${w} scroll ${id}: aria-current count ${s.aria.length}`,
-      );
-      ok(
-        s.aria[0] === id ||
-          (atBottom && s.aria[0] === "connect") ||
-          s.cur.includes(id),
-        `${pg}@${w} scroll ${id}: aria=${s.aria} cur=${s.cur}`,
-      );
-    }
-    await p.evaluate(() => scrollTo(0, 0));
-    await p.waitForTimeout(120);
+      }, sel);
+    let c = await cur();
+    ok(
+      c.aria.length === 1 && c.aria[0] === ids[0] && c.data.length === 1,
+      `${pg}@${w}: at load ${JSON.stringify(c)}`,
+    );
     for (const id of ids) {
       await p
-        .locator(`header nav a[data-nav="${id}"]`)
+        .locator(`${sel}[data-${key}="${id}"]`)
         .filter({ visible: true })
+        .first()
         .click();
-      await p.waitForTimeout(250);
-      const s = await state();
+      await p.waitForTimeout(1600);
+      c = await cur();
       ok(
-        s.aria.length === 1 && s.aria[0] === id,
-        `${pg}@${w} click ${id}: aria=${s.aria}`,
+        c.aria.length === 1 && c.aria[0] === id && c.data.join() === id,
+        `${pg}@${w}x${h} click ${id} → ${JSON.stringify(c)}`,
       );
-      if (w === 1440 && (id === "activities" || id === "awards"))
-        ok(
-          s.cur.includes("activities") && s.cur.includes("awards"),
-          `${pg}@${w} click ${id}: paired data-current ${s.cur}`,
-        );
+    }
+    // free scrolling: always exactly one
+    const H = await p.evaluate(() => document.documentElement.scrollHeight);
+    for (let y = 0; y < H; y += Math.round(h * 0.7)) {
+      await p.evaluate((y) => scrollTo({ top: y, behavior: "instant" }), y);
+      await p.waitForTimeout(80);
+      c = await cur();
+      ok(
+        c.aria.length === 1 && c.data.length === 1,
+        `${pg}@${w} y=${y}: ${JSON.stringify(c)}`,
+      );
     }
     await p.close();
   }
 
-// ── 9. reduced motion = static
-for (const pg of ["home-ko", "detail-ko", "list-ko"]) {
-  const p = await b.newPage({ viewport: { width: 1440, height: 900 } });
-  await p.emulateMedia({ reducedMotion: "reduce" });
-  await p.goto(url(pg));
-  const hovers = [
-    ".group\\/poster",
-    "article.group",
-    "li.group.bg-surface",
-    "li[data-kind]",
-    "#skills li.group",
-    "li.group.relative",
-  ];
-  for (const sel of hovers) {
-    const loc = p.locator(sel).first();
-    if (await loc.count()) {
-      await loc.scrollIntoViewIfNeeded();
-      await loc.hover();
-      await p.waitForTimeout(80);
-    }
+// ── skip link and in-page jumps land below the sticky header (WCAG 2.4.11)
+for (const pg of ["home-ko", "detail-ko", "list-en"])
+  for (const [w, h] of [
+    [390, 844],
+    [1440, 900],
+    [844, 390],
+  ]) {
+    const p = await b.newPage({ viewport: { width: w, height: h } });
+    await p.goto(url(pg));
+    await p.keyboard.press("Tab");
+    await p.keyboard.press("Enter");
+    await p.waitForTimeout(400);
+    await p.keyboard.press("Tab");
+    const r = await p.evaluate(() => ({
+      hdr: document.querySelector("header").getBoundingClientRect().bottom,
+      top: document.activeElement.getBoundingClientRect().top,
+      tag: document.activeElement.tagName,
+    }));
+    ok(
+      r.top >= r.hdr - 1,
+      `${pg}@${w}x${h}: focus under header (${r.tag} ${r.top} < ${r.hdr})`,
+    );
+    await p.close();
   }
-  const r = await p.evaluate(() => ({
-    anims: document
-      .getAnimations()
-      .filter(
-        (a) =>
-          a instanceof CSSAnimation ||
-          /transform|translate|rotate|scale/.test(a.transitionProperty || ""),
-      ).length,
-    trans: [
-      ...document.querySelectorAll("[aria-hidden=true], [aria-hidden=true] *"),
-    ].filter(
-      (e) =>
-        /transform|translate|rotate|scale|all/.test(
-          getComputedStyle(e).transitionProperty,
-        ) && getComputedStyle(e).transitionDuration !== "0s",
-    ).length,
-  }));
-  ok(r.anims === 0, `${pg} reduced: ${r.anims} animations`);
-  ok(
-    r.trans === 0,
-    `${pg} reduced: ${r.trans} shapes with transform transitions`,
-  );
-  await p.close();
-}
 
-// ── 10. motion on
+// ── tech filter (home + list), the stack map's counts, the unrecorded skill
 {
   const p = await b.newPage({ viewport: { width: 1440, height: 900 } });
   await p.goto(url("home-ko"));
-  await p.waitForTimeout(1500);
-  const r = await p.evaluate(async () => {
-    const inf = document
-      .getAnimations()
-      .filter((a) => a.effect.getTiming().iterations === Infinity);
-    const durs = [
-      ...new Set(inf.map((a) => a.effect.getTiming().duration / 1000)),
-    ];
-    // hero relay: pause every poster loop and step a virtual clock 0..48s
-    const poster = document.querySelector(".group\\/poster");
-    const loops = inf.filter((a) => poster.contains(a.effect.target));
-    loops.forEach((a) => a.pause());
-    const t0 = loops.map((a) => a.currentTime);
-    const pose = () =>
-      loops.map((a) => getComputedStyle(a.effect.target).transform);
-    let prev = null,
-      maxMoving = 0,
-      moves = [];
-    for (let ms = 0; ms <= 48000; ms += 100) {
-      loops.forEach((a, i) => {
-        a.currentTime = t0[i] + ms;
-      });
-      const cur = pose();
-      if (prev) {
-        const n = cur.filter((v, i) => v !== prev[i]).length;
-        if (n) moves.push(ms);
-        maxMoving = Math.max(maxMoving, n);
-      }
-      prev = cur;
-    }
-
-    const starts = moves
-      .filter((m, i) => i === 0 || m - moves[i - 1] > 100)
-      .map((m) => m / 1000);
-    // gated loops below the fold
-    const offscreen = inf.filter((a) => {
-      const g = a.effect.target.closest(".play-gate");
-      return g && g.getBoundingClientRect().top > innerHeight;
-    });
-    return {
-      durs,
-      heroLoops: loops.length,
-      maxMoving,
-      starts,
-      offscreenRunning: offscreen.filter((a) => a.playState === "running")
-        .length,
-      offscreen: offscreen.length,
-    };
-  });
+  const nodes = await p.evaluate(() =>
+    [...document.querySelectorAll("#skills a[data-tech]")].map((a) => ({
+      slug: a.dataset.tech,
+      label: a.dataset.label,
+      count: +a.querySelector("[aria-hidden]").textContent,
+      href: a.getAttribute("href"),
+      sr: a.querySelector(".sr-only").textContent,
+    })),
+  );
+  ok(nodes.length === 6, `stack map: ${nodes.length} linked nodes`);
+  const unrec = await p.evaluate(() =>
+    [...document.querySelectorAll("#skills li > span")].map(
+      (x) => x.textContent,
+    ),
+  );
   ok(
-    r.durs.every((d) => [24, 48, 96, 60].includes(d)),
-    `motion: durations ${r.durs}`,
+    unrec.length === 1 && /TypeScript.*기록된 프로젝트 없음/.test(unrec[0]),
+    `unrecorded skill: ${unrec}`,
   );
-  ok(r.maxMoving <= 1, `motion: ${r.maxMoving} hero shapes moving at once`);
-  ok(
-    r.offscreen > 0 && r.offscreenRunning === 0,
-    `motion: offscreen running ${r.offscreenRunning}/${r.offscreen}`,
-  );
-  console.log(
-    "hero relay move starts (s):",
-    r.starts.join(", "),
-    "| loops:",
-    r.heroLoops,
-    "| durations:",
-    r.durs.join(","),
-  );
-  await p.reload();
-  await p.waitForTimeout(300);
-  await p.click("[data-motion-toggle]");
-  await p.waitForTimeout(100);
-  const paused = await p.evaluate(() =>
-    document
-      .getAnimations()
-      .filter((a) => a.effect.getTiming().iterations === Infinity)
-      .every((a) => a.playState === "paused"),
-  );
-  ok(paused, "motion: toggle did not pause all loops");
-  await p.reload();
-  await p.waitForTimeout(300);
+  for (const n of nodes) {
+    ok(
+      n.href.includes("sys-list-ko") && n.href.includes(`tech=${n.slug}`),
+      `node ${n.slug}: no-JS href ${n.href}`,
+    );
+    await p.click(`#skills a[data-tech="${n.slug}"]`);
+    await p.waitForTimeout(150);
+    const r = await p.evaluate((slug) => {
+      const vis = [...document.querySelectorAll("[data-project]")].filter(
+        (li) => li.offsetParent,
+      );
+      return {
+        shown: vis.map((li) => li.dataset.project),
+        uses: vis.every((li) => li.dataset.techs.split(" ").includes(slug)),
+        matched: [...document.querySelectorAll('[data-match="true"]')].every(
+          (c) => c.dataset.node === slug,
+        ),
+        nMatched: document.querySelectorAll('[data-match="true"]').length,
+        bar: document.querySelector("[data-filter-bar]").offsetParent !== null,
+        text: document.querySelector("[data-filter-text]").textContent,
+        status: document.querySelector("[data-copy-status]").textContent,
+        url: location.search,
+        current: document
+          .querySelector(`#skills a[data-tech="${slug}"]`)
+          .getAttribute("aria-current"),
+      };
+    }, n.slug);
+    ok(
+      r.shown.length === n.count &&
+        r.uses &&
+        r.matched &&
+        r.nMatched === n.count &&
+        r.bar &&
+        r.text === `${n.label} 사용 프로젝트 ${n.count}개` &&
+        r.status === r.text &&
+        r.url === `?tech=${n.slug}` &&
+        r.current === "true",
+      `filter ${n.slug}: ${JSON.stringify(r)}`,
+    );
+    await p.click(`#skills a[data-tech="${n.slug}"]`); // same node again clears
+    await p.waitForTimeout(100);
+    const cleared = await p.evaluate(() => ({
+      n: [...document.querySelectorAll("[data-project]")].filter(
+        (li) => li.offsetParent,
+      ).length,
+      url: location.search,
+    }));
+    ok(
+      cleared.n === 3 && !cleared.url,
+      `toggle ${n.slug}: ${JSON.stringify(cleared)}`,
+    );
+  }
+  await p.click('#skills a[data-tech="react"]');
+  await p.click("[data-filter-clear]");
   const after = await p.evaluate(() => ({
-    pressed: document
-      .querySelector("[data-motion-toggle]")
-      .getAttribute("aria-pressed"),
-    paused: document
-      .getAnimations()
-      .filter((a) => a.effect.getTiming().iterations === Infinity)
-      .every((a) => a.playState === "paused"),
-    pops: document.getAnimations().filter((a) => a.animationName === "pop")
-      .length, // the entrance pop also respects the saved pause (head script)
+    n: [...document.querySelectorAll("[data-project]")].filter(
+      (li) => li.offsetParent,
+    ).length,
+    focus: document.activeElement.dataset.tech,
   }));
   ok(
-    after.pressed === "true" && after.paused && after.pops === 0,
-    `motion: pause did not survive reload ${JSON.stringify(after)}`,
+    after.n === 3 && after.focus === "react",
+    `clear: ${JSON.stringify(after)}`,
   );
-  await p.click("[data-motion-toggle]");
+  // list page reads ?tech= on load; EN wording
+  await p.goto(url("list-en", "?tech=fastapi"));
+  const l = await p.evaluate(() => ({
+    shown: [...document.querySelectorAll("[data-project]")]
+      .filter((li) => li.offsetParent)
+      .map((li) => li.dataset.project),
+    text: document.querySelector("[data-filter-text]").textContent,
+  }));
+  ok(
+    l.shown.join() === "lecture-bot" && l.text === "Projects using FastAPI: 1",
+    `list ?tech: ${JSON.stringify(l)}`,
+  );
   await p.close();
 }
 
-// ── 12. relations, hashes, copy, KO/EN structure
+// ── relations, hashes, TOC = rendered blocks, KO/EN structure
 {
-  const ctx = await b.newContext({ viewport: { width: 1440, height: 900 } });
-  await ctx.grantPermissions(["clipboard-read", "clipboard-write"]);
-  const p = await ctx.newPage();
-  const links = {};
+  const p = await b.newPage({ viewport: { width: 1440, height: 900 } });
+  const info = {};
   for (const pg of PAGES) {
     await p.goto(url(pg));
-    links[pg] = await p.evaluate(() => ({
-      hashes: [...document.querySelectorAll('a[href^="#"]')]
+    info[pg] = await p.evaluate(() => ({
+      badHash: [...document.querySelectorAll('a[href^="#"]')]
         .map((a) => a.getAttribute("href"))
         .filter((h) => h.length > 1 && !document.getElementById(h.slice(1))),
       lang: document.documentElement.lang,
       tags: [...document.body.querySelectorAll("*")]
         .map((e) => e.tagName)
-        .join(","),
-      rel: [...document.querySelectorAll("p a, li a")].map((a) => [
-        a.closest("[id]")?.id,
-        a.getAttribute("href"),
-      ]),
+        .join(),
+      toc: [...document.querySelectorAll("[data-toc]")].map(
+        (a) => a.dataset.toc,
+      ),
+      blocks: [...document.querySelectorAll("[data-block]")].map((x) => x.id),
+      h1: document.querySelectorAll("h1").length,
     }));
     ok(
-      !links[pg].hashes.length,
-      `${pg}: unresolved hashes ${links[pg].hashes}`,
+      !info[pg].badHash.length,
+      `${pg}: unresolved hashes ${info[pg].badHash}`,
     );
-    ok(links[pg].lang === pg.slice(-2), `${pg}: html lang ${links[pg].lang}`);
+    ok(info[pg].lang === pg.slice(-2), `${pg}: html lang ${info[pg].lang}`);
+    ok(info[pg].h1 === 1, `${pg}: ${info[pg].h1} h1`);
+    ok(info[pg].toc.join() === info[pg].blocks.join(), `${pg}: TOC ≠ blocks`);
   }
-  for (const k of ["home", "detail", "list"])
+  for (const k of ["home", "detail", "detail2", "list"])
     ok(
-      links[`${k}-ko`].tags === links[`${k}-en`].tags,
-      `${k}: KO/EN element structure differs`,
+      info[`${k}-ko`].tags === info[`${k}-en`].tags,
+      `${k}: KO/EN structure differs`,
     );
-  // every edge visible in both directions on home (projects link to the detail page)
+  ok(
+    info["detail-ko"].blocks.includes("screens") &&
+      info["detail-ko"].blocks.includes("related"),
+    "detail: screens/related missing",
+  );
+  ok(
+    !info["detail2-ko"].blocks.includes("screens") &&
+      !info["detail2-ko"].blocks.includes("related"),
+    "detail2: blocks without data rendered",
+  );
   await p.goto(url("home-ko"));
-  const edges = [
-    ["study-timer", "award-oo-hackathon"],
-    ["study-timer", "act-oo-hackathon"],
-  ];
-  const relOk = await p.evaluate((edges) => {
-    const has = (from, to) => {
-      const toHref = (id) =>
-        ["study-timer", "attendance", "lecture-bot"].includes(id)
-          ? "sys-detail"
-          : id === "the-lab"
-            ? "#society"
-            : "#" + id;
-      const scope =
-        from === "the-lab"
-          ? document.querySelector("#society")
-          : ["study-timer", "attendance", "lecture-bot"].includes(from)
-            ? [...document.querySelectorAll("#projects article")].find(
-                (a) =>
-                  a.querySelector("h3").textContent.trim() ===
-                  {
-                    "study-timer": "스터디 타이머",
-                    attendance: "학회 출석 관리 서비스",
-                    "lecture-bot": "강의 요약 챗봇",
-                  }[from],
-              )
-            : document.getElementById(from);
-      return (
-        !!scope &&
-        [...scope.querySelectorAll("p a")].some((a) =>
-          a.getAttribute("href").includes(toHref(to)),
-        )
+  const rel = await p.evaluate(() => {
+    const entry = document.querySelector('[data-project="study-timer"]');
+    const toE = [...entry.querySelectorAll("p a")].map((a) =>
+      a.getAttribute("href"),
+    );
+    const back = (id) =>
+      [...document.getElementById(id).querySelectorAll("p a")].some((a) =>
+        a.getAttribute("href").includes("sys-detail-ko"),
       );
+    return {
+      toAward: toE.some((h) => h === "#award-oo-hackathon"),
+      toAct: toE.some((h) => h === "#act-oo-hackathon"),
+      awardBack: back("award-oo-hackathon"),
+      actBack: back("act-oo-hackathon"),
     };
-    return edges.map(([a, c]) => [a, c, has(a, c), has(c, a)]);
-  }, edges);
-  for (const [a, c, f, r] of relOk)
-    ok(f && r, `relation ${a}<->${c}: ${f}/${r}`);
-  for (const sel of ["#about [data-copy]", "#connect [data-copy]"]) {
-    const btns = p.locator(sel);
-    for (let i = 0; i < (await btns.count()); i++) {
-      const bt = btns.nth(i);
-      await bt.click();
-      await p.waitForTimeout(100);
-      const r = await p.evaluate(
-        async (el) => ({
-          clip: await navigator.clipboard.readText(),
-          want: el.dataset.copy,
-          status: document.querySelector("[data-copy-status]").textContent,
-          done: el.dataset.done === "true",
-          label: el.querySelector("[data-copy-label]").textContent,
-        }),
-        await bt.elementHandle(),
-      );
-      ok(
-        r.clip === r.want && r.status && r.done && r.label === "복사됨",
-        `copy ${sel}#${i}: ${JSON.stringify(r)}`,
-      );
-    }
-  }
-  await ctx.close();
+  });
+  ok(Object.values(rel).every(Boolean), `relations: ${JSON.stringify(rel)}`);
+  await p.close();
 }
 
-// ── media slots keep their exact capture ratio at every width; spine modules stay square; copy failure degrades
+// ── media slots keep their exact capture ratio at every width
 {
   const WANT = { web: 16 / 10, mobile: 6 / 13, photo: 4 / 3 };
-  for (const pg of ["home-ko", "home-en", "detail-ko", "list-en"])
+  for (const pg of ["home-ko", "home-en", "detail-ko", "detail-en"])
     for (const w of [320, 390, 768, 1024, 1440]) {
       const p = await b.newPage({ viewport: { width: w, height: 900 } });
       await p.goto(url(pg));
@@ -429,168 +434,73 @@ for (const pg of ["home-ko", "detail-ko", "list-ko"]) {
         let n = 0;
         for (const el of document.querySelectorAll("[data-slot]")) {
           const rc = el.getBoundingClientRect();
-          if (!rc.width || el.dataset.fit === "cover") continue; // hidden at this width (phone column below sm) / cropped photo
+          if (!rc.width) continue;
           n++;
           const ratio = rc.width / rc.height;
-          const want = WANT[el.dataset.slot];
-          if (Math.abs(ratio / want - 1) > 0.02)
-            bad.push(
-              `${el.dataset.slot} ${ratio.toFixed(3)}≠${want.toFixed(3)}`,
-            );
-          if (rc.right > innerWidth + 0.5)
-            bad.push(`${el.dataset.slot} overflows`);
-        }
-        // the capture + spine unit: spine cells square
-        for (const u of document.querySelectorAll(".aspect-29\\/15")) {
-          const sp = u.children[1];
-          if (!sp) continue;
-          for (const c of sp.children) {
-            const rc = c.getBoundingClientRect();
-            if (Math.abs(rc.width / rc.height - 1) > 0.03)
-              bad.push(`spine ${rc.width.toFixed(1)}x${rc.height.toFixed(1)}`);
-          }
+          if (Math.abs(ratio / WANT[el.dataset.slot] - 1) > 0.02)
+            bad.push(`${el.dataset.slot} ${ratio.toFixed(3)}`);
         }
         return { bad, n };
       }, WANT);
-      ok(r.n > 0, `${pg}@${w}: no media slots rendered`);
+      ok(r.n > 0, `${pg}@${w}: no media slots`);
       ok(!r.bad.length, `${pg}@${w}: ${r.bad.slice(0, 4).join("; ")}`);
       await p.close();
     }
-  // copy blocked → label + status give the hint, the value text is selected for a manual copy
-  const ctx = await b.newContext({ viewport: { width: 1440, height: 900 } });
-  const p = await ctx.newPage();
-  await p.addInitScript(() => {
-    Object.defineProperty(navigator, "clipboard", {
-      value: { writeText: () => Promise.reject(new Error("blocked")) },
-    });
-  });
-  await p.goto(url("home-ko"));
-  for (const sel of ["#about [data-copy]", "#connect [data-copy]"]) {
-    const btns = p.locator(sel);
-    for (let i = 0; i < (await btns.count()); i++) {
-      const bt = btns.nth(i);
-      await bt.click();
-      await p.waitForTimeout(100);
-      const r = await p.evaluate(
-        (el) => ({
-          done: el.dataset.done,
-          label: el.querySelector("[data-copy-label]").textContent,
-          status: document.querySelector("[data-copy-status]").textContent,
-          sel: String(getSelection()),
-          want: el.dataset.copy,
-        }),
-        await bt.elementHandle(),
-      );
-      ok(
-        r.done === "fail" &&
-          r.label === "복사 실패" &&
-          r.status.includes("직접") &&
-          r.sel === r.want,
-        `copy-fail ${sel}#${i}: ${JSON.stringify(r)}`,
-      );
-    }
-  }
-  await ctx.close();
 }
 
-// ── focus not obscured: skip link and "back to top" land below the sticky header (WCAG 2.4.11)
-for (const pg of ["detail-ko", "list-en", "home-ko"])
-  for (const [w, h] of [
-    [390, 844],
-    [1440, 900],
-    [844, 390],
-  ]) {
-    const p = await b.newPage({ viewport: { width: w, height: h } });
-    await p.emulateMedia({ reducedMotion: "reduce" });
-    await p.goto(url(pg));
-    await p.keyboard.press("Tab");
-    await p.keyboard.press("Enter");
+// ── copy buttons: success, and the blocked-clipboard fallback
+{
+  const ctx = await b.newContext({ viewport: { width: 1440, height: 900 } });
+  await ctx.grantPermissions(["clipboard-read", "clipboard-write"]);
+  const p = await ctx.newPage();
+  await p.goto(url("home-ko"));
+  const btns = p.locator("[data-copy]");
+  for (let i = 0; i < (await btns.count()); i++) {
+    await btns.nth(i).click();
     await p.waitForTimeout(100);
-    await p.keyboard.press("Tab");
-    const r = await p.evaluate(() => {
-      const hb = document
-        .querySelector("header")
-        .getBoundingClientRect().bottom;
-      const f = document.activeElement.getBoundingClientRect();
-      return {
-        hb: Math.round(hb),
-        top: Math.round(f.top),
-        what: document.activeElement.textContent.trim().slice(0, 20),
-      };
-    });
-    ok(
-      r.top >= r.hb,
-      `${pg}@${w}x${h} skip link: focused "${r.what}" top ${r.top} under header ${r.hb}`,
+    const r = await p.evaluate(
+      async (el) => ({
+        clip: await navigator.clipboard.readText(),
+        want: el.dataset.copy,
+        done: el.dataset.done,
+        status: document.querySelector("[data-copy-status]").textContent,
+      }),
+      await btns.nth(i).elementHandle(),
     );
-    await p.close();
+    ok(
+      r.clip === r.want && r.done === "true" && r.status,
+      `copy #${i}: ${JSON.stringify(r)}`,
+    );
   }
-
-// ── detail TOC + home nav at a tall desktop: clicking any entry makes exactly that entry current
-for (const [pg, sel, key, ids] of [
-  [
-    "detail-ko",
-    "[data-toc]",
-    "toc",
-    [
-      "summary",
-      "contributions",
-      "features",
-      "tech",
-      "outcomes",
-      "challenges",
-      "related",
-    ],
-  ],
-  [
-    "home-en",
-    "header nav a[data-nav]",
-    "nav",
-    [
-      "about",
-      "projects",
-      "activities",
-      "awards",
-      "society",
-      "skills",
-      "education",
-      "connect",
-    ],
-  ],
-])
-  for (const [w, h] of [
-    [1440, 900],
-    [1920, 1080],
-    [390, 844],
-  ]) {
-    const p = await b.newPage({ viewport: { width: w, height: h } });
-    await p.emulateMedia({ reducedMotion: "reduce" });
-    await p.goto(url(pg));
-    for (const id of ids) {
-      await p
-        .locator(`${sel}[data-${key}="${id}"]`)
-        .filter({ visible: true })
-        .first()
-        .click();
-      await p.waitForTimeout(250);
-      await p.evaluate(() => window.dispatchEvent(new Event("scrollend")));
-      await p.waitForTimeout(80);
-      const cur = await p.evaluate(
-        (sel) =>
-          [...document.querySelectorAll(sel)]
-            .filter(
-              (a) =>
-                a.offsetParent && a.getAttribute("aria-current") === "location",
-            )
-            .map((a) => a.dataset.toc || a.dataset.nav),
-        sel,
-      );
-      ok(
-        cur.length === 1 && cur[0] === id,
-        `${pg}@${w}x${h} click ${id} → aria-current ${cur}`,
-      );
-    }
-    await p.close();
+  await ctx.close();
+  const ctx2 = await b.newContext({ viewport: { width: 1440, height: 900 } });
+  const q = await ctx2.newPage();
+  await q.addInitScript(() =>
+    Object.defineProperty(navigator, "clipboard", {
+      value: { writeText: () => Promise.reject(new Error("blocked")) },
+    }),
+  );
+  await q.goto(url("home-ko"));
+  const fb = q.locator("[data-copy]");
+  for (let i = 0; i < (await fb.count()); i++) {
+    await fb.nth(i).click();
+    await q.waitForTimeout(100);
+    const r = await q.evaluate(
+      (el) => ({
+        done: el.dataset.done,
+        sel: String(getSelection()),
+        want: el.dataset.copy,
+        status: document.querySelector("[data-copy-status]").textContent,
+      }),
+      await fb.nth(i).elementHandle(),
+    );
+    ok(
+      r.done === "fail" && r.sel === r.want && r.status.includes("직접"),
+      `copy-fail #${i}: ${JSON.stringify(r)}`,
+    );
   }
+  await ctx2.close();
+}
 
 await b.close();
 console.log(

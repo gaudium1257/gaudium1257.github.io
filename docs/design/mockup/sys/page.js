@@ -1,44 +1,14 @@
 (() => {
   const root = document.documentElement;
-
-  // Motion toggle ("Pause motion", pressed = paused): pauses every loop through --play
-  // (root data-motion=off), remembered in localStorage
-  const mt = document.querySelector("[data-motion-toggle]");
-  const applyMotion = (off) => {
-    root.dataset.motion = off ? "off" : "on";
-    mt.setAttribute("aria-pressed", String(off));
+  const cfg = JSON.parse(document.body.dataset.cfg || "{}");
+  const status = document.querySelector("[data-copy-status]");
+  const say = (msg) => {
+    status.textContent = "";
+    requestAnimationFrame(() => (status.textContent = msg));
   };
-  let saved = null;
-  try {
-    saved = localStorage.getItem("motion");
-  } catch {}
-  applyMotion(saved === "off");
-  mt.addEventListener("click", () => {
-    const off = root.dataset.motion !== "off";
-    applyMotion(off);
-    try {
-      localStorage.setItem("motion", off ? "off" : "on");
-    } catch {}
-  });
-
-  // Play gates: loops run only while their container is on screen
-  if ("IntersectionObserver" in window) {
-    const io = new IntersectionObserver(
-      (es) =>
-        es.forEach((e) =>
-          e.target.setAttribute("data-inview", String(e.isIntersecting)),
-        ),
-      { threshold: 0.25 },
-    );
-    document.querySelectorAll("[data-gate]").forEach((el) => io.observe(el));
-  } else
-    document
-      .querySelectorAll("[data-gate]")
-      .forEach((el) => el.setAttribute("data-inview", "true"));
 
   // Copy buttons, announced in one status region. If the clipboard is blocked, the value's
   // visible text is selected so it can be copied by hand, and the hint says so.
-  const status = document.querySelector("[data-copy-status]");
   document.querySelectorAll("[data-copy]").forEach((b) =>
     b.addEventListener("click", async () => {
       const lab = b.querySelector("[data-copy-label]");
@@ -51,7 +21,7 @@
       }
       lab.textContent = ok ? tx.done : tx.fail;
       b.setAttribute("data-done", ok ? "true" : "fail");
-      status.textContent = ok ? tx.status : tx.hint;
+      say(ok ? tx.status : tx.hint);
       if (!ok) {
         const sel = `[data-copy-value="${b.dataset.copyKey}"]`;
         let p = b.parentElement;
@@ -74,6 +44,64 @@
       );
     }),
   );
+
+  // Tech filter (home + project list). Each tech is a real link (no JS: the list filtered by that tech);
+  // with JS the list filters in place, the URL keeps ?tech=<slug>, and the result is announced.
+  const techLinks = [...document.querySelectorAll("a[data-tech]")];
+  const entries = [...document.querySelectorAll("[data-project]")];
+  const bar = document.querySelector("[data-filter-bar]");
+  if (techLinks.length && entries.length && bar) {
+    const text = bar.querySelector("[data-filter-text]");
+    let current = null;
+    const apply = (slug, announce) => {
+      current = slug;
+      techLinks.forEach((a) =>
+        a.setAttribute("aria-current", String(a.dataset.tech === slug)),
+      );
+      let n = 0;
+      entries.forEach((li) => {
+        const hit = !slug || li.dataset.techs.split(" ").includes(slug);
+        li.setAttribute("data-show", String(hit));
+        if (hit) n++;
+        li.querySelectorAll("[data-node]").forEach((c) =>
+          c.setAttribute(
+            "data-match",
+            String(!!slug && c.dataset.node === slug),
+          ),
+        );
+      });
+      const url = new URL(location.href);
+      if (slug) url.searchParams.set("tech", slug);
+      else url.searchParams.delete("tech");
+      history.replaceState(null, "", url);
+      bar.setAttribute("data-show", String(!!slug));
+      if (slug) {
+        const label = techLinks.find((a) => a.dataset.tech === slug).dataset
+          .label;
+        text.textContent = cfg.filter
+          .replace("{tech}", label)
+          .replace("{n}", n);
+        if (announce) say(text.textContent);
+      }
+    };
+    techLinks.forEach((a) =>
+      a.addEventListener("click", (ev) => {
+        if (ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.button) return; // new tab: open the static page
+        ev.preventDefault();
+        apply(current === a.dataset.tech ? null : a.dataset.tech, true);
+        const list = document.querySelector("[data-project-list]");
+        if (list.getBoundingClientRect().top > innerHeight - 160)
+          bar.scrollIntoView({ block: "start" });
+      }),
+    );
+    bar.querySelector("[data-filter-clear]").addEventListener("click", () => {
+      const was = techLinks.find((a) => a.dataset.tech === current);
+      apply(null, false);
+      if (was) was.focus();
+    });
+    const q = new URLSearchParams(location.search).get("tech");
+    if (q && techLinks.some((a) => a.dataset.tech === q)) apply(q, false);
+  }
 
   // "See all N screens" also unfolds the screens folded into <details>
   document
@@ -100,70 +128,73 @@
   addEventListener("hashchange", openOnHash);
   openOnHash();
 
-  // Scrollspy: a row of sections sharing a top lights up together (data-current); exactly one link gets aria-current.
-  // The line sits just under the sticky header, where an anchor jump lands, so a short section still becomes current.
-  const spy = (links, key, sectionIds, rowMode) => {
+  // Scrollspy: exactly one link is current — the last section whose top has passed the line just under the
+  // sticky header (where an anchor jump lands). A clicked section stays current at the page bottom.
+  const spy = (links, key) => {
     if (!links.length) return;
-    const secs = sectionIds
-      .map((id) => document.getElementById(id))
-      .filter(Boolean);
+    const ids = links.map((a) => a.dataset[key]);
+    const secs = ids.map((id) => document.getElementById(id)).filter(Boolean);
     let clicked = null,
       lock = 0,
       last = "";
-    const set = (row, cur) => {
-      const k = row.join() + "|" + cur;
-      if (k === last) return;
-      last = k;
+    const set = (cur) => {
+      if (cur === last) return;
+      last = cur;
       links.forEach((a) => {
-        const id = a.dataset[key];
-        if (rowMode) a.setAttribute("data-current", String(row.includes(id)));
-        if (id === cur) a.setAttribute("aria-current", "location");
+        const on = a.dataset[key] === cur;
+        a.setAttribute("data-current", String(on));
+        if (on) a.setAttribute("aria-current", "location");
         else a.removeAttribute("aria-current");
       });
     };
-    const rowAt = (ref) =>
-      secs
-        .filter((s) => Math.abs(s.getBoundingClientRect().top - ref) < 4)
-        .map((s) => s.id);
     const update = () => {
       if (Date.now() < lock) return;
       const line =
         document.querySelector("header").getBoundingClientRect().bottom + 24;
-      let top = null;
-      for (const s of secs) {
-        const tp = s.getBoundingClientRect().top;
-        if (tp <= line) top = tp;
+      const passed = secs.filter((x) => x.getBoundingClientRect().top <= line);
+      let row = [secs[0]];
+      if (passed.length) {
+        const top = passed.at(-1).getBoundingClientRect().top;
+        row = secs.filter(
+          (x) => Math.abs(x.getBoundingClientRect().top - top) < 4,
+        ); // sections side by side share a top: the first wins unless the other was clicked
       }
       const bottom = innerHeight + scrollY >= root.scrollHeight - 2;
-      let row = bottom
-        ? rowAt(secs.at(-1).getBoundingClientRect().top)
-        : top === null
-          ? [secs[0].id]
-          : rowAt(top);
-      if (clicked && !row.includes(clicked)) {
-        // at the page bottom a clicked section that can't reach the line stays current
-        if (bottom)
-          row = rowAt(
-            document.getElementById(clicked).getBoundingClientRect().top,
-          );
+      let cur = row[0].id;
+      if (clicked) {
+        if (bottom || row.some((x) => x.id === clicked)) cur = clicked;
         else clicked = null;
-      }
-      set(row, clicked || (bottom ? row.at(-1) : row[0]));
+      } else if (bottom) cur = secs.at(-1).id;
+      set(cur);
+    };
+    let fallback = 0;
+    // the hold ends when the jump has arrived (section at the scroll-padding line, or the page can't scroll further);
+    // a scrollend left over from an earlier scroll doesn't count
+    const arrived = () => {
+      const el = clicked && document.getElementById(clicked);
+      if (!el) return true;
+      const pt = parseFloat(getComputedStyle(root).scrollPaddingTop) || 0;
+      const max = root.scrollHeight - innerHeight;
+      const goal = Math.min(
+        max,
+        Math.max(0, scrollY + el.getBoundingClientRect().top - pt),
+      ); // where the jump will stop, clamped to the scrollable range
+      return Math.abs(scrollY - goal) < 6;
+    };
+    const release = () => {
+      lock = 0;
+      clearTimeout(fallback);
+      update();
     };
     links.forEach((a) =>
       a.addEventListener("click", () => {
-        const id = a.dataset[key];
-        const el = document.getElementById(id);
-        if (!el) return;
-        clicked = id;
-        lock = Date.now() + 900;
-        set(rowAt(el.getBoundingClientRect().top), id);
+        clicked = a.dataset[key];
+        lock = Infinity; // until the jump's scroll ends (fallback where scrollend is missing)
+        clearTimeout(fallback);
+        fallback = setTimeout(release, 2500);
+        set(clicked);
       }),
     );
-    addEventListener("scrollend", () => {
-      lock = 0;
-      update();
-    });
     let ticking = false;
     const tick = () => {
       if (ticking) return;
@@ -173,17 +204,14 @@
         update();
       });
     };
+    addEventListener("scrollend", () => {
+      if (lock === Infinity && !arrived()) return;
+      release();
+    });
     addEventListener("scroll", tick, { passive: true });
     addEventListener("resize", tick);
     update();
   };
-  const navLinks = [...document.querySelectorAll("[data-nav]")];
-  spy(navLinks, "nav", [...new Set(navLinks.map((a) => a.dataset.nav))], true);
-  const tocLinks = [...document.querySelectorAll("[data-toc]")];
-  spy(
-    tocLinks,
-    "toc",
-    tocLinks.map((a) => a.dataset.toc),
-    false,
-  );
+  spy([...document.querySelectorAll("[data-nav]")], "nav");
+  spy([...document.querySelectorAll("[data-toc]")], "toc");
 })();

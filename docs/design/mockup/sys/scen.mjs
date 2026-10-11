@@ -31,18 +31,6 @@ for (const d of dirs)
         if (Math.abs(ratio / WANT[el.dataset.slot] - 1) > 0.02)
           bad.push(`${el.dataset.slot} ${ratio.toFixed(3)}`);
       }
-      for (const u of document.querySelectorAll(".aspect-29\\/15")) {
-        const rc = u.getBoundingClientRect();
-        if (Math.abs(rc.width / rc.height - 29 / 15) > 0.03)
-          bad.push(`unit ${(rc.width / rc.height).toFixed(3)}`);
-        const sp = u.children[1];
-        if (sp && sp.classList.contains("grid-rows-3"))
-          for (const c of sp.children) {
-            const cr = c.getBoundingClientRect();
-            if (Math.abs(cr.width / cr.height - 1) > 0.03)
-              bad.push(`spine ${cr.width.toFixed(0)}x${cr.height.toFixed(0)}`);
-          }
-      }
       const toc = [...document.querySelectorAll("[data-toc]")].map(
         (a) => a.dataset.toc,
       );
