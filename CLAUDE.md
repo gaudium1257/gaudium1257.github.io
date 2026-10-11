@@ -40,7 +40,7 @@ src/i18n/                   locales, t(), dictionaries
 src/config/sections.ts      section registry → drives nav order and home sections
 src/app/[locale]/…          pages (/ko/, /en/, /ko/projects/<id>/)
 src/app/(root)/             "/" → redirects to saved or browser language
-docs/prompts/               project-fact-sheet.md (for other project sessions), design.md (/design prompt)
+docs/prompts/               project-fact-sheet.md (for other project sessions), design.md (/design prompt), handoff.md (cloud → local session)
 ```
 
 - Ids are global kebab-case and equal the file name. `related: [ids]` may point to any collection; declaring one side is enough (relations are undirected).
