@@ -75,6 +75,17 @@
     }),
   );
 
+  // "See all N screens" also unfolds the screens folded into <details>
+  document
+    .querySelectorAll('a[href="#screens"]')
+    .forEach((a) =>
+      a.addEventListener("click", () =>
+        document
+          .querySelectorAll("#screens details")
+          .forEach((d) => (d.open = true)),
+      ),
+    );
+
   // Open a collapsed <details> when the hash points inside it
   const openOnHash = () => {
     const el =

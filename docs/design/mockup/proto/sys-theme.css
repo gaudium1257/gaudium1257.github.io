@@ -1,6 +1,14 @@
 /* "Moving Poster" theme — the same block becomes src/app/globals.css (plus @import "tailwindcss" and the font import). */
 @custom-variant short (@media (max-height: 500px));
 @custom-variant tiny (@media (max-height: 240px)); /* 400% zoom: unpin the header */
+/* entrance pop: needs motion allowed by the OS AND not paused with the header toggle (data-motion="off" on <html>) */
+@custom-variant motion-on {
+  @media (prefers-reduced-motion: no-preference) {
+    &:not([data-motion="off"] *) {
+      @slot;
+    }
+  }
+}
 
 @theme {
   --color-*: initial;

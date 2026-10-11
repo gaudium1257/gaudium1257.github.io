@@ -48,6 +48,8 @@ next-env.d.ts
 /docs/design/mockup/design2/
 /docs/design/mockup/proto/sys-*/
 /docs/design/mockup/proto/sys.css
+/docs/design/mockup/proto/_scen*
+/docs/design/mockup/sys/scen/
 /docs/design/mockup/proto/node_modules
 /docs/design/mockup/sys/shots*/
 /docs/design/mockup/sys/dcshots/

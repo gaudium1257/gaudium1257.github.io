@@ -54,14 +54,14 @@ for (const pg of PAGES) {
         ) ||
         /group-hover[^:]*:-?(rotate|translate|scale)/.test(c) ||
         /group-has-[^ ]*:-?(rotate|translate|scale)/.test(c)) &&
-      !c.startsWith("motion-safe:"),
+      !/^motion-(safe|on):/.test(c),
   );
   ok(
     !ungated.length,
     `${pg}: ungated transforms ${[...new Set(ungated)].slice(0, 5)}`,
   );
   const anims = classes.filter(
-    (c) => /(^|:)animate-/.test(c) && !c.startsWith("motion-safe:"),
+    (c) => /(^|:)animate-/.test(c) && !/^motion-(safe|on):/.test(c),
   );
   ok(!anims.length, `${pg}: ungated animations ${anims.slice(0, 3)}`);
 }
@@ -310,9 +310,11 @@ for (const pg of ["home-ko", "detail-ko", "list-ko"]) {
       .getAnimations()
       .filter((a) => a.effect.getTiming().iterations === Infinity)
       .every((a) => a.playState === "paused"),
+    pops: document.getAnimations().filter((a) => a.animationName === "pop")
+      .length, // the entrance pop also respects the saved pause (head script)
   }));
   ok(
-    after.pressed === "true" && after.paused,
+    after.pressed === "true" && after.paused && after.pops === 0,
     `motion: pause did not survive reload ${JSON.stringify(after)}`,
   );
   await p.click("[data-motion-toggle]");
