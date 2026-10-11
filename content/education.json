@@ -3,6 +3,7 @@
     {
       "id": "korea-university",
       "school": { "ko": "고려대학교", "en": "Korea University" },
+      "status": "enrolled",
       "period": { "start": "2026-03", "end": null }
     }
   ],
