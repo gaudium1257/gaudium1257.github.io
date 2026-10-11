@@ -415,6 +415,82 @@ for (const pg of ["home-ko", "detail-ko", "list-ko"]) {
   await ctx.close();
 }
 
+// ── media slots keep their exact capture ratio at every width; spine modules stay square; copy failure degrades
+{
+  const WANT = { web: 16 / 10, mobile: 6 / 13, photo: 4 / 3 };
+  for (const pg of ["home-ko", "home-en", "detail-ko", "list-en"])
+    for (const w of [320, 390, 768, 1024, 1440]) {
+      const p = await b.newPage({ viewport: { width: w, height: 900 } });
+      await p.goto(url(pg));
+      const r = await p.evaluate((WANT) => {
+        const bad = [];
+        let n = 0;
+        for (const el of document.querySelectorAll("[data-slot]")) {
+          const rc = el.getBoundingClientRect();
+          if (!rc.width || el.dataset.fit === "cover") continue; // hidden at this width (phone column below sm) / cropped photo
+          n++;
+          const ratio = rc.width / rc.height;
+          const want = WANT[el.dataset.slot];
+          if (Math.abs(ratio / want - 1) > 0.02)
+            bad.push(
+              `${el.dataset.slot} ${ratio.toFixed(3)}≠${want.toFixed(3)}`,
+            );
+          if (rc.right > innerWidth + 0.5)
+            bad.push(`${el.dataset.slot} overflows`);
+        }
+        // the capture + spine unit: spine cells square
+        for (const u of document.querySelectorAll(".aspect-29\\/15")) {
+          const sp = u.children[1];
+          if (!sp) continue;
+          for (const c of sp.children) {
+            const rc = c.getBoundingClientRect();
+            if (Math.abs(rc.width / rc.height - 1) > 0.03)
+              bad.push(`spine ${rc.width.toFixed(1)}x${rc.height.toFixed(1)}`);
+          }
+        }
+        return { bad, n };
+      }, WANT);
+      ok(r.n > 0, `${pg}@${w}: no media slots rendered`);
+      ok(!r.bad.length, `${pg}@${w}: ${r.bad.slice(0, 4).join("; ")}`);
+      await p.close();
+    }
+  // copy blocked → label + status give the hint, the value text is selected for a manual copy
+  const ctx = await b.newContext({ viewport: { width: 1440, height: 900 } });
+  const p = await ctx.newPage();
+  await p.addInitScript(() => {
+    Object.defineProperty(navigator, "clipboard", {
+      value: { writeText: () => Promise.reject(new Error("blocked")) },
+    });
+  });
+  await p.goto(url("home-ko"));
+  for (const sel of ["#about [data-copy]", "#connect [data-copy]"]) {
+    const btns = p.locator(sel);
+    for (let i = 0; i < (await btns.count()); i++) {
+      const bt = btns.nth(i);
+      await bt.click();
+      await p.waitForTimeout(100);
+      const r = await p.evaluate(
+        (el) => ({
+          done: el.dataset.done,
+          label: el.querySelector("[data-copy-label]").textContent,
+          status: document.querySelector("[data-copy-status]").textContent,
+          sel: String(getSelection()),
+          want: el.dataset.copy,
+        }),
+        await bt.elementHandle(),
+      );
+      ok(
+        r.done === "fail" &&
+          r.label === "복사 실패" &&
+          r.status.includes("직접") &&
+          r.sel === r.want,
+        `copy-fail ${sel}#${i}: ${JSON.stringify(r)}`,
+      );
+    }
+  }
+  await ctx.close();
+}
+
 // ── focus not obscured: skip link and "back to top" land below the sticky header (WCAG 2.4.11)
 for (const pg of ["detail-ko", "list-en", "home-ko"])
   for (const [w, h] of [

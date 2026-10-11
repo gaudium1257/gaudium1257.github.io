@@ -94,7 +94,7 @@ class Component extends DCLogic {
     const done = (ok) => {
       const cp = Object.assign({}, (this.state && this.state.copy) || {});
       cp[key] = ok ? "done" : "fail";
-      this.setState({ copy: cp, status: ok ? item.status : c.copyFail });
+      this.setState({ copy: cp, status: ok ? item.status : c.copyHint });
       this._ct = this._ct || {};
       clearTimeout(this._ct[key]);
       this._ct[key] = setTimeout(() => {
@@ -138,7 +138,7 @@ class Component extends DCLogic {
       const s = (st.copy || {})[k];
       copy[k] = {
         label: s === "done" ? c.copied : s === "fail" ? c.copyFail : c.copyIdle,
-        done: s === "done" ? "true" : "false",
+        done: s === "done" ? "true" : s === "fail" ? "fail" : "false",
         go: () => this.doCopy(k),
       };
     });

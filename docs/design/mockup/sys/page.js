@@ -36,26 +36,42 @@
       .querySelectorAll("[data-gate]")
       .forEach((el) => el.setAttribute("data-inview", "true"));
 
-  // Copy buttons, announced in one status region
+  // Copy buttons, announced in one status region. If the clipboard is blocked, the value's
+  // visible text is selected so it can be copied by hand, and the hint says so.
   const status = document.querySelector("[data-copy-status]");
   document.querySelectorAll("[data-copy]").forEach((b) =>
     b.addEventListener("click", async () => {
       const lab = b.querySelector("[data-copy-label]");
       const tx = JSON.parse(b.dataset.copyText);
+      let ok = true;
       try {
         await navigator.clipboard.writeText(b.dataset.copy);
-        lab.textContent = tx.done;
-        b.setAttribute("data-done", "true");
-        status.textContent = tx.status;
       } catch {
-        lab.textContent = tx.fail;
-        status.textContent = tx.fail;
+        ok = false;
+      }
+      lab.textContent = ok ? tx.done : tx.fail;
+      b.setAttribute("data-done", ok ? "true" : "fail");
+      status.textContent = ok ? tx.status : tx.hint;
+      if (!ok) {
+        const sel = `[data-copy-value="${b.dataset.copyKey}"]`;
+        let p = b.parentElement;
+        while (p && !p.querySelector(sel)) p = p.parentElement;
+        const v = p && p.querySelector(sel);
+        if (v) {
+          const r = document.createRange();
+          r.selectNodeContents(v);
+          getSelection().removeAllRanges();
+          getSelection().addRange(r);
+        }
       }
       clearTimeout(b._t);
-      b._t = setTimeout(() => {
-        lab.textContent = tx.idle;
-        b.setAttribute("data-done", "false");
-      }, 1600);
+      b._t = setTimeout(
+        () => {
+          lab.textContent = tx.idle;
+          b.setAttribute("data-done", "false");
+        },
+        ok ? 1600 : 4000,
+      );
     }),
   );
 
@@ -137,10 +153,17 @@
       lock = 0;
       update();
     });
-    addEventListener("scroll", () => requestAnimationFrame(update), {
-      passive: true,
-    });
-    addEventListener("resize", update);
+    let ticking = false;
+    const tick = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        ticking = false;
+        update();
+      });
+    };
+    addEventListener("scroll", tick, { passive: true });
+    addEventListener("resize", tick);
     update();
   };
   const navLinks = [...document.querySelectorAll("[data-nav]")];
