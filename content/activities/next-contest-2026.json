@@ -1,0 +1,35 @@
+{
+  "id": "next-contest-2026",
+  "title": {
+    "ko": "2026 NE:XT CONTEST",
+    "en": "2026 NE:XT CONTEST"
+  },
+  "organization": {
+    "ko": "고려대학교 정보대학",
+    "en": "Korea University College of Informatics"
+  },
+  "type": "competition",
+  "period": {
+    "start": "2026-03",
+    "end": "2026-05"
+  },
+  "role": {
+    "ko": "개인 출품",
+    "en": "Solo entry"
+  },
+  "description": {
+    "ko": "고려대학교 정보대학 소프트웨어 경진대회에 일정·일기 앱 Dayce를 1인으로 개발해 출품했습니다.",
+    "en": "Built the schedule and diary app Dayce on my own and entered it in the software competition of Korea University's College of Informatics."
+  },
+  "links": [
+    {
+      "type": "other",
+      "url": "https://husky-willow-b6d.notion.site/2026-NE-XT-CONTEST-30d4e67d9ce480a0a418f8ca0e489fca",
+      "label": {
+        "ko": "대회 안내",
+        "en": "Contest page"
+      }
+    }
+  ],
+  "related": ["dayce"]
+}
