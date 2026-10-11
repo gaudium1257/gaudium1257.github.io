@@ -63,6 +63,13 @@ export const PublicImage = z
   .string()
   .regex(/^\/images\/.+\.(png|jpe?g|webp|gif|svg)$/i);
 
+/**
+ * Capture box: web 16:10 · mobile (phone) 6:13 · photo 4:3. Boxes never crop,
+ * so the file must already have that ratio (the validator checks ±1%).
+ */
+export const MediaKind = z.enum(["web", "mobile", "photo"]);
+export type MediaKind = z.infer<typeof MediaKind>;
+
 // ---------------------------------------------------------------------------
 // Profile (자기소개 + connect)
 // ---------------------------------------------------------------------------
@@ -180,9 +187,17 @@ export const Project = z.object({
   related: Related,
   tags: z.array(z.string().trim().min(1)).default([]),
   featured: z.boolean().default(false),
+  /** Lead web capture (16:10). Without it the first web/photo screenshot leads. */
   thumbnail: PublicImage.optional(),
+  /** First `mobile` shot = the phone box beside the lead; the gallery lists them all. */
   screenshots: z
-    .array(z.object({ src: PublicImage, alt: Localized }))
+    .array(
+      z.object({
+        src: PublicImage,
+        alt: Localized,
+        kind: MediaKind.default("web"),
+      }),
+    )
     .default([]),
 });
 export type Project = z.infer<typeof Project>;

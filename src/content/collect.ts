@@ -8,6 +8,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import type { z } from "zod";
+import { MEDIA_RATIO } from "../lib/media";
 import {
   Activity,
   Award,
@@ -216,7 +217,53 @@ export function collectContent(): CollectResult {
       );
     if (p.period.end && p.period.end < p.period.start)
       errors.push(`project "${p.id}": period.end is before period.start`);
+
+    // capture boxes never crop, so each file must exist and match its box ratio
+    const shots = [
+      ...(p.thumbnail ? [{ src: p.thumbnail, kind: "web" as const }] : []),
+      ...p.screenshots,
+    ];
+    for (const { src, kind } of shots) {
+      const file = path.join(PUBLIC_DIR, src);
+      if (!fs.existsSync(file)) {
+        errors.push(`project "${p.id}": image ${src} not found in public/`);
+        continue;
+      }
+      const size = imageSize(file);
+      if (!size) continue; // ratio is only read from PNG/JPEG
+      const ratio = size.width / size.height;
+      if (Math.abs(ratio / MEDIA_RATIO[kind] - 1) > 0.01)
+        errors.push(
+          `project "${p.id}": ${src} is ${size.width}×${size.height}; a ${kind} capture must be ${RATIO_LABEL[kind]} (±1%)`,
+        );
+    }
   }
 
   return { content, errors, warnings };
+}
+
+const PUBLIC_DIR = path.join(process.cwd(), "public");
+const RATIO_LABEL = { web: "16:10", mobile: "6:13", photo: "4:3" } as const;
+
+/** Pixel size from a PNG or JPEG header; `null` for other formats. */
+function imageSize(file: string): { width: number; height: number } | null {
+  const b = fs.readFileSync(file);
+  if (b.readUInt32BE(0) === 0x89504e47)
+    return { width: b.readUInt32BE(16), height: b.readUInt32BE(20) };
+  if (b[0] === 0xff && b[1] === 0xd8) {
+    let i = 2;
+    while (i + 9 < b.length) {
+      if (b[i] !== 0xff) return null;
+      const marker = b[i + 1];
+      // SOF0–SOF15 carry the frame size (C4/C8/CC are not frames)
+      if (
+        marker >= 0xc0 &&
+        marker <= 0xcf &&
+        ![0xc4, 0xc8, 0xcc].includes(marker)
+      )
+        return { width: b.readUInt16BE(i + 7), height: b.readUInt16BE(i + 5) };
+      i += 2 + b.readUInt16BE(i + 2);
+    }
+  }
+  return null;
 }

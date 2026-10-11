@@ -4,6 +4,7 @@ import { t, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { formatPeriod } from "@/lib/format";
 import { itemHref } from "@/lib/href";
+import { heroShots } from "@/lib/media";
 import { projectTechSlugs } from "@/lib/tech";
 import { Capture } from "./media";
 import { RepoLine } from "./repo";
@@ -118,12 +119,8 @@ export function ProjectEntry({
       <RepoLine project={project} dict={dict} newTab={dict.common.newTab} />
     </>
   );
-  const lead = featured
-    ? (project.thumbnail ?? project.screenshots[0]?.src)
-    : undefined;
-  const leadAlt = project.screenshots[0]
-    ? t(project.screenshots[0].alt, locale)
-    : t(project.title, locale);
+  const { wide, phone } = featured ? heroShots(project) : {};
+  const lead = Boolean(wide || phone);
   return (
     <li
       data-project={project.id}
@@ -170,8 +167,29 @@ export function ProjectEntry({
           />
         </div>
         {lead && (
-          <div className="min-w-0 md:col-span-5 md:col-start-8 md:row-start-1">
-            <Capture src={lead} alt={leadAlt} />
+          <div
+            className={cx(
+              "grid min-w-0 gap-3 md:col-span-5 md:col-start-8 md:row-start-1",
+              wide && phone && "grid-cols-[minmax(0,208fr)_minmax(0,60fr)]",
+            )}
+          >
+            {wide && (
+              <Capture
+                src={wide.src}
+                alt={t(wide.alt, locale)}
+                kind={wide.kind}
+              />
+            )}
+            {phone && (
+              // a lone phone never stretches to the column
+              <div className={cx(!wide && "w-36 sm:w-40")}>
+                <Capture
+                  src={phone.src}
+                  alt={t(phone.alt, locale)}
+                  kind="mobile"
+                />
+              </div>
+            )}
           </div>
         )}
         <div

@@ -133,6 +133,7 @@ const en: Dictionary = {
     allScreens: "See all screens ({n})",
     moreScreens: "More screens ({n})",
     fullSize: "View full size",
+    mediaKind: { web: "Web screen", mobile: "Phone screen", photo: "Photo" },
     repoTitle: "GitHub repository",
     stars: "Stars",
     license: "License",
