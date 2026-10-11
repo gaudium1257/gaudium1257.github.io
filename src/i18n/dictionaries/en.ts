@@ -3,7 +3,8 @@ import type { Dictionary } from "./ko";
 const en: Dictionary = {
   meta: {
     title: "Portfolio",
-    description: "Projects, activities, awards, and society work in one place.",
+    description:
+      "Projects, activities, awards, education, and experience in one place.",
   },
   nav: {
     about: "About",
@@ -11,8 +12,7 @@ const en: Dictionary = {
     projects: "Projects",
     activities: "Activities",
     awards: "Awards",
-    society: "Society",
-    education: "Education",
+    education: "Education & experience",
     connect: "Contact",
   },
   common: {
@@ -43,9 +43,8 @@ const en: Dictionary = {
     facts: { affiliation: "Affiliation", email: "Email", github: "GitHub" },
   },
   skills: {
-    help: "Numbers count the projects that used each technology, not skill level. Pick one to see only those projects.",
+    help: "Pick a technology to see only the projects that used it.",
     unrecorded: "Dashed items aren’t recorded in a project yet.",
-    srCount: "projects: {n} ({names})",
     srNone: "no recorded projects",
     label: "Tech stack",
     linkSr: "see projects using this technology",
@@ -65,7 +64,7 @@ const en: Dictionary = {
   projects: {
     viewAll: "See all projects ({n})",
     listLink: "Project list",
-    filterStatus: "Projects using {tech}: {n}",
+    filterStatus: "Projects using {tech}",
     filterClear: "Clear filter",
     filterLabel: "Filter by technology",
     provenance: "Stars and last commit are from GitHub as of {date}.",
@@ -88,22 +87,11 @@ const en: Dictionary = {
     project: "Project",
     award: "Award",
     activity: "Activity",
-    society: "Society",
-    "society-event": "Society event",
-  },
-  society: {
-    roles: "Roles",
-    events: "Events",
-    eventType: {
-      education: "Education",
-      hackathon: "Hackathon",
-      seminar: "Seminar",
-      study: "Study",
-      project: "Project",
-      other: "Other",
-    },
   },
   education: {
+    school: "Education",
+    career: "Experience",
+    careerLine: "{role}, {organization}",
     status: {
       enrolled: "Enrolled",
       graduated: "Graduated",

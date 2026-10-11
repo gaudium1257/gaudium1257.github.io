@@ -15,14 +15,12 @@ import {
   Profile,
   Project,
   Skills,
-  Society,
   type Localized,
 } from "./schema";
 
 export const CONTENT_DIR = path.join(process.cwd(), "content");
 
-export type ContentKind =
-  "project" | "activity" | "award" | "society" | "society-event";
+export type ContentKind = "project" | "activity" | "award";
 
 export interface Content {
   profile: Profile | null;
@@ -31,12 +29,8 @@ export interface Content {
   projects: Project[];
   activities: Activity[];
   awards: Award[];
-  societies: Society[];
   /** Every addressable id → what it is. */
-  index: Map<
-    string,
-    { kind: ContentKind; title: Localized; parentId?: string }
-  >;
+  index: Map<string, { kind: ContentKind; title: Localized }>;
   /** Undirected relation graph: declaring a link on either side is enough. */
   relations: Map<string, Set<string>>;
 }
@@ -141,11 +135,13 @@ export function collectContent(): CollectResult {
   const content: Content = {
     profile,
     skills: parseSingle(Skills, "skills.json", errors, { groups: [] }),
-    education: parseSingle(Education, "education.json", errors, { items: [] }),
+    education: parseSingle(Education, "education.json", errors, {
+      items: [],
+      career: [],
+    }),
     projects: parseCollection(Project, "projects", errors),
     activities: parseCollection(Activity, "activities", errors),
     awards: parseCollection(Award, "awards", errors),
-    societies: parseCollection(Society, "society", errors),
     index: new Map(),
     relations: new Map(),
   };
@@ -157,10 +153,9 @@ export function collectContent(): CollectResult {
     kind: ContentKind,
     title: Localized,
     related: string[],
-    parentId?: string,
   ) => {
     if (content.index.has(id)) errors.push(`duplicate id "${id}" (${kind})`);
-    content.index.set(id, { kind, title, parentId });
+    content.index.set(id, { kind, title });
     declared.push({ id, related });
   };
   content.projects.forEach((p) =>
@@ -170,12 +165,6 @@ export function collectContent(): CollectResult {
     register(a.id, "activity", a.title, a.related),
   );
   content.awards.forEach((a) => register(a.id, "award", a.title, a.related));
-  content.societies.forEach((s) => {
-    register(s.id, "society", s.name, s.related);
-    s.events.forEach((e) =>
-      register(e.id, "society-event", e.title, e.related, s.id),
-    );
-  });
 
   // --- relations ------------------------------------------------------------
   const link = (a: string, b: string) => {
@@ -214,7 +203,6 @@ export function collectContent(): CollectResult {
     ...content.projects.map((p) => [`project "${p.id}"`, p] as const),
     ...content.activities.map((a) => [`activity "${a.id}"`, a] as const),
     ...content.awards.map((a) => [`award "${a.id}"`, a] as const),
-    ...content.societies.map((s) => [`society "${s.id}"`, s] as const),
   ] as const) {
     for (const [at, s] of strings(value))
       if (/\bTODO\b/.test(s))

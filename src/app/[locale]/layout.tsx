@@ -39,7 +39,7 @@ export async function generateMetadata({
 const DESK =
   "relative flex h-16 items-center px-2.5 text-ui font-medium text-muted transition-colors hover:text-ink focus-visible:z-10 focus-visible:-outline-offset-2 data-[current=true]:text-ink after:absolute after:inset-x-2.5 after:bottom-0 after:h-0.5 after:bg-primary after:opacity-0 data-[current=true]:after:opacity-100 forced-colors:after:bg-[CanvasText] xl:px-3 xl:after:inset-x-3";
 const MOB =
-  "relative flex h-9 items-center justify-center text-sm font-medium text-muted transition-colors hover:text-ink active:bg-primary-50 focus-visible:z-10 focus-visible:-outline-offset-2 data-[current=true]:font-semibold data-[current=true]:text-ink after:absolute after:inset-x-3 after:bottom-0 after:h-0.5 after:bg-primary after:opacity-0 data-[current=true]:after:opacity-100 forced-colors:after:bg-[CanvasText] md:h-11 md:text-ui";
+  "relative flex h-9 items-center justify-center text-sm font-medium text-muted transition-colors hover:text-ink active:bg-primary-50 focus-visible:z-10 focus-visible:-outline-offset-2 data-[current=true]:font-semibold data-[current=true]:text-ink after:absolute after:inset-x-3 after:bottom-0 after:h-0.5 after:bg-primary after:opacity-0 data-[current=true]:after:opacity-100 forced-colors:after:bg-[CanvasText] whitespace-nowrap md:h-11 md:px-3 md:text-ui";
 
 export default async function LocaleLayout({
   children,
@@ -54,7 +54,7 @@ export default async function LocaleLayout({
   // Nav links always point at the home sections; the home page's ScrollSpy marks the current one.
   const nav = (cls: string) =>
     sections.map((s) => (
-      <li key={s.id}>
+      <li key={s.id} className={"wide" in s ? "col-span-2" : undefined}>
         <a href={`/${locale}/#${s.id}`} data-nav={s.id} className={cls}>
           {dict.nav[s.label]}
         </a>
@@ -98,7 +98,7 @@ export default async function LocaleLayout({
             aria-label={dict.common.navLabel}
             className="border-t border-line lg:hidden"
           >
-            <ul className="shell grid grid-cols-4 md:grid-cols-8">
+            <ul className="shell grid grid-cols-4 md:flex md:justify-between">
               {nav(MOB)}
             </ul>
           </nav>

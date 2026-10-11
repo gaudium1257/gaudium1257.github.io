@@ -9,6 +9,5 @@ export function itemHref(
   onHome = false,
 ) {
   if (kind === "project") return `/${locale}/projects/${id}/`;
-  const hash = kind === "society" ? "society" : id;
-  return onHome ? `#${hash}` : `/${locale}/#${hash}`;
+  return onHome ? `#${id}` : `/${locale}/#${id}`;
 }

@@ -1,14 +1,11 @@
 import type { Project, Skills } from "@/content/schema";
 import { t, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
-import { fill } from "@/lib/format";
 import { groupedStack, TIER, techSlug } from "@/lib/tech";
 import { cx } from "./ui";
 
 const NODE =
-  "group inline-flex min-h-10 items-center gap-2 rounded-node border border-edge bg-white py-1 pl-3 pr-1.5 text-ui font-semibold text-ink transition-colors hover:border-primary hover:text-primary active:bg-primary-50";
-const COUNT =
-  "grid h-7 min-w-7 place-items-center rounded-tag bg-primary-50 px-1.5 text-sm font-semibold tabular-nums text-primary-700";
+  "inline-flex min-h-10 items-center rounded-node border border-edge bg-white px-3 py-1 text-ui font-semibold text-ink transition-colors hover:border-primary hover:text-primary active:bg-primary-50";
 
 /** Static tech label in project entries; highlighted when it matches the active filter. */
 export function TechChip({ name }: { name: string }) {
@@ -25,18 +22,16 @@ export function TechChip({ name }: { name: string }) {
 }
 
 /**
- * Interactive node: a real link with the number of projects that used the tech (data, not a rating).
+ * Interactive node: a real link to the projects that used the tech.
  * `filter` nodes (stack map, list) carry data-tech for the in-place filter; detail-page nodes just link.
  */
 export function TechNode({
   name,
-  used,
   href,
   srText,
   filter,
 }: {
   name: string;
-  used: number;
   href: string;
   srText: string;
   filter: boolean;
@@ -55,16 +50,6 @@ export function TechNode({
       >
         {name}
         <span className="sr-only">, {srText}</span>
-        <span
-          aria-hidden="true"
-          className={cx(
-            COUNT,
-            filter &&
-              "group-aria-[current=true]:bg-white group-aria-[current=true]:text-primary",
-          )}
-        >
-          {used}
-        </span>
       </a>
     </li>
   );
@@ -101,7 +86,6 @@ export function TechList({
                   <TechNode
                     key={name}
                     name={name}
-                    used={usage.get(name)?.length ?? 0}
                     href={`/${locale}/?tech=${techSlug(name)}#projects`}
                     srText={dict.skills.linkSr}
                     filter={false}
@@ -144,13 +128,7 @@ export function StackRows({
     .sort((a, b) => TIER.indexOf(a.category) - TIER.indexOf(b.category))
     .map((g) => ({
       ...g,
-      names: g.names
-        .filter((n) => unrecorded || usage.has(n))
-        .sort(
-          (a, b) =>
-            (usage.get(b)?.length ?? 0) - (usage.get(a)?.length ?? 0) ||
-            a.localeCompare(b),
-        ),
+      names: g.names.filter((n) => unrecorded || usage.has(n)),
     }))
     .filter((g) => g.names.length);
   return (
@@ -173,8 +151,7 @@ export function StackRows({
           </h3>
           <ul className="flex flex-wrap gap-2">
             {g.names.map((name) => {
-              const used = usage.get(name) ?? [];
-              if (!used.length)
+              if (!usage.has(name))
                 return (
                   <li key={name}>
                     <span
@@ -191,16 +168,12 @@ export function StackRows({
                 <TechNode
                   key={name}
                   name={name}
-                  used={used.length}
                   href={
                     onHome
                       ? `/${locale}/projects/?tech=${slug}`
                       : `?tech=${slug}`
                   }
-                  srText={fill(dict.skills.srCount, {
-                    n: used.length,
-                    names: used.map((p) => t(p.title, locale)).join(", "),
-                  })}
+                  srText={dict.skills.linkSr}
                   filter
                 />
               );

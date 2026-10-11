@@ -29,11 +29,10 @@ Bilingual (ko/en) personal portfolio. Next.js 16 (App Router, static export) + T
 content/                    ← all portfolio data (JSON), validated by src/content/schema.ts
   profile.json              자기소개 + connect (GitHub, email, Instagram, Discord)
   projects/<id>.json        프로젝트          sources/projects/<id>.md = fact sheet (audit trail)
-  activities/<id>.json      대외활동
+  activities/<id>.json      활동
   awards/<id>.json          수상경력
-  society/<id>.json         학회 (roles + events: 교육 / 해커톤 / 세미나)
   skills.json               기술 스택 (names must match projects' techStack)
-  education.json            학력
+  education.json            학력 및 경력사항 (items = 학력, career = 경력)
 src/content/schema.ts       zod schemas (single source of truth)
 src/content/collect.ts      reads + validates content, builds the global id index and relation graph
 src/content/load.ts         getContent() / getRelated() for pages (throws on invalid content)

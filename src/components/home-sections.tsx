@@ -81,8 +81,7 @@ export function Identity({ content, dict, locale }: Props) {
   if (!p) return null;
   const other: Locale = locale === "ko" ? "en" : "ko";
   const { email, github } = p.connect;
-  const society = content.societies[0];
-  const role = society?.roles[0];
+  const career = content.education.career[0];
   const intro = t(p.intro, locale);
   const facts: { label: string; node: React.ReactNode }[] = [];
   const edu = content.education.items.find((e) => e.status === "enrolled");
@@ -100,12 +99,15 @@ export function Identity({ content, dict, locale }: Props) {
               .join(" ")
           : `${[edu.major && t(edu.major, locale), t(edu.school, locale)].filter(Boolean).join(", ")} (${dict.education.status.enrolled.toLowerCase()})`,
     });
-  if (society && role)
+  if (career)
     facts.push({
-      label: dict.nav.society,
+      label: dict.education.career,
       node: (
-        <a href="#society" className={LINK}>
-          {t(society.name, locale)} {t(role.title, locale)}
+        <a href="#education" className={LINK}>
+          {fill(dict.education.careerLine, {
+            organization: t(career.organization, locale),
+            role: t(career.role, locale),
+          })}
         </a>
       ),
     });
@@ -395,87 +397,56 @@ export function AwardsSection({ content, dict, locale }: Props) {
   );
 }
 
-export function SocietySection({ content, dict, locale }: Props) {
+function TimelineRow({
+  id,
+  title,
+  sub,
+  date,
+}: {
+  id: string;
+  title: string;
+  sub?: string;
+  date?: string;
+}) {
   return (
-    <section id="society" aria-labelledby="society-title" className="min-w-0">
-      <SectionHead id="society" title={dict.nav.society} />
-      {content.societies.length ? (
-        content.societies.map((s) => (
-          <div
-            key={s.id}
-            id={s.id}
-            className="mt-4 grid gap-8 lg:grid-cols-12 lg:gap-12"
-          >
-            <div className="lg:col-span-5">
-              <h3 translate="no" className="text-h3 font-bold text-ink">
-                {t(s.name, locale)}
-              </h3>
-              <p className="mt-1 text-ui text-ink-2">
-                {t(s.description, locale)}
-              </p>
-              <h4 className="mt-5 text-sm font-semibold text-muted">
-                {dict.society.roles}
-              </h4>
-              <ul className="mt-1 divide-y divide-line border-t border-line">
-                {s.roles.map((r) => (
-                  <li
-                    key={t(r.title, locale)}
-                    className="flex flex-wrap items-baseline justify-between gap-x-4 py-2.5"
-                  >
-                    <span className="text-base font-semibold text-ink">
-                      {t(r.title, locale)}
-                    </span>
-                    <span className="text-sm text-muted tabular-nums">
-                      {formatPeriod(r.period, dict.common.present)}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            {s.events.length > 0 && (
-              <div className="min-w-0 lg:col-span-7">
-                <h4 className="text-sm font-semibold text-muted">
-                  {dict.society.events}
-                </h4>
-                <ul className="mt-1 divide-y divide-line border-t border-line">
-                  {[...s.events]
-                    .sort((a, b) => byStartDesc(a.date, b.date))
-                    .map((e) => (
-                      <li
-                        key={e.id}
-                        id={e.id}
-                        className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-4 py-3"
-                      >
-                        <p className="flex min-w-0 flex-wrap items-baseline gap-x-2.5 gap-y-1">
-                          <span className="inline-flex h-6 shrink-0 items-center self-center rounded-tag border border-line px-1.5 text-sm font-medium text-ink-2">
-                            {dict.society.eventType[e.type]}
-                          </span>
-                          <span className="font-semibold text-ink">
-                            {t(e.title, locale)}
-                          </span>
-                          <span className="text-sm text-muted">
-                            {t(e.myRole, locale)}
-                          </span>
-                        </p>
-                        <span className="text-sm text-muted tabular-nums">
-                          {formatYm(e.date)}
-                        </span>
-                      </li>
-                    ))}
-                </ul>
-              </div>
-            )}
-          </div>
-        ))
-      ) : (
-        <Empty dict={dict} />
+    <li id={id} className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-4 py-4">
+      <div className="min-w-0">
+        <h4 className="text-base font-semibold text-ink">{title}</h4>
+        {sub && <p className="mt-1 text-sm text-muted">{sub}</p>}
+      </div>
+      {date && (
+        <p className="text-sm whitespace-nowrap text-muted tabular-nums">
+          {date}
+        </p>
       )}
-    </section>
+    </li>
+  );
+}
+
+function TimelineGroup({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <h3 className="text-sm font-semibold text-muted">{title}</h3>
+      <ul className="mt-1 divide-y divide-line border-t border-line">
+        {children}
+      </ul>
+    </div>
   );
 }
 
 export function EducationSection({ content, dict, locale }: Props) {
-  const items = content.education.items;
+  const { items, career } = content.education;
+  const eduDate = (e: (typeof items)[number]) => {
+    const status = e.status && dict.education.status[e.status];
+    if (e.period) return formatPeriod(e.period, status ?? dict.common.present);
+    return status;
+  };
   return (
     <section
       id="education"
@@ -483,27 +454,40 @@ export function EducationSection({ content, dict, locale }: Props) {
       className="min-w-0"
     >
       <SectionHead id="education" title={dict.nav.education} />
-      {items.length ? (
-        <ul className="mt-3 divide-y divide-line border-t border-line">
-          {items.map((e) => (
-            <li key={e.id} id={e.id} className="py-4">
-              <h3 className="text-base font-semibold text-ink">
-                {t(e.school, locale)}
-              </h3>
-              {(e.major || e.degree) && (
-                <p className="mt-1 text-sm text-muted">
-                  {[e.major, e.degree]
-                    .filter((x) => !!x)
-                    .map((x) => t(x!, locale))
-                    .join(" ")}
-                </p>
-              )}
-              <p className="mt-0.5 text-sm text-muted tabular-nums">
-                {formatPeriod(e.period, dict.education.status[e.status])}
-              </p>
-            </li>
-          ))}
-        </ul>
+      {items.length || career.length ? (
+        <div className="mt-4 grid gap-6">
+          {items.length > 0 && (
+            <TimelineGroup title={dict.education.school}>
+              {items.map((e) => (
+                <TimelineRow
+                  key={e.id}
+                  id={e.id}
+                  title={t(e.school, locale)}
+                  sub={
+                    [e.major, e.degree]
+                      .filter((x) => !!x)
+                      .map((x) => t(x!, locale))
+                      .join(" ") || undefined
+                  }
+                  date={eduDate(e)}
+                />
+              ))}
+            </TimelineGroup>
+          )}
+          {career.length > 0 && (
+            <TimelineGroup title={dict.education.career}>
+              {career.map((c) => (
+                <TimelineRow
+                  key={c.id}
+                  id={c.id}
+                  title={t(c.organization, locale)}
+                  sub={t(c.role, locale)}
+                  date={c.period && formatPeriod(c.period, dict.common.present)}
+                />
+              ))}
+            </TimelineGroup>
+          )}
+        </div>
       ) : (
         <Empty dict={dict} />
       )}

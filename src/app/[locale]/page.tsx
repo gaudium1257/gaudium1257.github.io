@@ -6,7 +6,6 @@ import {
   EducationSection,
   Identity,
   ProjectsSection,
-  SocietySection,
 } from "@/components/home-sections";
 import { StackMap } from "@/components/tech";
 import { getContent } from "@/content/load";
@@ -58,9 +57,6 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       <Band className="grid gap-10 lg:grid-cols-2 lg:gap-12">
         <ActivitiesSection {...props} />
         <AwardsSection {...props} />
-      </Band>
-      <Band>
-        <SocietySection {...props} />
       </Band>
       <Band className="grid gap-10 lg:grid-cols-12 lg:gap-12">
         <div className="lg:col-span-5">
