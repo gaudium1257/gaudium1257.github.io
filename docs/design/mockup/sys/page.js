@@ -88,10 +88,13 @@
       a.addEventListener("click", (ev) => {
         if (ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.button) return; // new tab: open the static page
         ev.preventDefault();
-        apply(current === a.dataset.tech ? null : a.dataset.tech, true);
+        const kbd = ev.detail === 0; // Enter on a focused link
+        const next = current === a.dataset.tech ? null : a.dataset.tech;
+        apply(next, !(kbd && next)); // keyboard: focus reads the result, so the status region stays quiet
         const list = document.querySelector("[data-project-list]");
         if (list.getBoundingClientRect().top > innerHeight - 160)
           bar.scrollIntoView({ block: "start" });
+        if (kbd && next) text.focus({ preventScroll: true }); // the next Tab reaches "Clear filter", then the results
       }),
     );
     bar.querySelector("[data-filter-clear]").addEventListener("click", () => {

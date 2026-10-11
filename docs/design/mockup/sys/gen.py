@@ -65,13 +65,13 @@ S = {
         cat={"language": "언어", "frontend": "프론트엔드", "backend": "백엔드", "mobile": "모바일", "ai-ml": "AI", "data": "데이터",
              "database": "DB", "infra": "인프라", "tooling": "도구", "other": "기타"},
         stack_label="기술 스택",
-        count="{n}개", view_all="프로젝트 {n}개 모두 보기",
+        count="{n}개", view_all="프로젝트 {n}개 모두 보기", list_link="프로젝트 목록",
         filter_status="{tech} 사용 프로젝트 {n}개", filter_clear="필터 해제", filter_label="기술로 거르기",
         phrase=dict(team_hackathon="해커톤 팀 프로젝트", club="학회 프로젝트", personal="개인 프로젝트"),
         live="배포 중", related="관련", highlights_sr="핵심",
         kind=dict(project="프로젝트", award="수상", activity="대외활동", event="학회 행사", society="학회"),
         repo_ph="[저장소]", star_sr="GitHub 별", stars_ph="[★ 수]", commit="최근 커밋", commit_ph="[yyyy.mm]",
-        provenance="GitHub 정보(별, 최근 커밋)는 빌드할 때 GitHub에서 받아 온 값이에요. 기준 [yyyy.mm.dd]",
+        provenance="별과 최근 커밋은 [yyyy.mm.dd] 기준 GitHub 값이에요.",
         slot=dict(web=("웹 화면", "16:10"), mobile=("휴대폰", "9:19.5"), photo=("사진", "4:3")),
         slot_aria=dict(web="웹 화면 자리 (16:10)", mobile="휴대폰 화면 자리 (9:19.5)", photo="사진 자리 (4:3)"),
         media_kind=dict(web="웹 화면", mobile="휴대폰 화면", photo="사진"),
@@ -91,7 +91,7 @@ S = {
                 caption="[화면 설명 — 팩트시트]", link="[링크]", snapshot="[yyyy.mm.dd]", license="[라이선스]", langs="[언어 비율]"),
         demo="데모 열기",
         repo_title="GitHub 저장소", stars="별", license="라이선스",
-        repo_note="{d} 기준. 빌드할 때 GitHub에서 받아 저장소에 커밋한 값이에요.",
+        repo_note="{d} 기준 GitHub 값이에요.",
         langs_title="GitHub 언어 비율", langs_note="측정값, {d} 기준",
         tech_link_sr="이 기술을 쓴 프로젝트 보기",
         shared="같은 기술을 쓴 다른 프로젝트",
@@ -106,7 +106,7 @@ S = {
         title_home="Gildong Hong — Portfolio", title_detail="Study Timer — Gildong Hong", title_detail2="Lecture Summary Chatbot — Gildong Hong",
         title_list="Projects — Gildong Hong",
         skip="Skip to content", nav_label="Sections", lang_label="Language", lang_names=dict(ko="한국어", en="English"),
-        nav=dict(about="About", skills="Stack", projects="Projects", activities="Activities", awards="Awards",
+        nav=dict(about="About", skills="Tech stack", projects="Projects", activities="Activities", awards="Awards",
                  society="Society", education="Education", connect="Contact"),
         photo="ID photo 3:4", photo_aria="ID photo slot (3:4)",
         facts=dict(affiliation="Affiliation", society="Society", email="Email", github="GitHub"),
@@ -116,17 +116,17 @@ S = {
         copied_email="Email address copied.", copied_discord="Discord username copied.",
         stack_help="Numbers count the projects that used each technology, not skill level. Pick one to see only those projects.",
         stack_none="Dashed items aren’t recorded in a project yet.",
-        sr_count="{n} project: {names}", sr_none="no recorded projects",
+        sr_count="projects: {n} ({names})", sr_none="no recorded projects",
         cat={"language": "Language", "frontend": "Frontend", "backend": "Backend", "mobile": "Mobile", "ai-ml": "AI", "data": "Data",
              "database": "Database", "infra": "Infra", "tooling": "Tooling", "other": "Other"},
         stack_label="Tech stack",
-        count="{n}", view_all="See all {n} projects",
+        count="{n}", view_all="See all projects ({n})", list_link="Project list",
         filter_status="Projects using {tech}: {n}", filter_clear="Clear filter", filter_label="Filter by technology",
         phrase=dict(team_hackathon="Team project at a hackathon", club="Society project", personal="Solo project"),
         live="Live", related="Related", highlights_sr="Highlights",
         kind=dict(project="Project", award="Award", activity="Activity", event="Society event", society="Society"),
         repo_ph="[repo]", star_sr="GitHub stars", stars_ph="[★ count]", commit="Last commit", commit_ph="[yyyy.mm]",
-        provenance="GitHub data (stars, last commit) is fetched from GitHub at build time. As of [yyyy.mm.dd]",
+        provenance="Stars and last commit are from GitHub as of [yyyy.mm.dd].",
         slot=dict(web=("Web screen", "16:10"), mobile=("Phone", "9:19.5"), photo=("Photo", "4:3")),
         slot_aria=dict(web="Web screen slot (16:10)", mobile="Phone screen slot (9:19.5)", photo="Photo slot (4:3)"),
         media_kind=dict(web="Web screen", mobile="Phone screen", photo="Photo"),
@@ -136,7 +136,7 @@ S = {
         contact=dict(email="Email", github="GitHub", instagram="Instagram", discord="Discord"),
         new_tab="(new tab)", footer="© 2026 Gildong Hong", back_to_top="Back to top",
         crumbs_label="Breadcrumb", crumbs=("Home", "Projects"), toc="On this page",
-        d_facts=dict(period="Period", kind="Kind", team="Team", role="Role", status="Status", deploy="Deployment"),
+        d_facts=dict(period="Period", kind="Type", team="Team", role="Role", status="Status", deploy="Deployment"),
         ph=dict(team="[Team size]", role="[Role]", status="[Status]", deploy_detail="on [Platform], checked [date]", deploy_status="[Deployment status]",
                 summary="[Summary — fact sheet. What it is, who it is for, what problem it solves, in 2–4 sentences]",
                 arch="[Architecture — from the fact sheet. Only what the code shows]",
@@ -145,15 +145,15 @@ S = {
                 caption="[Caption — fact sheet]", link="[link]", snapshot="[yyyy.mm.dd]", license="[license]", langs="[languages]"),
         demo="Open demo",
         repo_title="GitHub repository", stars="Stars", license="License",
-        repo_note="As of {d}. Fetched from GitHub at build time and committed to the repo.",
+        repo_note="From GitHub as of {d}.",
         langs_title="GitHub languages", langs_note="measured, as of {d}",
         tech_link_sr="see projects using this technology",
         shared="Other projects using the same technology",
         sec=dict(summary="Summary", contrib="What I did", screens="Screens", features="Key features", stack="Tech stack", arch="Architecture",
                  challenges="Problems and solutions", outcomes="Outcomes", learnings="Learnings", related="Related"),
         problem="Problem", solution="Solution", related_award="Related award",
-        all_screens="See all {n} screens", more_screens="More screens ({n})", full_size="View full size",
-        prev="Previous project", next="Next project", all_projects="See all {n} projects", other_projects="Other projects",
+        all_screens="See all screens ({n})", more_screens="More screens ({n})", full_size="View full size",
+        prev="Previous project", next="Next project", all_projects="See all projects ({n})", other_projects="Other projects",
         back_home="Back to home",
     ),
 }
@@ -177,15 +177,15 @@ EMAIL, GITHUB, INSTA, DISCORD = "hong@example.com", "gaudium1257", "gildong.dev"
 PROJECTS = [
     dict(id="study-timer", kind="project", title={"ko": "스터디 타이머", "en": "Study Timer"},
          tagline={"ko": "함께 공부하는 시간을 기록하는 웹앱", "en": "A web app that records time spent studying together"},
-         phrase="team_hackathon", start="2025-03", end="2025-06", live=True, featured=True, github=True,
+         phrase="team_hackathon", start="2025-03", end="2025-06", live=True, featured=True, github=True, has={"arch", "challenges", "outcomes", "learnings"},
          tech=[("frontend", "Next.js"), ("backend", "Supabase")]),
     dict(id="attendance", kind="project", title={"ko": "학회 출석 관리 서비스", "en": "Society Attendance Service"},
          tagline={"ko": "학회 세션 출석을 QR로 기록", "en": "Records attendance at society sessions with QR codes"},
-         phrase="club", start="2025-01", end="2025-02", live=False, featured=False, github=True,
+         phrase="club", start="2025-01", end="2025-02", live=False, featured=False, github=True, has={"outcomes"},
          tech=[("frontend", "React"), ("backend", "Firebase")]),
     dict(id="lecture-bot", kind="project", title={"ko": "강의 요약 챗봇", "en": "Lecture Summary Chatbot"},
          tagline={"ko": "강의 자료를 요약하고 질문에 답하는 챗봇", "en": "A chatbot that summarizes lecture materials and answers questions"},
-         phrase="personal", start="2024-09", end="2024-12", live=False, featured=False, github=True,
+         phrase="personal", start="2024-09", end="2024-12", live=False, featured=False, github=True, has={"learnings"},
          tech=[("backend", "FastAPI"), ("ai-ml", "OpenAI API")]),
 ]
 ACTIVITIES = [
@@ -314,15 +314,14 @@ def tag(text, extra=""):
     return f'<span class="{cls("inline-flex h-6 shrink-0 items-center rounded-tag border border-line px-1.5 text-sm font-medium text-ink-2", extra)}">{text}</span>'
 
 
-def media_slot(kind, place="", zoom=False):
+def media_slot(kind, place=""):
     """Honest placeholder for a REAL capture: surface fill, hairline, a centred label naming kind + exact ratio.
-    Production: <img width height alt> in the same box; on detail pages wrapped in a link to the full-size file."""
+    Production: <img width height alt> in the same box; on detail pages wrapped in
+    <a href="{full-size file}" target="_blank" class="block cursor-zoom-in"> + <span class="sr-only">{s("full_size")}</span>."""
     name, ratio = s("slot")[kind]
     ratio_cls = {"web": "aspect-16/10", "mobile": "aspect-6/13", "photo": "aspect-4/3"}[kind]
-    chip = ('<span aria-hidden="true" class="absolute bottom-2 right-2 grid size-7 place-items-center rounded-tag bg-white ring-1 ring-line">'
-            '<span class="size-2.5 rounded-[1px] border-[1.5px] border-ink"></span></span>') if zoom else ""
     return (f'<div role="img" aria-label="{s("slot_aria")[kind]}" data-slot="{kind}" class="{cls("relative grid place-items-center overflow-hidden rounded-node bg-surface ring-1 ring-inset ring-line", ratio_cls, place)}">'
-            f'<span class="px-1 text-center text-sm leading-snug text-muted">{name}<br>{ratio}</span>{chip}</div>')
+            f'<span class="px-1 text-center text-sm leading-snug text-muted">{name}<br>{ratio}</span></div>')
 
 
 def copy_button(key, value):
@@ -374,45 +373,52 @@ def tech_node(name):
     """Interactive node (stack map, list filter): a real link that filters the project list; the count is data, not a rating."""
     used = uses(name)
     if not used:
-        return (f'<li><span translate="no" class="inline-flex h-10 items-center rounded-node border border-dashed border-edge px-3 text-ui text-muted">'
+        return (f'<li><span translate="no" class="inline-flex min-h-10 items-center rounded-node border border-dashed border-edge px-3 py-1 text-ui text-muted">'
                 f'{esc(name)}<span class="sr-only">, {s("sr_none")}</span></span></li>')
     names = ", ".join(t(p["title"]) for p in used)
     if MODE == "dc":
         href = "#projects" if CTX["page"] == "home" else "#main"
     else:  # without JS the link opens the list filtered by this tech (real site: /[locale]/projects/tech/<slug>/)
         href = page_href("list", query=f"tech={slug(name)}") if CTX["page"] == "home" else f"?tech={slug(name)}"
-    return (f'<li><a href="{href}"{tech_attrs(name)} translate="no" class="group inline-flex h-10 items-center gap-2 rounded-node border border-edge bg-white pl-3 pr-1.5 text-ui font-semibold text-ink transition-colors hover:border-primary hover:text-primary active:bg-primary-50 aria-[current=true]:border-primary aria-[current=true]:bg-primary aria-[current=true]:text-white">'
+    return (f'<li><a href="{href}"{tech_attrs(name)} translate="no" class="group inline-flex min-h-10 items-center gap-2 rounded-node border border-edge bg-white py-1 pl-3 pr-1.5 text-ui font-semibold text-ink transition-colors hover:border-primary hover:text-primary active:bg-primary-50 aria-[current=true]:border-primary aria-[current=true]:bg-primary aria-[current=true]:text-white">'
             f'{esc(name)}<span class="sr-only">, {s("sr_count").format(n=len(used), names=names)}</span>'
             f'<span aria-hidden="true" class="grid h-7 min-w-7 place-items-center rounded-tag bg-primary-50 px-1.5 text-sm font-semibold tabular-nums text-primary-700 group-aria-[current=true]:bg-white group-aria-[current=true]:text-primary">{len(used)}</span></a></li>')
 
 
-def chip(name, link=None):
-    """Static tech chip (project entries, detail). Highlighted when it matches the active filter."""
+def chip(name):
+    """Static tech label (project entries). Highlighted when it matches the active filter."""
     sl = slug(name)
     match = A('data-match="false"', f'data-match="{{{{match.{hk(sl)}}}}}"')
-    base = "inline-flex h-7 items-center rounded-tag border border-line bg-white px-2 text-sm font-medium text-ink-2 data-[match=true]:border-primary data-[match=true]:bg-primary-100 data-[match=true]:text-primary-700"
-    if link:
-        return (f'<li><a href="{link}" data-node="{sl}"{match} translate="no" class="{cls(base, "transition-colors hover:border-edge hover:text-primary")}">{esc(name)}'
-                f'<span class="sr-only">, {s("tech_link_sr")}</span></a></li>')
-    return f'<li data-node="{sl}"{match} translate="no" class="{base}">{esc(name)}</li>'
+    return (f'<li data-node="{sl}"{match} translate="no" class="inline-flex min-h-7 items-center rounded-tag border border-line bg-white px-2 py-0.5 text-sm font-medium text-ink-2 '
+            f'data-[match=true]:border-primary data-[match=true]:bg-primary-100 data-[match=true]:text-primary-700">{esc(name)}</li>')
 
 
-def tech_list(p, extra=""):
-    """Category-grouped chips in the one fixed TIER order (same order as the stack map and the detail stack)."""
+def link_node(name):
+    """Detail page: the same node as the stack map (link + project count), going to the home list filtered by this tech."""
+    n = len(uses(name))
+    href = page_href("home", hash_="projects", query=f"tech={slug(name)}")
+    return (f'<li><a href="{href}" translate="no" class="group inline-flex min-h-10 items-center gap-2 rounded-node border border-edge bg-white py-1 pl-3 pr-1.5 text-ui font-semibold text-ink transition-colors hover:border-primary hover:text-primary active:bg-primary-50">'
+            f'{esc(name)}<span class="sr-only">, {s("tech_link_sr")}</span>'
+            f'<span aria-hidden="true" class="grid h-7 min-w-7 place-items-center rounded-tag bg-primary-50 px-1.5 text-sm font-semibold tabular-nums text-primary-700">{n}</span></a></li>')
+
+
+def tech_list(p, extra="", link=False):
+    """Category-grouped tech in the one fixed TIER order (same order as the stack map). link=True: detail-page nodes."""
+    item = link_node if link else chip
     groups = "".join(f'<div class="flex min-w-0 items-center gap-2"><dt class="shrink-0 text-sm text-muted">{s("cat")[c]}</dt>'
-                     f'<dd><ul class="flex flex-wrap gap-1.5">{"".join(chip(n) for n in names)}</ul></dd></div>' for c, names in grouped(p))
+                     f'<dd><ul class="flex flex-wrap gap-1.5">{"".join(item(n) for n in names)}</ul></dd></div>' for c, names in grouped(p))
     return f'<dl aria-label="{s("stack_label")}" class="{cls("flex flex-wrap gap-x-5 gap-y-2", extra)}">{groups}</dl>'
 
 
-def stack_rows(items_by_cat, unrecorded=True):
+def stack_rows(items_by_cat, unrecorded=True, narrow=False):
     rows = []
     for c, names in items_by_cat:
         names = [n for n in names if unrecorded or uses(n)]
         if not names:
             continue
         names = sorted(names, key=lambda n: (-len(uses(n)), n.lower()))  # most-used first, then name
-        rows.append(f'<li class="grid gap-x-4 gap-y-2 border-t border-line py-3 first:border-t-0 sm:grid-cols-[6rem_minmax(0,1fr)]">'
-                    f'<h3 class="text-sm font-semibold text-ink-2 sm:pt-2.5 sm:text-ui">{s("cat")[c]}</h3>'
+        rows.append(f'<li class="{cls("grid gap-x-4 gap-y-2 border-t border-line py-3 first:border-t-0 sm:grid-cols-[6rem_minmax(0,1fr)]", "lg:grid-cols-1" if narrow else "")}">'
+                    f'<h3 class="{cls("text-sm font-semibold text-ink-2 sm:pt-2.5 sm:text-ui", "lg:pt-0" if narrow else "")}">{s("cat")[c]}</h3>'
                     f'<ul class="flex flex-wrap gap-2">{"".join(tech_node(n) for n in names)}</ul></li>')
     return "".join(rows)
 
@@ -425,23 +431,29 @@ def stack_map():
     return (f'<section id="skills" aria-labelledby="skills-title" class="min-w-0">'
             f'<h2 id="skills-title" class="text-h2 font-bold text-ink">{s("nav")["skills"]}</h2>'
             f'<p class="mt-2 max-w-152 text-ui text-muted">{s("stack_help")}</p>'
-            f'<div class="mt-4 rounded-panel bg-surface px-3 py-1 sm:px-5"><ul>{stack_rows(order)}</ul></div>{legend}</section>')
+            f'<div class="mt-4 rounded-panel bg-surface px-3 py-1 sm:px-5"><ul>{stack_rows(order, narrow=True)}</ul></div>{legend}</section>')
 
 
 # ───────────────────────────── GitHub ─────────────────────────────
-def repo_line():
-    """One line of repository data per project entry (values from the committed GitHub snapshot)."""
-    return (f'<p class="relative z-10 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted">'
-            f'<span class="inline-flex items-center gap-1.5 font-medium text-ink-2">{GH_MARK}<span><span translate="no">{GITHUB}/</span>{ph(s("repo_ph"))}</span></span>'
-            f'<span class="tabular-nums"><span aria-hidden="true">★</span><span class="sr-only">{s("star_sr")}</span> {s("stars_ph")}</span>'
+def repo_url(p):
+    """Production: the project's links[type=github].url. The mockup links the profile because the repo name is unknown."""
+    return f"https://github.com/{GITHUB}/{p['repo']}" if p.get("repo") else f"https://github.com/{GITHUB}"
+
+
+def repo_line(p):
+    """One line of repository data per project entry (values from the committed GitHub snapshot). Only the link sits
+    above the card's stretched link, so a click on the stars/commit text still opens the project."""
+    return (f'<p class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted">'
+            + ext(repo_url(p), f'{GH_MARK}<span><span translate="no">{GITHUB}/</span>{s("repo_ph")}</span>', cls("relative z-10 inline-flex min-h-6 items-center gap-1.5 font-medium wrap-anywhere", LINK))
+            + f'<span class="tabular-nums"><span aria-hidden="true">★</span><span class="sr-only">{s("star_sr")}</span> {s("stars_ph")}</span>'
             f'<span class="tabular-nums">{s("commit")} {s("commit_ph")}</span></p>')
 
 
-def repo_card():
+def repo_card(p):
     P = s("ph")
     return (f'<section aria-labelledby="repo-title" class="rounded-panel bg-surface p-5">'
             f'<h2 id="repo-title" class="flex items-center gap-2 text-ui font-semibold text-ink-2">{GH_MARK}{s("repo_title")}</h2>'
-            f'<p class="mt-2 text-lead font-semibold text-ink"><span translate="no">{GITHUB}/</span>{ph(s("repo_ph"))}</p>'
+            f'<p class="mt-2 text-lead font-semibold">' + ext(repo_url(p), f'<span translate="no">{GITHUB}/</span>{s("repo_ph")}', cls("wrap-anywhere", LINK)) + '</p>'
             '<dl class="mt-4 grid grid-cols-3 gap-x-4 gap-y-3">'
             f'<div><dt class="text-sm text-muted">{s("stars")}</dt><dd class="mt-0.5 text-ui font-semibold tabular-nums">{ph(s("stars_ph"))}</dd></div>'
             f'<div><dt class="text-sm text-muted">{s("commit")}</dt><dd class="mt-0.5 text-ui font-semibold tabular-nums">{ph(s("commit_ph"))}</dd></div>'
@@ -515,13 +527,13 @@ def identity():
              + fact_row(f["email"], f'<span class="flex flex-wrap items-center gap-x-3 gap-y-1"><a href="mailto:{EMAIL}" translate="no" data-copy-value="email" class="{cls(LINK, "wrap-anywhere")}">{EMAIL}</a>{copy_button("email", EMAIL)}</span>')
              + fact_row(f["github"], ext(f"https://github.com/{GITHUB}", f'{GH_MARK}<span translate="no">github.com/{GITHUB}</span>', cls("inline-flex items-center gap-1.5", LINK)), last=True))
     return (f'<section id="about" aria-labelledby="about-title" class="min-w-0">'
-            '<div class="grid grid-cols-[6rem_minmax(0,1fr)] gap-x-4 gap-y-5 sm:grid-cols-[9rem_minmax(0,1fr)] sm:gap-x-6 xl:grid-cols-[12.5rem_minmax(0,1fr)]">'
+            '<div class="grid grid-cols-[6rem_minmax(0,1fr)] gap-x-4 gap-y-5 sm:grid-cols-[9rem_minmax(0,1fr)] sm:gap-x-6 lg:grid-cols-[8rem_minmax(0,1fr)] xl:grid-cols-[12.5rem_minmax(0,1fr)]">'
             f'<div role="img" aria-label="{s("photo_aria")}" class="grid aspect-3/4 place-items-center self-start rounded-node bg-surface ring-1 ring-inset ring-line sm:row-span-2">'
-            f'<span class="px-1 text-center text-sm leading-snug text-muted">{s("photo").replace(" ", "<br>", 1)}</span></div>'
+            f'<span class="px-1 text-center text-sm leading-snug text-muted">{"<br>".join(s("photo").rsplit(" ", 1))}</span></div>'
             '<div class="min-w-0 self-center sm:self-start">'
             f'<h1 id="about-title" class="flex flex-wrap items-baseline gap-x-3 gap-y-1"><span translate="no" class="text-name-sm font-bold text-ink sm:text-name">{t(NAME)}</span>'
             f'<span lang="{alt_lc}" translate="no" class="text-lead font-medium text-muted">{NAME[alt_lc]}</span></h1>'
-            f'<p class="mt-2 text-ui font-medium text-ink-2 sm:text-lead">{t(ROLES)}</p>'
+            f'<p class="mt-2 text-pretty text-ui font-medium text-ink-2 sm:text-lead">{t(ROLES)}</p>'
             f'<p class="mt-4 hidden max-w-136 text-base leading-prose text-ink-2 sm:block">{t(INTRO)}</p></div>'
             f'<p class="col-span-2 text-base leading-prose text-ink-2 sm:hidden">{t(INTRO)}</p>'
             f'<dl class="col-span-2 min-w-0 sm:col-span-1 sm:col-start-2">{facts}</dl></div></section>')
@@ -552,20 +564,21 @@ def project_entry(p, featured=False, heading="h3"):
             web = media_slot("web") if "web" in ks else ""
             phone = media_slot("mobile", "" if web else "w-36 sm:w-40") if "mobile" in ks else ""  # a lone phone never stretches to the column
             colsx = "grid-cols-[minmax(0,208fr)_minmax(0,60fr)]" if web and phone else "grid-cols-1"
-            media = f'<div class="min-w-0 md:col-span-5 md:col-start-8 md:row-span-2 md:row-start-1"><div class="grid {colsx} gap-3">{web}{phone}</div></div>'
+            media = f'<div class="min-w-0 md:col-span-5 md:col-start-8 md:row-start-1"><div class="grid {colsx} gap-3">{web}{phone}</div></div>'
+        side = "md:row-start-2" if media else "md:row-start-1 md:pt-1"
         return (f'{li}<article class="{cls(art, "gap-y-4 md:grid-rows-[auto_1fr]")}">'
-                f'<div class="min-w-0 md:col-span-7">{title}</div>{media}'
-                f'<div class="flex min-w-0 flex-col gap-3 md:col-span-7">{meta(p)}{hl}{tech_list(p)}{repo_line()}{related_links(p["id"])}</div>'
+                f'<div class="flex min-w-0 flex-col gap-3 md:col-span-7 md:row-span-2 md:row-start-1"><div>{title}</div>{meta(p)}{hl}{related_links(p["id"])}</div>{media}'
+                f'<div class="{cls("flex min-w-0 flex-col gap-2.5 md:col-span-5 md:col-start-8", side)}">{tech_list(p)}{repo_line(p)}</div>'
                 '</article></li>')
     return (f'{li}<article class="{cls(art, "gap-y-3")}">'
             f'<div class="flex min-w-0 flex-col gap-2 md:col-span-7"><div>{title}</div>{meta(p)}{related_links(p["id"])}</div>'
-            f'<div class="flex min-w-0 flex-col gap-2.5 md:col-span-5 md:pt-1">{tech_list(p)}{repo_line()}</div>'
+            f'<div class="flex min-w-0 flex-col gap-2.5 md:col-span-5 md:pt-1">{tech_list(p)}{repo_line(p)}</div>'
             '</article></li>')
 
 
 def filter_bar():
     attrs = A('data-filter-bar data-show="false"', 'data-show="{{filter.show}}"')
-    text = A("data-filter-text", "")
+    text = A('data-filter-text tabindex="-1"', "")
     txt = "" if MODE == "proto" else "{{filter.text}}"
     clear = A("data-filter-clear", 'onClick="{{filter.clear}}"')
     return (f'<div{attrs} class="mt-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-node bg-primary-50 px-4 py-2.5 data-[show=false]:hidden">'
@@ -573,9 +586,14 @@ def filter_bar():
             f'<button type="button"{clear} class="relative text-ui font-semibold text-primary underline underline-offset-4 after:absolute after:-inset-2 hover:text-primary-700">{s("filter_clear")}</button></div>')
 
 
+HOME_LIMIT = 5  # featured first; the rest live on the list page
+
+
 def projects_section():
-    entries = "".join(project_entry(p, featured=p["featured"]) for p in PROJECTS)
-    action = f'<a href="{page_href("list")}" class="{cls("inline-flex min-h-6 items-center text-ui font-semibold", LINK)}">{s("view_all").format(n=len(PROJECTS))}</a>'
+    shown = PROJECTS[:HOME_LIMIT]
+    entries = "".join(project_entry(p, featured=p["featured"]) for p in shown)
+    label = s("view_all").format(n=len(PROJECTS)) if len(PROJECTS) > HOME_LIMIT else s("list_link")
+    action = f'<a href="{page_href("list")}" class="{cls("inline-flex min-h-6 items-center text-ui font-semibold", LINK)}">{label}</a>'
     return (f'<section id="projects" aria-labelledby="projects-title" class="min-w-0">{section_head("projects", len(PROJECTS), action)}'
             f'{filter_bar()}<ol data-project-list class="mt-2 divide-y divide-line">{entries}</ol>'
             f'<p class="mt-4 border-t border-line pt-4 text-ui text-muted">{s("provenance")}</p></section>')
@@ -592,13 +610,13 @@ def plain_row(it, sub, date_html):
 def activities_section():
     rows = "".join(plain_row(a, f'<span>{t(a["org"])}</span><span>{t(a["role"])}</span>', period(a["start"], a.get("end"))) for a in ACTIVITIES)
     return (f'<section id="activities" aria-labelledby="activities-title" class="min-w-0">{section_head("activities", len(ACTIVITIES))}'
-            f'<ul class="mt-3 divide-y divide-line border-y border-line">{rows}</ul></section>')
+            f'<ul class="mt-3 divide-y divide-line border-t border-line">{rows}</ul></section>')
 
 
 def awards_section():
     rows = "".join(plain_row(a, f'<span>{t(a["org"])}</span>', ym(a["start"])) for a in AWARDS)
     return (f'<section id="awards" aria-labelledby="awards-title" class="min-w-0">{section_head("awards", len(AWARDS))}'
-            f'<ul class="mt-3 divide-y divide-line border-y border-line">{rows}</ul></section>')
+            f'<ul class="mt-3 divide-y divide-line border-t border-line">{rows}</ul></section>')
 
 
 def society_section():
@@ -611,14 +629,14 @@ def society_section():
     return (f'<section id="society" aria-labelledby="society-title" class="min-w-0">{section_head("society")}'
             '<div id="the-lab" class="mt-4 grid gap-8 lg:grid-cols-12 lg:gap-12">'
             f'<div class="lg:col-span-5"><h3 translate="no" class="text-h3 font-bold text-ink">THE LAB</h3><p class="mt-1 text-ui text-ink-2">{s("lab_desc")}</p>'
-            f'<h4 class="mt-5 text-sm font-semibold text-muted">{s("lab_roles")}</h4><ul class="mt-1 divide-y divide-line border-y border-line">{roles}</ul></div>'
-            f'<div class="min-w-0 lg:col-span-7"><h4 class="text-sm font-semibold text-muted">{s("lab_events")}</h4><ul class="mt-1 divide-y divide-line border-y border-line">{evs}</ul></div>'
+            f'<h4 class="mt-5 text-sm font-semibold text-muted">{s("lab_roles")}</h4><ul class="mt-1 divide-y divide-line border-t border-line">{roles}</ul></div>'
+            f'<div class="min-w-0 lg:col-span-7"><h4 class="text-sm font-semibold text-muted">{s("lab_events")}</h4><ul class="mt-1 divide-y divide-line border-t border-line">{evs}</ul></div>'
             '</div></section>')
 
 
 def education_section():
     return (f'<section id="education" aria-labelledby="education-title" class="min-w-0">{section_head("education")}'
-            f'<div class="mt-3 border-y border-line py-4"><h3 class="text-base font-semibold text-ink">{t(EDU["school"])}</h3>'
+            f'<div class="mt-3 border-t border-line py-4"><h3 class="text-base font-semibold text-ink">{t(EDU["school"])}</h3>'
             f'<p class="mt-1 text-sm text-muted">{t(EDU["major"])}</p>'
             f'<p class="mt-0.5 text-sm tabular-nums text-muted">{period(EDU["start"], None, s("enrolled"))}</p></div></section>')
 
@@ -634,7 +652,7 @@ def contact_section():
             + row(c["instagram"], ext(f"https://instagram.com/{INSTA}", f'<span translate="no">@{INSTA}</span>', cls("text-ui font-medium", LINK)))
             + row(c["discord"], f'<span translate="no" data-copy-value="discord" class="text-ui font-medium text-ink">{DISCORD}</span>', copy_button("discord", DISCORD)))
     return (f'<section id="connect" aria-labelledby="connect-title" class="min-w-0">{section_head("connect")}'
-            f'<dl class="mt-3 divide-y divide-line border-y border-line">{rows}</dl></section>')
+            f'<dl class="mt-3 divide-y divide-line border-t border-line">{rows}</dl></section>')
 
 
 def band(inner, extra=""):
@@ -643,8 +661,8 @@ def band(inner, extra=""):
 
 def home_body():
     return ('<main id="main">'
-            f'<div class="shell grid gap-x-14 gap-y-10 pb-10 pt-8 lg:pb-12 lg:pt-12 xl:grid-cols-12"><div class="min-w-0 xl:col-span-6">{identity()}</div>'
-            f'<div class="min-w-0 xl:col-span-6">{stack_map()}</div></div>'
+            f'<div class="shell grid gap-x-12 gap-y-10 pb-10 pt-8 lg:grid-cols-12 lg:pb-12 lg:pt-12"><div class="min-w-0 lg:col-span-7">{identity()}</div>'
+            f'<div class="min-w-0 lg:col-span-5">{stack_map()}</div></div>'
             + band(projects_section())
             + band(activities_section() + awards_section(), "grid gap-10 lg:grid-cols-2 lg:gap-12")
             + band(society_section())
@@ -698,7 +716,7 @@ def gallery_rows(items):
 def gallery(p, fold_after=4):
     def fig(k):
         span = "col-span-2 sm:col-span-1" if k != "mobile" else ""
-        return (f'<figure class="{cls("min-w-0", span)}">{media_slot(k, zoom=True)}'
+        return (f'<figure class="{cls("min-w-0", span)}">{media_slot(k)}'
                 f'<figcaption class="mt-2 text-sm text-muted"><span class="font-medium text-ink-2">{s("media_kind")[k]}</span> {s("ph")["caption"]}</figcaption></figure>')
     rows = [(len(r), f'<div class="grid grid-cols-2 items-start gap-3 {GALLERY_ROW[r]}">{"".join(fig(k) for k in r)}</div>') for r in gallery_rows(MEDIA.get(p["id"], []))]
     shown, rest, count = [], [], 0
@@ -721,19 +739,21 @@ def bullets(items):
         f'<li class="flex gap-3 text-base leading-prose text-ink-2"><span aria-hidden="true" class="mt-3 size-1.5 shrink-0 rounded-full bg-edge"></span><span class="min-w-0">{x}</span></li>' for x in items) + "</ul>")
 
 
-def tech_layers(p):
-    rows = "".join(f'<div class="grid grid-cols-[6.5rem_minmax(0,1fr)] items-center gap-4 border-t border-line px-4 py-3 first:border-t-0 sm:grid-cols-[8rem_minmax(0,1fr)]">'
-                   f'<dt class="text-sm font-semibold text-ink-2">{s("cat")[c]}</dt>'
-                   f'<dd><ul class="flex flex-wrap gap-1.5">{"".join(chip(n, link=page_href("home", hash_="projects", query=f"tech={slug(n)}")) for n in names)}</ul></dd></div>'
-                   for c, names in grouped(p))
-    shared = sorted({q["id"] for _, n in p["tech"] for q in uses(n) if q["id"] != p["id"]})
-    shared_html = (f'<p class="mt-3 flex flex-wrap items-baseline gap-x-3 text-sm"><span class="text-muted">{s("shared")}</span>'
+def shared_projects(p):
+    return sorted({q["id"] for _, n in p["tech"] for q in uses(n) if q["id"] != p["id"]})
+
+
+def stack_block(p):
+    """The declared stack is in the header (nodes). This block adds what the header can't: projects sharing a tech, and the
+    measured GitHub language ratio. It renders only when one of them exists."""
+    shared = shared_projects(p)
+    shared_html = (f'<p class="flex flex-wrap items-baseline gap-x-3 text-ui"><span class="text-muted">{s("shared")}</span>'
                    + "".join(f'<a href="{item_href(q)}" class="{cls("font-medium", LINK)}">{t(INDEX[q]["title"])}</a>' for q in shared) + "</p>") if shared else ""
     P = s("ph")
-    langs = (f'<div class="mt-6 max-w-160"><p class="text-ui font-semibold text-ink-2">{s("langs_title")} <span class="font-normal text-muted">{s("langs_note").format(d=P["snapshot"])}</span></p>'
+    langs = (f'<div class="{cls("max-w-160", "mt-6" if shared else "")}"><p class="text-ui font-semibold text-ink-2">{s("langs_title")} <span class="font-normal text-muted">{s("langs_note").format(d=P["snapshot"])}</span></p>'
              '<div aria-hidden="true" class="mt-2 h-2.5 rounded-full border border-dashed border-edge"></div>'
              f'<p class="mt-1.5 text-sm text-muted">{P["langs"]}</p></div>') if p.get("github") else ""
-    return f'<dl class="max-w-160 rounded-panel border border-line">{rows}</dl>{shared_html}{langs}'
+    return f'{shared_html}{langs}'
 
 
 def block_content(bid, p):
@@ -745,19 +765,20 @@ def block_content(bid, p):
     if bid == "screens":
         return gallery(p)
     if bid == "features":
-        return ('<dl class="max-w-160 divide-y divide-line border-y border-line">' + "".join(
+        return ('<dl class="max-w-160 divide-y divide-line border-t border-line">' + "".join(
             f'<div class="grid gap-1 py-4 sm:grid-cols-[12rem_minmax(0,1fr)] sm:gap-6"><dt class="text-base font-semibold">{ph(P["feature"].format(n=n))}</dt><dd class="text-ui">{ph(P["feature_desc"])}</dd></div>'
             for n in (1, 2, 3)) + "</dl>")
     if bid == "stack":
-        return tech_layers(p)
+        return stack_block(p)
     if bid == "arch":
         return f'<p class="max-w-160 text-base leading-prose text-ink-2">{ph(P["arch"])}</p>'
     if bid == "challenges":
-        return ('<ol class="max-w-184 divide-y divide-line border-y border-line">' + "".join(
+        return ('<ol class="max-w-184 divide-y divide-line border-t border-line">' + "".join(
             f'<li class="grid gap-x-8 gap-y-3 py-4 md:grid-cols-2"><div><p class="text-sm font-semibold text-ink-2">{s("problem")}</p><p class="mt-1 text-base leading-prose">{ph(P["problem"])}</p></div>'
             f'<div><p class="text-sm font-semibold text-ink-2">{s("solution")}</p><p class="mt-1 text-base leading-prose">{ph(P["solution"])}</p></div></li>' for _ in (1,)) + "</ol>")
     if bid == "outcomes":
-        award = next((INDEX[r] for r in related(p["id"]) if INDEX[r]["kind"] == "award"), None)
+        aw = award_in_outcomes(p)
+        award = INDEX[aw] if aw else None
         line = ""
         if award:
             line = (f'<p class="mt-3 flex flex-wrap items-baseline gap-x-3 gap-y-1 text-ui"><span class="text-muted">{s("related_award")}</span>'
@@ -771,18 +792,31 @@ def block_content(bid, p):
                        f'{tag(s("kind")[INDEX[r]["kind"]], "self-center")}<a href="{item_href(r)}" class="{cls("font-semibold", LINK)}">{t(INDEX[r]["title"])}'
                        + (f' <span class="text-award">{t(INDEX[r]["prize"])}</span>' if INDEX[r]["kind"] == "award" else "")
                        + f'</a><span class="text-sm text-muted">{t(INDEX[r]["org"])}</span></p><span class="text-sm tabular-nums text-muted">{ym(INDEX[r]["start"])}</span></li>'
-                       for r in related(p["id"]))
-        return f'<ul class="max-w-184 divide-y divide-line border-y border-line">{rows}</ul>'
+                       for r in related_rest(p))
+        return f'<ul class="max-w-184 divide-y divide-line border-t border-line">{rows}</ul>'
     raise KeyError(bid)
+
+
+def award_in_outcomes(p):
+    return next((r for r in related(p["id"]) if INDEX[r]["kind"] == "award"), None) if "outcomes" in p["has"] else None
+
+
+def related_rest(p):
+    """Related items minus the award the outcomes block already shows."""
+    aw = award_in_outcomes(p)
+    return [r for r in related(p["id"]) if r != aw]
 
 
 # Block registry: a block renders only when its data exists, so each project's page shows its own character.
 # The TOC is built from the blocks that render. A future optional `layout` preset may only reorder blocks
 # (and choose the hero's right column); only "default" exists now.
+
+
 BLOCK_HAS = {
     "summary": lambda p: True, "contrib": lambda p: True, "screens": has_gallery, "features": lambda p: True,
-    "stack": lambda p: bool(p["tech"]), "arch": lambda p: True,  # architecture is optional: unknown in the sample, so a placeholder
-    "challenges": lambda p: True, "outcomes": lambda p: True, "learnings": lambda p: True, "related": lambda p: bool(related(p["id"])),
+    "stack": lambda p: bool(shared_projects(p)) or bool(p.get("github")),
+    "arch": lambda p: "arch" in p["has"], "challenges": lambda p: "challenges" in p["has"], "outcomes": lambda p: "outcomes" in p["has"],
+    "learnings": lambda p: "learnings" in p["has"], "related": lambda p: bool(related_rest(p)),
 }
 PRESETS = {"default": ["summary", "contrib", "screens", "features", "stack", "arch", "challenges", "outcomes", "learnings", "related"]}
 
@@ -809,26 +843,25 @@ def detail_body(p):
             if p["live"] else "")
     lead = ""
     if ks:
-        web = media_slot("web", zoom=True) if "web" in ks else ""
-        phone = media_slot("mobile", "hidden sm:grid", zoom=True) if "mobile" in ks and web else (media_slot("mobile", "w-40 sm:w-48", zoom=True) if "mobile" in ks else "")
+        web = media_slot("web") if "web" in ks else ""
+        phone = media_slot("mobile", "hidden sm:grid") if "mobile" in ks and web else (media_slot("mobile", "w-40 sm:w-48") if "mobile" in ks else "")
         colsx = "grid-cols-1 sm:grid-cols-[minmax(0,208fr)_minmax(0,60fr)]" if web and phone else "grid-cols-1"
         more = (f'<p class="mt-3"><a href="#screens" class="{cls("inline-flex min-h-6 items-center text-ui font-semibold", LINK)}">{s("all_screens").format(n=len(ks))}</a></p>' if has_gallery(p)
                 else f'<p class="mt-2 text-sm text-muted"><span class="font-medium text-ink-2">{s("media_kind")["web"]}</span> {P["caption"]}</p>')
         lead = f'<div class="min-w-0 lg:col-span-5 lg:col-start-8 lg:row-span-2 lg:row-start-1"><div class="grid {colsx} gap-3">{web}{phone}</div>{more}</div>'
-    repo = (f'<div class="{cls("min-w-0 lg:col-span-5 lg:col-start-8", "lg:row-start-3" if ks else "lg:row-span-3 lg:row-start-1")}">{repo_card()}</div>' if p.get("github") else "")
+    repo = (f'<div class="{cls("min-w-0 lg:col-span-5 lg:col-start-8", "lg:row-start-3" if ks else "lg:row-span-3 lg:row-start-1")}">{repo_card(p)}</div>' if p.get("github") else "")
     crumbs = s("crumbs")
     hero_ = (
         '<div class="shell pb-10 pt-6 lg:pb-12 lg:pt-10">'
         f'<nav aria-label="{s("crumbs_label")}"><ol class="flex flex-wrap items-center gap-x-2 text-sm text-muted">'
-        f'<li><a href="{page_href("home")}" class="underline decoration-line underline-offset-4 hover:text-primary hover:decoration-primary">{crumbs[0]}</a></li><li aria-hidden="true">/</li>'
-        f'<li><a href="{page_href("list")}" class="underline decoration-line underline-offset-4 hover:text-primary hover:decoration-primary">{crumbs[1]}</a></li><li aria-hidden="true">/</li>'
+        f'<li><a href="{page_href("home")}" class="relative inline-flex min-h-6 items-center underline decoration-edge underline-offset-4 transition-colors after:absolute after:-inset-x-1.5 after:-inset-y-2.5 hover:text-primary hover:decoration-primary active:text-primary-700">{crumbs[0]}</a></li><li aria-hidden="true">/</li>'
+        f'<li><a href="{page_href("list")}" class="relative inline-flex min-h-6 items-center underline decoration-edge underline-offset-4 transition-colors after:absolute after:-inset-x-1.5 after:-inset-y-2.5 hover:text-primary hover:decoration-primary active:text-primary-700">{crumbs[1]}</a></li><li aria-hidden="true">/</li>'
         f'<li><span aria-current="page" class="text-ink-2">{t(p["title"])}</span></li></ol></nav>'
         '<div class="mt-5 grid gap-x-12 gap-y-8 lg:grid-cols-12 lg:grid-rows-[auto_auto_1fr]">'
         f'<div class="min-w-0 lg:col-span-7"><h1 class="text-title-sm font-bold text-ink sm:text-title">{t(p["title"])}</h1>'
         f'<p class="mt-3 max-w-160 text-lead leading-copy text-ink-2">{t(p["tagline"])}</p></div>'
-        f'{lead}'
-        f'<div class="min-w-0 lg:col-span-7 lg:row-span-2">{tech_list(p)}{demo}<dl class="mt-6 grid grid-cols-2 sm:grid-cols-3">{facts_html}</dl></div>'
-        f'{repo}</div></div>'
+        f'<div class="min-w-0 lg:col-span-7 lg:row-span-2 lg:row-start-2">{tech_list(p, link=True)}{demo}<dl class="mt-6 grid grid-cols-2 sm:grid-cols-3">{facts_html}</dl></div>'
+        f'{lead}{repo}</div></div>'
     )
     blocks = detail_blocks(p)
     names = s("sec")
@@ -882,7 +915,7 @@ def body_for(page):
     return f'{skip}{header()}{main}{footer()}{status_region()}'
 
 
-ROOT_CLS = "scroll-smooth scroll-pt-32 md:scroll-pt-24 lg:scroll-pt-20 tiny:scroll-pt-0 motion-reduce:scroll-auto"
+ROOT_CLS = "scroll-pt-32 md:scroll-pt-24 lg:scroll-pt-20 tiny:scroll-pt-0"
 TITLES = {"home": "title_home", "detail": "title_detail", "detail2": "title_detail2", "list": "title_list"}
 PAGES = ("home", "detail", "detail2", "list")
 
@@ -927,7 +960,7 @@ def render_dc(page, lc, mobile, css_blob, w, h):
     CTX.update(loc=lc, page=page, mobile=mobile)
     helmet = ('<style>\n'
               f'@font-face{{font-family:"Pretendard Variable";src:url({FONT_BLOB}) format("woff2");font-weight:45 920;font-style:normal;font-display:swap}}\n'
-              'body{margin:0}\nhtml{scroll-behavior:smooth;scroll-padding-top:8rem}\n@media (width>=48rem){html{scroll-padding-top:6rem}}\n@media (width>=64rem){html{scroll-padding-top:5rem}}\n@media (max-height:240px){html{scroll-padding-top:0}}\n@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}\n'
+              'body{margin:0}\nhtml{scroll-padding-top:8rem}\n@media (width>=48rem){html{scroll-padding-top:6rem}}\n@media (width>=64rem){html{scroll-padding-top:5rem}}\n@media (max-height:240px){html{scroll-padding-top:0}}\n'
               '</style>')
     root = f'<div>{body_for(page)}</div>'
     js = DC_JS.replace("__CFG__", json.dumps(dc_cfg(page), ensure_ascii=False))
