@@ -1,1 +1,52 @@
-{ "groups": [] }
+{
+  "groups": [
+    {
+      "category": "language",
+      "label": {
+        "ko": "언어",
+        "en": "Language"
+      },
+      "items": [
+        {
+          "name": "Dart"
+        }
+      ]
+    },
+    {
+      "category": "mobile",
+      "label": {
+        "ko": "모바일",
+        "en": "Mobile"
+      },
+      "items": [
+        {
+          "name": "Flutter"
+        }
+      ]
+    },
+    {
+      "category": "database",
+      "label": {
+        "ko": "DB",
+        "en": "Database"
+      },
+      "items": [
+        {
+          "name": "SQLite"
+        }
+      ]
+    },
+    {
+      "category": "tooling",
+      "label": {
+        "ko": "도구",
+        "en": "Tooling"
+      },
+      "items": [
+        {
+          "name": "Claude Code"
+        }
+      ]
+    }
+  ]
+}
