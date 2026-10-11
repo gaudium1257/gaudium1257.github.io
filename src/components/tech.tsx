@@ -60,13 +60,11 @@ export function TechList({
   project,
   dict,
   locale,
-  usage,
   link = false,
 }: {
   project: Project;
   dict: Dictionary;
   locale: Locale;
-  usage: Map<string, Project[]>;
   link?: boolean;
 }) {
   return (

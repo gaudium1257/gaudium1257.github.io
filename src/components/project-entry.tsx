@@ -85,7 +85,6 @@ export function ProjectEntry({
   project,
   dict,
   locale,
-  usage,
   featured = false,
   heading: Heading = "h3",
   onHome,
@@ -93,7 +92,6 @@ export function ProjectEntry({
   project: Project;
   dict: Dictionary;
   locale: Locale;
-  usage: Map<string, Project[]>;
   featured?: boolean;
   heading?: "h2" | "h3";
   onHome: boolean;
@@ -116,7 +114,7 @@ export function ProjectEntry({
   );
   const side = (
     <>
-      <TechList project={project} dict={dict} locale={locale} usage={usage} />
+      <TechList project={project} dict={dict} locale={locale} />
       <RepoLine project={project} dict={dict} newTab={dict.common.newTab} />
     </>
   );

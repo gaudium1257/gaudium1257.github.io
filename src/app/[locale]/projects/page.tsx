@@ -94,7 +94,6 @@ export default async function ProjectsPage({
                 project={p}
                 dict={dict}
                 locale={locale}
-                usage={usage}
                 heading="h2"
                 onHome={false}
               />

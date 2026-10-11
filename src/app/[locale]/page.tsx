@@ -52,7 +52,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         </div>
       </div>
       <Band>
-        <ProjectsSection {...props} usage={usage} />
+        <ProjectsSection {...props} />
       </Band>
       <Band className="grid gap-10 lg:grid-cols-2 lg:gap-12">
         <ActivitiesSection {...props} />
