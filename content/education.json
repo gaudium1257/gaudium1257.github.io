@@ -1,1 +1,18 @@
-{ "items": [] }
+{
+  "items": [
+    {
+      "id": "korea-university",
+      "school": { "ko": "고려대학교", "en": "Korea University" }
+    }
+  ],
+  "career": [
+    {
+      "id": "the-hack-campus-korea-university",
+      "organization": {
+        "ko": "The Hack : Campus 고려대학교 지부",
+        "en": "The Hack : Campus, Korea University chapter"
+      },
+      "role": { "ko": "운영진", "en": "Organizing team" }
+    }
+  ]
+}
