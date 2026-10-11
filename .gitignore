@@ -53,3 +53,6 @@ next-env.d.ts
 /docs/design/mockup/sys/dcshots/
 /docs/design/mockup/sys/*.css
 /docs/design/mockup/sys/heights.json
+
+# python bytecode from skill scripts (ui-ux-pro-max search tool)
+__pycache__/
