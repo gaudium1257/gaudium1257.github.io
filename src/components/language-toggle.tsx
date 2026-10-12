@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import type { MouseEvent } from "react";
+import { useEffect, type MouseEvent } from "react";
 import {
   LOCALE_STORAGE_KEY,
   locales,
@@ -9,37 +9,113 @@ import {
   type Locale,
 } from "@/i18n/config";
 
+const POS_KEY = "locale-switch-position";
+
+/** `sel` finds the anchor again on the other page; `hash` is set when it is a section. */
+type Position = { path: string; sel?: string; hash?: string; ratio: number };
+
+type Anchor = { el: HTMLElement; sel: string; hash?: string };
+
+/** Top edge of the readable area: everything above it sits under the sticky header. */
+const edge = () =>
+  document.querySelector("header")?.getBoundingClientRect().bottom ?? 0;
+
 /**
- * Where to land in the other language: the same page, with its query (`?tech=`) and hash, and —
- * when the visitor has scrolled — the section in the upper part of the viewport (detail-page TOC
- * sections first, else the home sections), so switching never drops them at the top.
- * Not the scroll-spy's highlight: near the page end that line slides down to later sections.
+ * What a position can be measured from: detail-page TOC sections, else home sections, else the
+ * visible project cards (list page). Side-by-side sections share a top: the nav's current one first.
+ */
+function anchors(): Anchor[] {
+  const toc = [...document.querySelectorAll<HTMLElement>("[data-toc]")];
+  const links = toc.length
+    ? toc
+    : [...document.querySelectorAll<HTMLElement>("[data-nav]")];
+  const idOf = (a?: HTMLElement) => a?.dataset.toc ?? a?.dataset.nav;
+  const marked = idOf(links.find((a) => a.dataset.current === "true"));
+  const ids = [...new Set(links.map((a) => idOf(a)))].sort(
+    (a, b) => Number(b === marked) - Number(a === marked),
+  );
+  const secs = ids.flatMap((id) => {
+    const el = id ? document.getElementById(id) : null;
+    return el ? [{ el, sel: `#${id}`, hash: id }] : [];
+  });
+  if (secs.length) return secs;
+  return [
+    ...document.querySelectorAll<HTMLElement>(
+      '[data-project]:not([data-show="false"])',
+    ),
+  ].map((el) => ({ el, sel: `[data-project="${el.dataset.project}"]` }));
+}
+
+/**
+ * Where the visitor is reading, in terms that survive the other language's different text lengths:
+ * the anchor at the top edge and how far into it they are (0–1); with no anchor passed yet, the
+ * overall scroll fraction.
+ */
+function readingPosition(path: string): Position | null {
+  if (scrollY < 4) return null;
+  const line = edge() + 1;
+  const passed = anchors().filter(
+    (a) => a.el.getBoundingClientRect().top <= line,
+  );
+  if (passed.length) {
+    const lowest = Math.max(
+      ...passed.map((a) => a.el.getBoundingClientRect().top),
+    );
+    // first in `anchors()` order among those sharing that top
+    const at = passed.find(
+      (a) => Math.abs(a.el.getBoundingClientRect().top - lowest) < 4,
+    )!;
+    const r = at.el.getBoundingClientRect();
+    const ratio = Math.min(1, Math.max(0, (edge() - r.top) / r.height));
+    return { path, sel: at.sel, hash: at.hash, ratio };
+  }
+  const max = document.documentElement.scrollHeight - innerHeight;
+  return { path, ratio: max > 0 ? scrollY / max : 0 };
+}
+
+/**
+ * On the new page: back to the saved spot (once; a stale entry for another page is dropped).
+ * Waits two frames so effects that reshape the page on load (the `?tech=` filter) have run.
+ */
+function restorePosition() {
+  let pos: Position | null = null;
+  try {
+    pos = JSON.parse(sessionStorage.getItem(POS_KEY) ?? "null");
+    sessionStorage.removeItem(POS_KEY);
+  } catch {
+    return;
+  }
+  if (!pos || pos.path !== location.pathname) return;
+  const { sel, ratio } = pos;
+  requestAnimationFrame(() =>
+    requestAnimationFrame(() => {
+      const el = sel ? document.querySelector<HTMLElement>(sel) : null;
+      const top = el
+        ? el.getBoundingClientRect().top +
+          scrollY +
+          ratio * el.offsetHeight -
+          edge()
+        : ratio * (document.documentElement.scrollHeight - innerHeight);
+      scrollTo({ top: Math.max(0, top), behavior: "instant" });
+    }),
+  );
+}
+
+/**
+ * The same page in the other language with its query (`?tech=`), opened where the visitor is
+ * reading now — not at the URL hash, which still names whatever was clicked last. The section also
+ * goes in the hash so the page opens near it (and without storage) before the exact spot is restored.
  */
 function targetUrl(to: Locale) {
   const path = switchLocalePath(location.pathname, to);
-  let hash = location.hash;
-  if (!hash && scrollY > 80) {
-    const toc = [...document.querySelectorAll<HTMLElement>("[data-toc]")];
-    const ids = (
-      toc.length
-        ? toc.map((a) => a.dataset.toc)
-        : [...document.querySelectorAll<HTMLElement>("[data-nav]")].map(
-            (a) => a.dataset.nav,
-          )
-    ).filter((id): id is string => !!id);
-    // a section whose top has reached the upper third of the screen is the one being read
-    const line = innerHeight / 3;
-    // the lowest section top above the line; side-by-side sections (activities | awards) keep the first
-    let at: string | undefined;
-    let best = -Infinity;
-    for (const id of ids) {
-      const top = document.getElementById(id)?.getBoundingClientRect().top;
-      if (top !== undefined && top <= line && top > best)
-        [at, best] = [id, top];
-    }
-    if (at) hash = `#${at}`;
+  const pos = readingPosition(path);
+  try {
+    if (pos) sessionStorage.setItem(POS_KEY, JSON.stringify(pos));
+    else sessionStorage.removeItem(POS_KEY);
+  } catch {
+    // no storage: the hash still lands on the section
   }
-  return path + location.search + hash;
+  return path + location.search + (pos?.hash ? `#${pos.hash}` : "");
 }
 
 /** KO | EN segmented links; the current one is marked, the other remembers the choice. */
@@ -53,6 +129,7 @@ export function LanguageToggle({
   names: Record<Locale, string>;
 }) {
   const pathname = usePathname();
+  useEffect(restorePosition, []);
   const go = (e: MouseEvent<HTMLAnchorElement>, lc: Locale) => {
     try {
       localStorage.setItem(LOCALE_STORAGE_KEY, lc);
