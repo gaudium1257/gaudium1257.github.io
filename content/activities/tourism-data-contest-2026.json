@@ -1,0 +1,27 @@
+{
+  "id": "tourism-data-contest-2026",
+  "title": {
+    "ko": "2026 관광데이터 활용 공모전 (웹·앱 구현 부문)",
+    "en": "2026 Tourism Data Contest (web/app track)"
+  },
+  "organization": {
+    "ko": "한국관광공사 × 성균관대학교 AI중심대학사업단",
+    "en": "Korea Tourism Organization × Sungkyunkwan University AI-Centered University Program"
+  },
+  "type": "competition",
+  "period": {
+    "start": "2026-07",
+    "end": "2026-09"
+  },
+  "role": {
+    "ko": "팀 총괄 (3인 팀 ‘붉은사슴뿔버섯’)",
+    "en": "Team lead (3-person team ‘붉은사슴뿔버섯’)"
+  },
+  "description": {
+    "ko": "한국관광공사 OpenAPI 활용이 필수인 공모전의 웹·앱 구현 부문에 관광 퀘스트 앱 로컬 퀘스트를 3인 팀으로 출품했습니다. 1차 심사 결과를 기다리고 있습니다(2026-10 기준).",
+    "en": "Entered the tourism quest app Local Quest as a 3-person team in the web/app track of a contest that requires the Korea Tourism Organization's OpenAPI. First-round results are pending (as of 2026-10)."
+  },
+  "highlights": [],
+  "links": [],
+  "related": ["local-quest"]
+}

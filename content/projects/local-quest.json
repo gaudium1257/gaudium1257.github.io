@@ -1,0 +1,298 @@
+{
+  "id": "local-quest",
+  "title": {
+    "ko": "로컬 퀘스트",
+    "en": "Local Quest"
+  },
+  "tagline": {
+    "ko": "덜 붐비는 곳으로 걸어가면 보상을 주는 관광 퀘스트 앱",
+    "en": "A tourism quest app that rewards walking to less crowded places"
+  },
+  "summary": {
+    "ko": "한국관광공사 위치기반 관광정보로 주변 장소를 퀘스트로 만들고, 사용자가 GPS로 도착을 인증하면 경험치와 배지를 주는 Android 앱입니다. 혼잡도가 낮은 장소, 처음 가는 지역, 평일 오전 방문에는 경험치 배율을 더 줍니다. 2026 관광데이터 활용 공모전 웹·앱 구현 부문에 팀으로 참가해 원스토어에 출시했습니다.",
+    "en": "An Android app that turns nearby places from the Korea Tourism Organization's location-based tourism data into quests and awards EXP and badges when users verify their arrival by GPS. It applies higher EXP multipliers to less crowded places, first visits to a region, and weekday-morning visits. Our team built it for the web/app track of the 2026 Tourism Data Contest and released it on ONE store."
+  },
+  "category": "team",
+  "status": "completed",
+  "period": {
+    "start": "2026-08",
+    "end": "2026-09"
+  },
+  "team": {
+    "size": 3,
+    "role": {
+      "ko": "총괄 · 프론트엔드 개발 · 디자인",
+      "en": "Project lead, frontend developer, and designer"
+    }
+  },
+  "contributions": [
+    {
+      "ko": "디자인 시스템 \"Parchment & Seal\" v1.0과 앱 전체 화면 디자인",
+      "en": "Designed the \"Parchment & Seal\" v1.0 design system and every screen of the app"
+    },
+    {
+      "ko": "디자인 토큰과 공용 위젯 기반으로 로그인·온보딩·홈 등 앱 화면 재작성",
+      "en": "Rebuilt the login, onboarding, home and other screens on shared design tokens and widgets"
+    },
+    {
+      "ko": "배지 컬렉션·배지 상세·프로필·설정 화면 구현",
+      "en": "Built the badge collection, badge detail, profile and settings screens"
+    },
+    {
+      "ko": "퀘스트 진행 화면의 카카오맵 기반 목적지·인증 반경·현위치·방향 표시 구현",
+      "en": "Implemented the quest progress map showing the destination, verification radius, current position and heading on Kakao Maps"
+    },
+    {
+      "ko": "사진 여러 장을 모으는 수집형 퀘스트의 인증 화면 구현",
+      "en": "Built the verification screen for collection quests that require several photos"
+    },
+    {
+      "ko": "퀘스트 유형 7종과 난이도 5단계별 지도 마커를 코드로 생성하는 도구 제작",
+      "en": "Wrote a tool that draws the map markers for 7 quest types across 5 difficulty tiers in code"
+    },
+    {
+      "ko": "토큰 자동 갱신과 네트워크 끊김·세션 만료 구분을 처리하는 앱 API 클라이언트 구현",
+      "en": "Implemented the app's API client with automatic token refresh and separate handling of network loss and session expiry"
+    },
+    {
+      "ko": "화면 크기 3종과 큰 글자 설정에서 화면 넘침을 검사하는 레이아웃 테스트 작성",
+      "en": "Wrote layout tests that check screens for overflow at three screen sizes and with enlarged text"
+    },
+    {
+      "ko": "안드로이드 릴리스 빌드 설정과 원스토어 출시 진행",
+      "en": "Configured the Android release build and carried out the ONE store release"
+    },
+    {
+      "ko": "공모전 제출 문서 작성과 시연 화면 촬영",
+      "en": "Wrote the contest submission documents and captured the demo screenshots"
+    }
+  ],
+  "features": [
+    {
+      "title": {
+        "ko": "주변 관광지 퀘스트 생성",
+        "en": "Nearby tourism quests"
+      },
+      "description": {
+        "ko": "한국관광공사 TourAPI로 받은 주변 장소를 방문·사진·수집·기록 퀘스트로 만듭니다.",
+        "en": "Turns nearby places from the Korea Tourism Organization's TourAPI into visit, photo, collection or note quests."
+      }
+    },
+    {
+      "title": {
+        "ko": "GPS 도착 인증",
+        "en": "GPS arrival verification"
+      },
+      "description": {
+        "ko": "서버가 인증 반경, GPS 정확도, 퀘스트 유형별 조건을 확인하고 같은 요청이 두 번 처리되지 않게 막습니다.",
+        "en": "The server checks the verification radius, GPS accuracy and per-type conditions, and prevents the same request from being processed twice."
+      }
+    },
+    {
+      "title": {
+        "ko": "장소마다 다른 인증 방식",
+        "en": "Per-place verification types"
+      },
+      "description": {
+        "ko": "도착만으로 끝나는 방문형 외에 사진 촬영, 사진 여러 장 수집, 퀴즈, 한 줄 기록 인증을 지원합니다.",
+        "en": "Besides arrival-only visits, quests can require a photo, a set of photos, a quiz answer or a one-line note."
+      }
+    },
+    {
+      "title": {
+        "ko": "경험치 배율 보상",
+        "en": "EXP multipliers"
+      },
+      "description": {
+        "ko": "앱 내 최근 인증 수로 계산한 혼잡도, 첫 방문 지역, 평일 오전, 연속 활동에 따라 경험치 배율이 달라집니다.",
+        "en": "EXP multipliers change with a crowding score computed from recent in-app check-ins, first visits to a region, weekday mornings and activity streaks."
+      }
+    },
+    {
+      "title": {
+        "ko": "퀘스트 지도",
+        "en": "Quest map"
+      },
+      "description": {
+        "ko": "카카오맵에서 보이는 영역의 퀘스트를 유형·난이도별 마커로 보여 주고, 기기 센서로 바라보는 방향을 표시합니다.",
+        "en": "Shows quests in the visible Kakao Maps area with markers by type and difficulty, and displays the user's heading from device sensors."
+      }
+    },
+    {
+      "title": {
+        "ko": "배지 컬렉션",
+        "en": "Badge collection"
+      },
+      "description": {
+        "ko": "배지 13종(숨김 1종 포함)을 모으고, 대표 배지를 3개까지 고를 수 있습니다.",
+        "en": "Users collect 13 badges (one of them hidden) and can pick up to 3 as featured badges."
+      }
+    },
+    {
+      "title": {
+        "ko": "오프라인 인증 보관",
+        "en": "Offline verification queue"
+      },
+      "description": {
+        "ko": "네트워크 문제로 실패한 인증을 기기에 보관했다가 앱을 다시 열거나 다시 시도할 때 서버로 보냅니다.",
+        "en": "Keeps verifications that failed because of the network on the device and sends them when the app reopens or the user retries."
+      }
+    }
+  ],
+  "techStack": [
+    {
+      "category": "language",
+      "items": ["Dart"]
+    },
+    {
+      "category": "mobile",
+      "items": ["Flutter", "Kakao Maps API", "Kakao Login", "Google Sign-In"]
+    },
+    {
+      "category": "data",
+      "items": ["TourAPI"]
+    }
+  ],
+  "deployment": {
+    "status": "live",
+    "platform": "ONE store",
+    "url": "https://m.onestore.co.kr/v2/ko-kr/app/0001009332",
+    "checkedAt": "2026-10-12"
+  },
+  "architecture": {
+    "ko": "Flutter Android 앱이 Express REST API를 호출하고, 서버는 Prisma로 PostgreSQL에 데이터를 저장하며 한국관광공사 TourAPI로 주변 장소를 받아 퀘스트를 만듭니다. 인증 사진은 앱이 AWS S3 presigned URL로 직접 올리고, 푸시 알림은 Firebase Cloud Messaging으로 보냅니다.",
+    "en": "The Flutter Android app calls an Express REST API; the server stores data in PostgreSQL through Prisma and creates quests from nearby places fetched from the Korea Tourism Organization's TourAPI. The app uploads verification photos directly to AWS S3 with presigned URLs, and push notifications are sent through Firebase Cloud Messaging."
+  },
+  "outcomes": [
+    {
+      "ko": "원스토어 출시 (2026-09-18, v1.0.0)",
+      "en": "Released on ONE store (2026-09-18, v1.0.0)"
+    },
+    {
+      "ko": "2026 관광데이터 활용 공모전 웹·앱 구현 부문 제출, 1차 심사 결과 대기 중 (2026-10 기준)",
+      "en": "Submitted to the web/app track of the 2026 Tourism Data Contest; first-round results pending (as of 2026-10)"
+    }
+  ],
+  "challenges": [
+    {
+      "problem": {
+        "ko": "릴리스 빌드에서 카카오 로그인 콜백을 받지 못함",
+        "en": "Kakao login could not receive its callback in release builds"
+      },
+      "solution": {
+        "ko": "빌드 설정의 앱 키로 매니페스트에 콜백 스킴을 넣도록 변경",
+        "en": "Injected the callback scheme into the manifest from the app key in the build settings"
+      }
+    },
+    {
+      "problem": {
+        "ko": "네트워크가 끊기면 로그아웃됨",
+        "en": "Losing the network logged users out"
+      },
+      "solution": {
+        "ko": "연결 실패와 세션 만료를 구분하고 오프라인 안내와 재시도 버튼 추가",
+        "en": "Separated connection failures from session expiry and added an offline notice with a retry button"
+      }
+    },
+    {
+      "problem": {
+        "ko": "작은 화면과 큰 글자 설정에서 화면이 넘침",
+        "en": "Screens overflowed on small phones and with enlarged text"
+      },
+      "solution": {
+        "ko": "화면 크기 3종과 글자 1.3배 조합을 검사하는 테스트를 만들고 넘치는 곳 수정",
+        "en": "Added tests covering three screen sizes and 1.3x text, then fixed the overflowing layouts"
+      }
+    },
+    {
+      "problem": {
+        "ko": "퀘스트 진행 화면의 지도가 장식용 그림이었음",
+        "en": "The quest progress screen showed a decorative drawing instead of a map"
+      },
+      "solution": {
+        "ko": "카카오맵에 목적지·인증 반경·현위치·방향을 그리도록 교체",
+        "en": "Replaced it with Kakao Maps showing the destination, verification radius, current position and heading"
+      }
+    }
+  ],
+  "learnings": [
+    {
+      "ko": "원스토어에 앱을 처음 출시하며, 로그인 콜백·서명 키·평문 통신 설정처럼 릴리스 빌드에서만 드러나는 문제를 배포 과정에서 확인하고 고쳤습니다.",
+      "en": "Releasing an app on ONE store for the first time, I found and fixed problems that only appear in release builds, such as the login callback, signing key and cleartext traffic settings."
+    }
+  ],
+  "highlights": [
+    {
+      "ko": "원스토어 출시 Android 앱",
+      "en": "Android app released on ONE store"
+    },
+    {
+      "ko": "혼잡도·첫 방문 지역·평일 오전에 따라 달라지는 경험치 보상",
+      "en": "EXP rewards that vary with crowding, first visits to a region and weekday mornings"
+    },
+    {
+      "ko": "디자인 시스템 설계와 주요 앱 화면 구현",
+      "en": "Designed the design system and built key app screens"
+    }
+  ],
+  "links": [
+    {
+      "type": "store",
+      "url": "https://m.onestore.co.kr/v2/ko-kr/app/0001009332"
+    }
+  ],
+  "related": ["tourism-data-contest-2026"],
+  "tags": ["mobile", "android", "location-based", "tourism", "gamification"],
+  "featured": true,
+  "thumbnail": "/images/projects/local-quest/thumbnail.png",
+  "screenshots": [
+    {
+      "src": "/images/projects/local-quest/01-map.jpg",
+      "alt": {
+        "ko": "유형별 퀘스트 마커가 깔린 지도",
+        "en": "Map covered with quest markers by type"
+      },
+      "kind": "mobile"
+    },
+    {
+      "src": "/images/projects/local-quest/02-quest-card.jpg",
+      "alt": {
+        "ko": "‘한산 · 700 EXP’ 퀘스트 카드",
+        "en": "Quest card marked ‘quiet · 700 EXP’"
+      },
+      "kind": "mobile"
+    },
+    {
+      "src": "/images/projects/local-quest/03-progress-radius.jpg",
+      "alt": {
+        "ko": "인증 반경 원과 ‘도착했어요’가 보이는 진행 화면",
+        "en": "Progress screen with the verification radius circle and ‘You’ve arrived’"
+      },
+      "kind": "mobile"
+    },
+    {
+      "src": "/images/projects/local-quest/04-verify.jpg",
+      "alt": {
+        "ko": "위치 확인 인증 화면 (오차 8m · 최대 100m)",
+        "en": "Verification screen confirming the location (8 m error, 100 m max)"
+      },
+      "kind": "mobile"
+    },
+    {
+      "src": "/images/projects/local-quest/05-reward.jpg",
+      "alt": {
+        "ko": "보상 화면: 기본 110 × 혼잡도 1.4 × 비피크 1.2 × 스트릭 1.05 = +194 EXP",
+        "en": "Reward screen: base 110 × crowding 1.4 × off-peak 1.2 × streak 1.05 = +194 EXP"
+      },
+      "kind": "mobile"
+    },
+    {
+      "src": "/images/projects/local-quest/06-badges.jpg",
+      "alt": {
+        "ko": "배지 컬렉션 (1/13, 지역·유형 필터)",
+        "en": "Badge collection (1/13, region and type filters)"
+      },
+      "kind": "mobile"
+    }
+  ]
+}

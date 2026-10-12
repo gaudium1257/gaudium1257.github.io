@@ -21,6 +21,15 @@
       "items": [
         {
           "name": "Flutter"
+        },
+        {
+          "name": "Kakao Maps API"
+        },
+        {
+          "name": "Kakao Login"
+        },
+        {
+          "name": "Google Sign-In"
         }
       ]
     },
@@ -37,14 +46,14 @@
       ]
     },
     {
-      "category": "tooling",
+      "category": "data",
       "label": {
-        "ko": "도구",
-        "en": "Tooling"
+        "ko": "데이터",
+        "en": "Data"
       },
       "items": [
         {
-          "name": "Claude Code"
+          "name": "TourAPI"
         }
       ]
     }

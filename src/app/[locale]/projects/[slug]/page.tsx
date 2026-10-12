@@ -357,8 +357,14 @@ export default async function ProjectPage({
   ]);
 
   const buttons = p.links.filter((l) => l.type !== "github");
-  if (live && p.deployment.url && !buttons.some((l) => l.type === "demo"))
-    buttons.unshift({ type: "demo", url: p.deployment.url });
+  // the live URL gets its own button unless a demo or a link to the same URL (e.g. a store page) exists
+  const liveUrl = p.deployment.url;
+  if (
+    live &&
+    liveUrl &&
+    !buttons.some((l) => l.type === "demo" || l.url === liveUrl)
+  )
+    buttons.unshift({ type: "demo", url: liveUrl });
   const { wide, phone } = heroShots(p);
   const lead = Boolean(wide || phone);
   const shots = galleryShots(p);
@@ -436,6 +442,15 @@ export default async function ProjectPage({
           </div>
           <div className="min-w-0 lg:col-span-7 lg:row-span-2 lg:row-start-2">
             <TechList project={p} dict={dict} locale={locale} link />
+            {p.aiTools.length > 0 && (
+              // plain text, not chips/nodes: AI assistants are not part of the tech stack
+              <p className="mt-3 flex flex-wrap items-baseline gap-x-2 text-sm">
+                <span className="text-muted">{dict.project.aiTools}</span>
+                <span translate="no" className="text-ink-2">
+                  {p.aiTools.join(", ")}
+                </span>
+              </p>
+            )}
             {buttons.length > 0 && (
               <div className="mt-6 flex flex-wrap gap-3">
                 {buttons.map((l) => (
