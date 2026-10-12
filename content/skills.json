@@ -9,6 +9,45 @@
       "items": [
         {
           "name": "Dart"
+        },
+        {
+          "name": "TypeScript"
+        }
+      ]
+    },
+    {
+      "category": "frontend",
+      "label": {
+        "ko": "프론트엔드",
+        "en": "Frontend"
+      },
+      "items": [
+        {
+          "name": "React"
+        },
+        {
+          "name": "Vite"
+        },
+        {
+          "name": "Tailwind CSS"
+        },
+        {
+          "name": "shadcn/ui"
+        },
+        {
+          "name": "React Router"
+        },
+        {
+          "name": "TanStack Query"
+        },
+        {
+          "name": "Zustand"
+        },
+        {
+          "name": "React Hook Form"
+        },
+        {
+          "name": "Axios"
         }
       ]
     },
@@ -30,6 +69,12 @@
         },
         {
           "name": "Google Sign-In"
+        },
+        {
+          "name": "React Native"
+        },
+        {
+          "name": "Expo"
         }
       ]
     },
@@ -54,6 +99,33 @@
       "items": [
         {
           "name": "TourAPI"
+        }
+      ]
+    },
+    {
+      "category": "infra",
+      "label": {
+        "ko": "인프라",
+        "en": "Infra"
+      },
+      "items": [
+        {
+          "name": "Vercel"
+        }
+      ]
+    },
+    {
+      "category": "other",
+      "label": {
+        "ko": "기타",
+        "en": "Other"
+      },
+      "items": [
+        {
+          "name": "PortOne"
+        },
+        {
+          "name": "Firebase Cloud Messaging"
         }
       ]
     }
