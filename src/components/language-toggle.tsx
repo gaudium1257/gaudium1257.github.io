@@ -34,7 +34,8 @@ function targetUrl(to: Locale) {
     let best = -Infinity;
     for (const id of ids) {
       const top = document.getElementById(id)?.getBoundingClientRect().top;
-      if (top !== undefined && top <= line && top > best) [at, best] = [id, top];
+      if (top !== undefined && top <= line && top > best)
+        [at, best] = [id, top];
     }
     if (at) hash = `#${at}`;
   }
