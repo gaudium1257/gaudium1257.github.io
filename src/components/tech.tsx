@@ -3,6 +3,7 @@ import { t, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { fill } from "@/lib/format";
 import { groupedStack, TIER, techSlug } from "@/lib/tech";
+import { Icon } from "./icons";
 import { cx } from "./ui";
 
 const NODE =
@@ -113,8 +114,10 @@ export function TechList({
 type TechCategory = Project["techStack"][number]["category"];
 
 /**
- * Folding rule (owner request 2026.10): the tech you build with — language, frontend, mobile,
- * backend, AI — stays open; the tech that supports it — DB, data, infra, tooling, other — folds.
+ * Every category folds on its own (owner request 2026.10). The tech you build with — language,
+ * frontend, mobile, backend, AI — starts open; the tech that supports it — DB, data, infra,
+ * tooling, other — starts folded. Native <details>: works without JS, and the filter reopens a
+ * category when `?tech=` points inside it.
  */
 const SUPPORT: TechCategory[] = [
   "database",
@@ -124,13 +127,12 @@ const SUPPORT: TechCategory[] = [
   "other",
 ];
 
-/** Rows of filter nodes by category (stack map on home, filter on the project list). */
+/** Foldable category rows of filter nodes (stack map on home, filter on the project list). */
 export function StackRows({
   groups,
   usage,
   dict,
   locale,
-  narrow = false,
   unrecorded = true,
   onHome,
 }: {
@@ -142,7 +144,6 @@ export function StackRows({
   usage: Map<string, Project[]>;
   dict: Dictionary;
   locale: Locale;
-  narrow?: boolean;
   unrecorded?: boolean;
   onHome: boolean;
 }) {
@@ -153,81 +154,68 @@ export function StackRows({
       names: g.names.filter((n) => unrecorded || usage.has(n)),
     }))
     .filter((g) => g.names.length);
-  const main = rows.filter((g) => !SUPPORT.includes(g.category));
-  const support = rows.filter((g) => SUPPORT.includes(g.category));
-  // nothing to fold into when every row is a supporting one
-  const open = main.length ? main : support;
-  const folded = main.length ? support : [];
-  const label = (g: (typeof rows)[number]) =>
-    g.label ?? dict.skills.category[g.category];
-  const row = (g: (typeof rows)[number]) => (
-    <li
-      key={g.category + (g.label ?? "")}
-      className={cx(
-        "grid gap-x-4 gap-y-2 border-t border-line py-3 first:border-t-0 sm:grid-cols-[6rem_minmax(0,1fr)]",
-        narrow && "lg:grid-cols-1",
-      )}
-    >
-      <h3
-        className={cx(
-          "text-sm font-semibold text-ink-2 sm:pt-2.5 sm:text-ui",
-          narrow && "lg:pt-0",
-        )}
-      >
-        {label(g)}
-      </h3>
-      <ul className="flex flex-wrap gap-2">
-        {g.names.map((name) => {
-          if (!usage.has(name))
-            return (
-              <li key={name}>
-                <span
-                  translate="no"
-                  className="inline-flex min-h-10 items-center rounded-node border border-dashed border-edge px-3 py-1 text-ui text-muted"
-                >
-                  {name}
-                  <span className="sr-only">, {dict.skills.srNone}</span>
-                </span>
-              </li>
-            );
-          const slug = techSlug(name);
-          return (
-            <TechNode
-              key={name}
-              name={name}
-              href={
-                onHome ? `/${locale}/projects/?tech=${slug}` : `?tech=${slug}`
-              }
-              srText={dict.skills.linkSr}
-              filter
-            />
-          );
-        })}
-      </ul>
-    </li>
-  );
-  const hidden = folded.reduce((n, g) => n + g.names.length, 0);
+  // when every row is a supporting one, nothing would be open: open them all
+  const allSupport = rows.every((g) => SUPPORT.includes(g.category));
   return (
-    <>
-      <ul>{open.map(row)}</ul>
-      {folded.length > 0 && (
-        // native disclosure: works without JS; the filter opens it when ?tech= points inside
-        <details className="group/fold border-t border-line">
-          <summary className="flex min-h-11 cursor-pointer list-none flex-wrap items-center gap-x-3 gap-y-0.5 py-2 text-ui font-semibold text-primary hover:text-primary-700 active:text-ink [&::-webkit-details-marker]:hidden">
-            <span className="group-open/fold:hidden">
-              {fill(dict.skills.more, { n: hidden })}
-            </span>
-            <span className="hidden group-open/fold:inline">
-              {dict.skills.less}
-            </span>
-            <span className="text-sm font-normal text-muted">
-              {folded.map(label).join(" · ")}
-            </span>
-          </summary>
-          <ul className="border-t border-line">{folded.map(row)}</ul>
-        </details>
-      )}
-    </>
+    <ul>
+      {rows.map((g) => (
+        <li
+          key={g.category + (g.label ?? "")}
+          className="border-t border-line first:border-t-0"
+        >
+          <details
+            open={allSupport || !SUPPORT.includes(g.category)}
+            className="group/cat"
+          >
+            <summary className="-mx-2 flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-node px-2 py-1.5 transition-colors hover:bg-white active:bg-primary-50 [&::-webkit-details-marker]:hidden">
+              <h3 className="text-sm font-semibold text-ink-2 sm:text-ui">
+                {g.label ?? dict.skills.category[g.category]}
+              </h3>
+              <span className="text-sm text-muted tabular-nums">
+                <span aria-hidden="true">{g.names.length}</span>
+                <span className="sr-only">
+                  {fill(dict.skills.countSr, { n: g.names.length })}
+                </span>
+              </span>
+              <Icon
+                name="chevron"
+                className="ml-auto text-muted group-open/cat:rotate-180"
+              />
+            </summary>
+            <ul className="flex flex-wrap gap-2 pt-1 pb-3">
+              {g.names.map((name) => {
+                if (!usage.has(name))
+                  return (
+                    <li key={name}>
+                      <span
+                        translate="no"
+                        className="inline-flex min-h-10 items-center rounded-node border border-dashed border-edge px-3 py-1 text-ui text-muted"
+                      >
+                        {name}
+                        <span className="sr-only">, {dict.skills.srNone}</span>
+                      </span>
+                    </li>
+                  );
+                const slug = techSlug(name);
+                return (
+                  <TechNode
+                    key={name}
+                    name={name}
+                    href={
+                      onHome
+                        ? `/${locale}/projects/?tech=${slug}`
+                        : `?tech=${slug}`
+                    }
+                    srText={dict.skills.linkSr}
+                    filter
+                  />
+                );
+              })}
+            </ul>
+          </details>
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -266,7 +254,6 @@ export function StackMap({
               usage={usage}
               dict={dict}
               locale={locale}
-              narrow
               onHome
             />
           </div>

@@ -1,7 +1,7 @@
 /**
  * Link icons, always `currentColor` (no brand colours — colours come from tokens).
  * Brand marks: Simple Icons 16.35 (CC0); GitHub keeps the Octicons mark.
- * Glyphs: Lucide 1.55 (ISC; `store` and `link` are Feather-derived, MIT).
+ * Glyphs: Lucide 1.55 (ISC; `store`, `link` and `chevron` are Feather-derived, MIT).
  * Full licence texts: THIRD_PARTY_NOTICES.md at the repo root.
  */
 import type { LinkType } from "@/content/schema";
@@ -86,6 +86,7 @@ const GLYPH = {
       <circle cx="12" cy="8" r="6" />
     </>
   ),
+  chevron: <path d="m6 9 6 6 6-6" />,
   link: (
     <>
       <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
