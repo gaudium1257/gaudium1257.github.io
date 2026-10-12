@@ -1,0 +1,315 @@
+{
+  "id": "hello-vibe",
+  "title": {
+    "ko": "Hello Vibe",
+    "en": "Hello Vibe"
+  },
+  "tagline": {
+    "ko": "만들면서 이해의 근거를 남기는 Kiro 바이브코딩 확장",
+    "en": "A vibe-coding extension for Kiro that records evidence of understanding while you build"
+  },
+  "summary": {
+    "ko": "코딩 초보자가 배우고 싶은 기술 하나로 시작해 TypeScript 서비스를 완성하도록 돕는 Kiro IDE 확장입니다. Agent가 코드를 작성하는 동안 개발 중 생긴 실제 결정을 사용자가 고르게 하고, \"Agent가 코드를 썼다\"와 \"사용자가 이해했다\"를 구분해 기록합니다. 고려대학교 × AWS AI Innovators Challenge에서 2인 팀으로 만들었고 본선에 진출했습니다.",
+    "en": "A Kiro IDE extension that helps coding beginners start from one technology they want to learn and finish a TypeScript service. While agents write the code, the user picks the real decisions that come up during development, and \"the agent wrote the code\" is recorded separately from \"the user understood it\". Built by a two-person team for the Korea University × AWS AI Innovators Challenge, where it advanced to the finals."
+  },
+  "category": "team",
+  "status": "in-progress",
+  "period": {
+    "start": "2026-08",
+    "end": null
+  },
+  "team": {
+    "size": 2,
+    "role": {
+      "ko": "프론트엔드 개발 (백엔드 지원)",
+      "en": "Frontend developer (backend support)"
+    }
+  },
+  "contributions": [
+    {
+      "ko": "Kiro 확장의 Agent Panel(Builder·Helper 탭, 응답 스트리밍 표시) 초기 구조 구현",
+      "en": "Built the initial structure of the Agent Panel in the Kiro extension, with Builder and Helper tabs and streamed responses"
+    },
+    {
+      "ko": "학습 목표 입력부터 프로젝트 후보, Learning Spec 확정까지의 화면 흐름 설계·구현",
+      "en": "Designed and built the screen flow from learning goal input through project candidates to Learning Spec confirmation"
+    },
+    {
+      "ko": "Core 프론트엔드 SDK 연동과 연결 실패 시 기능을 막는 처리 구현",
+      "en": "Integrated the Core frontend SDK and blocked features when the Core connection was unavailable"
+    },
+    {
+      "ko": "Builder·Helper·Decision·Evidence 화면을 실제 로컬 Core에 연결",
+      "en": "Connected the Builder, Helper, Decision and Evidence screens to the live local Core"
+    },
+    {
+      "ko": "실측에서 나온 오류 코드별 한국어 안내와 백엔드 문제 보고서 작성",
+      "en": "Wrote Korean guidance for each error code found in live testing, and reported backend issues"
+    },
+    {
+      "ko": "본선 버전의 'Kiro 채팅에서 열기'와 창 재로드 안내 구현",
+      "en": "Built the finals version's 'Open in Kiro chat' action and the window reload notice"
+    },
+    {
+      "ko": "백엔드의 Windows 도구 체인 오류 수정과 Windows 설치 파일 빌드·실기기 점검",
+      "en": "Fixed backend toolchain errors on Windows, and built and checked the Windows installer on a real PC"
+    }
+  ],
+  "features": [
+    {
+      "title": {
+        "ko": "프로젝트 후보 탐색",
+        "en": "Project discovery"
+      },
+      "description": {
+        "ko": "배우고 싶은 기술을 입력하면 프로젝트 후보 10개를 받고, 피드백으로 후보를 다시 좁힙니다.",
+        "en": "Entering a technology to learn returns ten project candidates, which the user can narrow down with feedback."
+      }
+    },
+    {
+      "title": {
+        "ko": "Learning Spec",
+        "en": "Learning Spec"
+      },
+      "description": {
+        "ko": "Learning Spec을 검토·보완해 확정하고, 필요하면 프로젝트 후보 탐색으로 돌아갑니다.",
+        "en": "The user reviews, refines and confirms the Learning Spec, and can go back to project discovery."
+      }
+    },
+    {
+      "title": {
+        "ko": "Builder 결정 카드",
+        "en": "Builder decision cards"
+      },
+      "description": {
+        "ko": "Builder Agent가 개발 중 만난 실제 결정을 카드로 보여 주고, 사용자가 고르면 그 선택대로 작업을 이어갑니다.",
+        "en": "Real decisions the Builder agent meets during development appear as cards, and work continues with the user's choice."
+      }
+    },
+    {
+      "title": {
+        "ko": "읽기 전용 Helper",
+        "en": "Read-only Helper"
+      },
+      "description": {
+        "ko": "설명을 위한 읽기 전용 대화로, 파일을 수정하지 않습니다.",
+        "en": "A read-only conversation for explanations that does not modify files."
+      }
+    },
+    {
+      "title": {
+        "ko": "이해 근거와 개념 상태",
+        "en": "Evidence and concept state"
+      },
+      "description": {
+        "ko": "학습 근거를 기록하고, 개념 상태는 정해진 네 단계 순서로만 올라가며 내려가는 변경은 거부합니다.",
+        "en": "Evidence of learning is recorded, and concept state only moves up through four fixed stages; downgrades are refused."
+      }
+    },
+    {
+      "title": {
+        "ko": "로컬 저장과 민감정보 가림",
+        "en": "Local storage with redaction"
+      },
+      "description": {
+        "ko": "상태를 사용자 컴퓨터의 SQLite에 저장하고, 저장 전에 알려진 형태의 토큰·키·홈 경로를 가립니다.",
+        "en": "State is stored in SQLite on the user's computer, and known forms of tokens, keys and home paths are redacted before saving."
+      }
+    },
+    {
+      "title": {
+        "ko": "Kiro 채팅 연동",
+        "en": "Kiro chat handoff"
+      },
+      "description": {
+        "ko": "본선 버전에서는 확정한 프로젝트를 Kiro 채팅에서 열어 실제 만들기를 이어갑니다.",
+        "en": "In the finals version, the confirmed project opens in Kiro chat, where building continues."
+      }
+    }
+  ],
+  "techStack": [
+    {
+      "category": "language",
+      "items": ["TypeScript"]
+    },
+    {
+      "category": "frontend",
+      "items": ["VS Code Extension API"]
+    },
+    {
+      "category": "backend",
+      "items": ["Node.js"]
+    },
+    {
+      "category": "ai-ml",
+      "items": ["Kiro", "Model Context Protocol"]
+    },
+    {
+      "category": "database",
+      "items": ["SQLite", "Drizzle ORM"]
+    },
+    {
+      "category": "tooling",
+      "items": ["Vitest", "fast-check", "esbuild"]
+    }
+  ],
+  "techNotes": {
+    "TypeScript": {
+      "ko": "확장 프론트엔드와 Core 백엔드의 주 언어",
+      "en": "Main language of the extension frontend and the Core backend"
+    },
+    "VS Code Extension API": {
+      "ko": "Kiro에 붙는 Agent Panel webview와 확장 명령",
+      "en": "The Agent Panel webview and extension commands inside Kiro"
+    },
+    "Node.js": {
+      "ko": "127.0.0.1에서만 열리는 로컬 Core HTTP·SSE 서버",
+      "en": "The local Core HTTP and SSE server bound to 127.0.0.1"
+    },
+    "Kiro": {
+      "ko": "Discovery·Builder·Helper·Evidence Analyst Agent 실행(Kiro 내장 Agent, kiro-cli)",
+      "en": "Running the Discovery, Builder, Helper and Evidence Analyst agents (Kiro built-in agent and kiro-cli)"
+    },
+    "Model Context Protocol": {
+      "ko": "Agent 역할마다 쓸 수 있는 도구를 나눈 MCP 서버",
+      "en": "MCP servers that give each agent role its own set of tools"
+    },
+    "SQLite": {
+      "ko": "로컬 상태 저장(better-sqlite3)",
+      "en": "Local state storage (better-sqlite3)"
+    },
+    "Drizzle ORM": {
+      "ko": "SQLite 스키마 정의와 마이그레이션",
+      "en": "SQLite schema definitions and migrations"
+    },
+    "Vitest": {
+      "ko": "확장과 Core의 테스트",
+      "en": "Tests for the extension and Core"
+    },
+    "fast-check": {
+      "ko": "화면 상태 Controller의 속성 기반 테스트",
+      "en": "Property-based tests for the screen state controllers"
+    },
+    "esbuild": {
+      "ko": "확장 코드와 webview 코드 번들링",
+      "en": "Bundling the extension and webview code"
+    }
+  },
+  "aiTools": ["Claude Code", "Kiro"],
+  "deployment": {
+    "status": "not-deployed"
+  },
+  "architecture": {
+    "ko": "Kiro 확장이 로컬 Core를 자동으로 띄우고, 127.0.0.1의 토큰 인증 HTTP·SSE로 통신합니다. Core는 상태를 SQLite에 저장하고, Kiro 내장 Agent 또는 kiro-cli로 네 Agent를 실행하며, Agent 역할마다 MCP 서버로 쓸 수 있는 도구를 나눕니다.",
+    "en": "The Kiro extension starts a local Core automatically and talks to it over token-authenticated HTTP and SSE on 127.0.0.1. Core stores state in SQLite, runs four agents through the Kiro built-in agent or kiro-cli, and gives each agent role its own tools through MCP servers."
+  },
+  "outcomes": [
+    {
+      "ko": "고려대학교 × AWS AI Innovators Challenge 본선 진출",
+      "en": "Advanced to the finals of the Korea University × AWS AI Innovators Challenge"
+    },
+    {
+      "ko": "프론트엔드 0.0.18 기준 자동 테스트 807개 통과",
+      "en": "Passed 807 automated tests on frontend version 0.0.18"
+    },
+    {
+      "ko": "Mac 설치본(0.1.3)에서 실제 모델로 앱 생성·실행, 결정 반영, 재시작 후 복원 확인",
+      "en": "Confirmed app generation and launch, decision handling, and restore after restart with a real model on the Mac build (0.1.3)"
+    }
+  ],
+  "challenges": [
+    {
+      "problem": {
+        "ko": "실제 Windows 11에서 사용자별로 설치된 kiro-cli를 찾지 못함",
+        "en": "The per-user kiro-cli install was not found on a real Windows 11 PC"
+      },
+      "solution": {
+        "ko": "사용자별 설치 경로를 탐색 대상에 추가하고 Windows에서만 실패하던 테스트 13개를 수정",
+        "en": "Added the per-user install path to the lookup and fixed 13 tests that failed only on Windows"
+      }
+    },
+    {
+      "problem": {
+        "ko": "확장 버전을 올릴 때마다 생성 프로젝트가 도구 체인 변경 오류로 멈춤",
+        "en": "Generated projects stopped with a toolchain-changed error after every extension version bump"
+      },
+      "solution": {
+        "ko": "같은 제품의 새 버전 업그레이드는 허용하도록 판별 조건을 수정",
+        "en": "Changed the check to accept upgrades to a newer version of the same product"
+      }
+    },
+    {
+      "problem": {
+        "ko": "본선 버전에서 Core가 패널 Builder 실행을 거부해 시작 버튼이 오류로 끝남",
+        "en": "In the finals version, Core refused panel Builder runs, so the start button ended in an error"
+      },
+      "solution": {
+        "ko": "시작 동작을 Kiro 채팅에서 프로젝트를 여는 방식으로 변경",
+        "en": "Changed the start action to open the project in Kiro chat"
+      }
+    },
+    {
+      "problem": {
+        "ko": "portable 폴더의 node_modules가 git에서 무시되고, 줄바꿈 변환으로 배포 kit 해시가 깨짐",
+        "en": "portable/node_modules was ignored by git, and line-ending conversion broke the release kit hashes"
+      },
+      "solution": {
+        "ko": ".gitignore 예외와 .gitattributes 설정으로 파일을 원본 그대로 추적",
+        "en": "Tracked the files byte for byte with a .gitignore exception and .gitattributes settings"
+      }
+    }
+  ],
+  "learnings": [
+    {
+      "ko": "확장 프로그램 개발은 처음이었습니다. 확장 호스트와 webview가 메시지로만 주고받는 구조에 맞춰, 화면 상태를 Controller로 분리해 관리하는 방법을 익혔습니다.",
+      "en": "This was my first extension. I learned to keep screen state in controllers, to fit a setup where the extension host and the webview only exchange messages."
+    },
+    {
+      "ko": "AI를 프로그램 기능에 넣어 본 것도 처음이었습니다. 모델 응답이 실패하거나 중간에 끊길 때 사용자에게 상황과 다음 단계를 알맞게 안내하는 일이 기능을 만드는 것만큼 중요하다는 것을 배웠습니다.",
+      "en": "It was also my first time putting AI into a program's features. I learned that telling users what happened and what to do next when a model response fails or stops matters as much as building the feature."
+    }
+  ],
+  "highlights": [
+    {
+      "ko": "고려대학교 × AWS AI Innovators Challenge 본선 진출",
+      "en": "Finalist, Korea University × AWS AI Innovators Challenge"
+    },
+    {
+      "ko": "Kiro 확장 화면과 로컬 Core 연동 개발",
+      "en": "Built the Kiro extension screens and their connection to the local Core"
+    },
+    {
+      "ko": "Agent가 쓴 코드와 사용자의 이해 근거를 구분해 기록하는 IDE 확장",
+      "en": "An IDE extension that records agent-written code apart from evidence of the user's understanding"
+    }
+  ],
+  "links": [
+    {
+      "type": "github",
+      "url": "https://github.com/Hello-KU-tty/program",
+      "label": {
+        "ko": "프론트엔드 저장소",
+        "en": "Frontend repository"
+      }
+    },
+    {
+      "type": "github",
+      "url": "https://github.com/Hello-KU-tty/core",
+      "label": {
+        "ko": "백엔드 저장소",
+        "en": "Backend repository"
+      }
+    },
+    {
+      "type": "docs",
+      "url": "https://github.com/Hello-KU-tty/core/blob/main/docs/DOWNLOAD_GUIDE.md",
+      "label": {
+        "ko": "다운로드·설치 가이드",
+        "en": "Download and install guide"
+      }
+    }
+  ],
+  "related": [],
+  "thumbnail": "/images/projects/hello-vibe/thumbnail.png",
+  "tags": ["ide-extension", "ai-agent", "mcp", "local-first", "competition"]
+}

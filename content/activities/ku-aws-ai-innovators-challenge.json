@@ -1,0 +1,26 @@
+{
+  "id": "ku-aws-ai-innovators-challenge",
+  "title": {
+    "ko": "고려대학교 × AWS AI Innovators Challenge",
+    "en": "Korea University × AWS AI Innovators Challenge"
+  },
+  "organization": {
+    "ko": "고려대학교 × AWS",
+    "en": "Korea University × AWS"
+  },
+  "type": "competition",
+  "period": {
+    "start": "2026-08",
+    "end": "2026-10"
+  },
+  "role": {
+    "ko": "프론트엔드 개발 (2인 팀)",
+    "en": "Frontend developer (two-person team)"
+  },
+  "description": {
+    "ko": "Kiro IDE 확장 Hello Vibe를 2인 팀으로 만들어 본선에 진출했습니다. 최종 결과는 아직 발표되지 않았습니다(2026-10 기준).",
+    "en": "Built the Kiro IDE extension Hello Vibe as a two-person team and advanced to the finals. Final results have not been announced (as of 2026-10)."
+  },
+  "links": [],
+  "related": ["hello-vibe"]
+}
