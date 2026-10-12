@@ -105,7 +105,7 @@ export function RepoCard({
   return (
     <section
       aria-labelledby="repo-title"
-      className="rounded-panel bg-surface p-5"
+      className="rounded-card bg-white p-5 ring-1 ring-line"
     >
       <h2
         id="repo-title"

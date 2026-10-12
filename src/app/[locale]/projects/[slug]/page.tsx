@@ -478,133 +478,141 @@ export default async function ProjectPage({
 
   return (
     <main id="main" data-layout="default">
-      <div className="shell pt-6 pb-10 lg:pt-10 lg:pb-12">
-        <Breadcrumbs
-          label={dict.project.crumbs}
-          items={[
-            { href: `/${locale}/`, label: dict.project.home },
-            { href: `/${locale}/projects/`, label: dict.nav.projects },
-          ]}
-          current={t(p.title, locale)}
-        />
-        <div className="mt-5 grid gap-x-12 gap-y-8 lg:grid-cols-12 lg:grid-rows-[auto_auto_1fr]">
-          <div className="min-w-0 lg:col-span-7">
-            <h1 className="text-title-sm font-bold text-ink sm:text-title">
-              {t(p.title, locale)}
-            </h1>
-            <p className="mt-3 max-w-160 text-lead leading-copy text-ink-2">
-              {t(p.tagline, locale)}
-            </p>
-          </div>
-          <div className="min-w-0 lg:col-span-7 lg:row-span-2 lg:row-start-2">
-            <TechList project={p} dict={dict} locale={locale} link />
-            {p.aiTools.length > 0 && (
-              // plain text, not chips/nodes: AI assistants are not part of the tech stack
-              <p className={cx(LABEL_COLS, "mt-2.5 items-baseline text-sm")}>
-                <span className="text-muted">{dict.project.aiTools}</span>
-                <span translate="no" className="text-ink-2">
-                  {p.aiTools.join(", ")}
-                </span>
+      {/* page header on a tinted band, like the home chapters */}
+      <div className="bg-surface">
+        <div className="shell pt-8 pb-12 lg:pt-12 lg:pb-16">
+          <Breadcrumbs
+            label={dict.project.crumbs}
+            items={[
+              { href: `/${locale}/`, label: dict.project.home },
+              { href: `/${locale}/projects/`, label: dict.nav.projects },
+            ]}
+            current={t(p.title, locale)}
+          />
+          <div className="mt-5 grid gap-x-12 gap-y-8 lg:grid-cols-12 lg:grid-rows-[auto_auto_1fr]">
+            <div className="min-w-0 lg:col-span-7">
+              <h1 className="text-title-sm font-extrabold text-ink sm:text-display-sm">
+                {t(p.title, locale)}
+              </h1>
+              <p className="mt-3 max-w-160 text-lead leading-copy text-ink-2">
+                {t(p.tagline, locale)}
               </p>
-            )}
-            {buttons.length > 0 && (
-              <div className="mt-6 flex flex-wrap gap-3">
-                {buttons.map((l) => (
-                  <ExternalLink
-                    key={l.url}
-                    href={l.url}
-                    newTab={dict.common.newTab}
-                    className={cx(BUTTON, "text-left")}
-                  >
-                    <Icon name={linkIcon(l.url, l.type)} />
-                    {l.label ? t(l.label, locale) : dict.project.links[l.type]}
-                  </ExternalLink>
-                ))}
-              </div>
-            )}
-            <dl className="mt-6 grid grid-cols-2 sm:grid-cols-3">
-              {facts.map(([k, v]) => (
-                <div key={k} className="min-w-0 border-t border-line py-3 pr-4">
-                  <dt className="text-sm text-muted">{k}</dt>
-                  <dd className="mt-1 text-ui font-medium text-ink">{v}</dd>
+            </div>
+            <div className="min-w-0 lg:col-span-7 lg:row-span-2 lg:row-start-2">
+              <TechList project={p} dict={dict} locale={locale} link />
+              {p.aiTools.length > 0 && (
+                // plain text, not chips/nodes: AI assistants are not part of the tech stack
+                <p className={cx(LABEL_COLS, "mt-2.5 items-baseline text-sm")}>
+                  <span className="text-muted">{dict.project.aiTools}</span>
+                  <span translate="no" className="text-ink-2">
+                    {p.aiTools.join(", ")}
+                  </span>
+                </p>
+              )}
+              {buttons.length > 0 && (
+                <div className="mt-6 flex flex-wrap gap-3">
+                  {buttons.map((l) => (
+                    <ExternalLink
+                      key={l.url}
+                      href={l.url}
+                      newTab={dict.common.newTab}
+                      className={cx(BUTTON, "text-left")}
+                    >
+                      <Icon name={linkIcon(l.url, l.type)} />
+                      {l.label
+                        ? t(l.label, locale)
+                        : dict.project.links[l.type]}
+                    </ExternalLink>
+                  ))}
                 </div>
-              ))}
-            </dl>
-          </div>
-          {lead && (
-            <div className="min-w-0 lg:col-span-5 lg:col-start-8 lg:row-span-2 lg:row-start-1">
-              <div
-                className={cx(
-                  "grid gap-3",
-                  wide &&
-                    phone &&
-                    "sm:grid-cols-[minmax(0,208fr)_minmax(0,60fr)]",
-                )}
-              >
-                {wide && (
-                  <Capture
-                    src={wide.src}
-                    alt={t(wide.alt, locale)}
-                    kind={wide.kind}
-                    load="high"
-                    fullSize={fullSize}
-                  />
-                )}
-                {phone && (
-                  // beside a wide capture the phone drops out below 640px; alone it keeps a phone's width
-                  <div className={wide ? "hidden sm:block" : "w-40 sm:w-48"}>
+              )}
+              <dl className="mt-6 grid grid-cols-2 sm:grid-cols-3">
+                {facts.map(([k, v]) => (
+                  <div
+                    key={k}
+                    className="min-w-0 border-t border-line py-3 pr-4"
+                  >
+                    <dt className="text-sm text-muted">{k}</dt>
+                    <dd className="mt-1 text-ui font-medium text-ink">{v}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+            {lead && (
+              <div className="min-w-0 lg:col-span-5 lg:col-start-8 lg:row-span-2 lg:row-start-1">
+                <div
+                  className={cx(
+                    "grid gap-3",
+                    wide &&
+                      phone &&
+                      "sm:grid-cols-[minmax(0,208fr)_minmax(0,60fr)]",
+                  )}
+                >
+                  {wide && (
                     <Capture
-                      src={phone.src}
-                      alt={t(phone.alt, locale)}
-                      kind="mobile"
-                      load={wide ? undefined : "high"}
+                      src={wide.src}
+                      alt={t(wide.alt, locale)}
+                      kind={wide.kind}
+                      load="high"
                       fullSize={fullSize}
                     />
-                  </div>
+                  )}
+                  {phone && (
+                    // beside a wide capture the phone drops out below 640px; alone it keeps a phone's width
+                    <div className={wide ? "hidden sm:block" : "w-40 sm:w-48"}>
+                      <Capture
+                        src={phone.src}
+                        alt={t(phone.alt, locale)}
+                        kind="mobile"
+                        load={wide ? undefined : "high"}
+                        fullSize={fullSize}
+                      />
+                    </div>
+                  )}
+                </div>
+                {shots.length > 0 ? (
+                  <p className="mt-3">
+                    <ScreensLink
+                      className={cx(
+                        "inline-flex min-h-6 items-center text-ui font-semibold",
+                        LINK,
+                      )}
+                    >
+                      {fill(dict.project.allScreens, { n: shots.length })}
+                    </ScreensLink>
+                  </p>
+                ) : (
+                  !p.thumbnail && (
+                    <MediaCaption
+                      shot={(wide ?? phone)!}
+                      dict={dict}
+                      locale={locale}
+                      className="mt-2 block"
+                    />
+                  )
                 )}
               </div>
-              {shots.length > 0 ? (
-                <p className="mt-3">
-                  <ScreensLink
-                    className={cx(
-                      "inline-flex min-h-6 items-center text-ui font-semibold",
-                      LINK,
-                    )}
-                  >
-                    {fill(dict.project.allScreens, { n: shots.length })}
-                  </ScreensLink>
-                </p>
-              ) : (
-                !p.thumbnail && (
-                  <MediaCaption
-                    shot={(wide ?? phone)!}
-                    dict={dict}
-                    locale={locale}
-                    className="mt-2 block"
-                  />
-                )
-              )}
-            </div>
-          )}
-          {repo && (
-            <div
-              className={cx(
-                "min-w-0 lg:col-span-5 lg:col-start-8",
-                lead ? "lg:row-start-3" : "lg:row-span-3 lg:row-start-1",
-              )}
-            >
-              <RepoCard
-                project={p}
-                dict={dict}
-                locale={locale}
-                newTab={dict.common.newTab}
-              />
-            </div>
-          )}
+            )}
+            {repo && (
+              <div
+                className={cx(
+                  "min-w-0 lg:col-span-5 lg:col-start-8",
+                  lead ? "lg:row-start-3" : "lg:row-span-3 lg:row-start-1",
+                )}
+              >
+                <RepoCard
+                  project={p}
+                  dict={dict}
+                  locale={locale}
+                  newTab={dict.common.newTab}
+                />
+              </div>
+            )}
+          </div>
         </div>
       </div>
-      <div className="border-t border-line">
-        <div className="shell grid gap-x-12 pt-10 lg:grid-cols-12 lg:pt-12">
+      <div>
+        <div className="shell grid gap-x-12 pt-12 lg:grid-cols-12 lg:pt-16">
           <nav
             aria-labelledby="toc-title"
             className="mb-8 lg:col-span-3 lg:mb-0"
@@ -639,7 +647,7 @@ export default async function ProjectPage({
               >
                 <h2
                   id={`${b.id}-title`}
-                  className="mb-4 text-h2 font-semibold text-ink"
+                  className="mb-5 text-h2 font-bold text-ink"
                 >
                   {dict.project.sections[b.id]}
                 </h2>

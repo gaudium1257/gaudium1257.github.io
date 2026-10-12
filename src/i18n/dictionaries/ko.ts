@@ -41,6 +41,9 @@ const ko = {
   about: {
     photo: "증명사진",
     facts: { affiliation: "소속", email: "이메일", github: "GitHub" },
+    ctaProjects: "프로젝트 보기",
+    ctaContact: "연락하기",
+    contactLead: "이메일이나 다른 채널로 편하게 연락해 주세요.",
   },
   skills: {
     help: "기술을 누르면 그 기술로 만든 프로젝트만 보여요.",

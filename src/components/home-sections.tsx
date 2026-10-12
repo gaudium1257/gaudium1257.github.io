@@ -8,9 +8,9 @@ import { BrandText } from "./brand-text";
 import { CopyButton } from "./copy-button";
 import { FilterBar } from "./project-filter";
 import { ProjectEntry, RelatedLinks } from "./project-entry";
-import { Icon } from "./icons";
+import { Icon, type IconName } from "./icons";
 import { ExternalLink, GitHubMark } from "./repo";
-import { cx, LABEL_COLS, LINK } from "./ui";
+import { cx, LINK, STAGE_BUTTON, STAGE_BUTTON_PRIMARY, STAGE_LINK } from "./ui";
 
 type Props = { content: Content; dict: Dictionary; locale: Locale };
 
@@ -31,7 +31,7 @@ export function SectionHead({
     <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
       <h2
         id={`${id}-title`}
-        className="flex items-baseline gap-2.5 text-h2 font-semibold text-ink"
+        className="flex items-baseline gap-2.5 text-h2 font-bold text-ink sm:text-section"
       >
         {title}
         {count !== undefined && count > 0 && countLabel && (
@@ -47,52 +47,28 @@ export function SectionHead({
 
 export function Empty({ dict }: { dict: Dictionary }) {
   return (
-    <p className="mt-4 border-t border-line pt-4 text-ui text-muted">
+    <p className="mt-6 border-t border-line pt-4 text-ui text-muted">
       {dict.common.empty}
     </p>
-  );
-}
-
-function FactRow({
-  label,
-  children,
-  last,
-  brand,
-}: {
-  label: string;
-  children: React.ReactNode;
-  last?: boolean;
-  /** label is a brand name (GitHub…): keep auto-translate off it */
-  brand?: boolean;
-}) {
-  return (
-    <div
-      className={cx(
-        LABEL_COLS,
-        "items-baseline border-t border-line py-2.5",
-        last && "border-b",
-      )}
-    >
-      <dt translate={brand ? "no" : undefined} className="text-sm text-muted">
-        {label}
-      </dt>
-      <dd className="min-w-0 text-ui font-medium text-ink">{children}</dd>
-    </div>
   );
 }
 
 const ghLabel = (url: string) =>
   url.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
 
+/**
+ * Hero on the deep-violet stage (owner request 2026.10: read like a portfolio, not a document).
+ * The statement is the one loud thing; name, intro, actions and two facts stay quiet. Email and
+ * GitHub live in the contact band (the GitHub button here is the one shortcut).
+ */
 export function Identity({ content, dict, locale }: Props) {
   const p = content.profile;
   if (!p) return null;
   const other: Locale = locale === "ko" ? "en" : "ko";
-  const { email, github } = p.connect;
+  const { github } = p.connect;
   const career = content.education.career[0];
-  const intro = t(p.intro, locale);
-  const facts: { label: string; node: React.ReactNode; brand?: boolean }[] = [];
   const edu = content.education.items.find((e) => e.status === "enrolled");
+  const facts: { label: string; node: React.ReactNode }[] = [];
   if (edu)
     facts.push({
       label: dict.about.facts.affiliation,
@@ -111,7 +87,7 @@ export function Identity({ content, dict, locale }: Props) {
     facts.push({
       label: dict.education.career,
       node: (
-        <a href="#education" className={LINK}>
+        <a href="#education" className={STAGE_LINK}>
           {fill(dict.education.careerLine, {
             organization: t(career.organization, locale),
             role: t(career.role, locale),
@@ -119,112 +95,97 @@ export function Identity({ content, dict, locale }: Props) {
         </a>
       ),
     });
-  if (email)
-    facts.push({
-      label: dict.about.facts.email,
-      node: (
-        <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
-          <a
-            href={`mailto:${email}`}
-            translate="no"
-            className={cx(
-              "inline-flex min-w-0 items-baseline gap-1.5 [&>svg]:self-center",
-              LINK,
-            )}
-          >
-            <Icon name="mail" />
-            <span data-copy-value="email" className="min-w-0 wrap-anywhere">
-              {email}
-            </span>
-          </a>
-          <CopyButton
-            value={email}
-            valueId="email"
-            text={dict.copy}
-            doneMessage={dict.copy.emailDone}
-            sr={dict.copy.emailSr}
-          />
-        </span>
-      ),
-    });
-  if (github)
-    facts.push({
-      label: dict.about.facts.github,
-      brand: true,
-      node: (
-        <ExternalLink
-          href={github}
-          newTab={dict.common.newTab}
-          className={cx(
-            "inline-flex items-baseline gap-1.5 [&>svg]:self-center",
-            LINK,
-          )}
-        >
-          <GitHubMark />
-          <span translate="no">{ghLabel(github)}</span>
-        </ExternalLink>
-      ),
-    });
+  const alt = `${t(p.name, locale)} ${dict.about.photo}`;
   return (
-    <section id="about" aria-labelledby="about-title" className="min-w-0">
-      <div className="grid grid-cols-[6rem_minmax(0,1fr)] gap-x-4 gap-y-5 sm:grid-cols-[9rem_minmax(0,1fr)] sm:gap-x-6 lg:grid-cols-[8rem_minmax(0,1fr)] xl:grid-cols-[12.5rem_minmax(0,1fr)]">
-        <div className="relative aspect-3/4 self-start overflow-hidden rounded-node bg-surface ring-1 ring-line ring-inset sm:row-span-2">
-          {p.avatar && (
+    <section
+      id="about"
+      aria-labelledby="about-title"
+      data-tone="stage"
+      className="bg-stage text-white"
+    >
+      <div className="shell grid gap-x-16 gap-y-8 pt-10 pb-14 sm:pt-14 lg:grid-cols-12 lg:items-center lg:pt-20 lg:pb-24">
+        <div className="min-w-0 lg:col-span-8">
+          <div className="flex items-center gap-4">
+            {p.avatar && (
+              // below 1024px a small portrait beside the name keeps the actions on the first screen
+              <div className="relative size-16 shrink-0 overflow-hidden rounded-full bg-stage-2 ring-2 ring-stage-line sm:size-20 lg:hidden">
+                <Image
+                  src={p.avatar}
+                  alt={alt}
+                  fill
+                  loading="eager"
+                  sizes="5rem"
+                  className="object-cover"
+                />
+              </div>
+            )}
+            <h1
+              id="about-title"
+              className="flex flex-wrap items-baseline gap-x-3 gap-y-1"
+            >
+              <span translate="no" className="text-h2 font-bold text-white">
+                {t(p.name, locale)}
+              </span>
+              {p.name[other] !== p.name[locale] && (
+                <span
+                  lang={other}
+                  translate="no"
+                  className="text-lead font-medium text-lilac-soft"
+                >
+                  {p.name[other]}
+                </span>
+              )}
+            </h1>
+          </div>
+          <p className="mt-6 text-display-sm font-extrabold text-balance text-white sm:text-display lg:text-display-sm xl:text-display">
+            {t(p.headline, locale)}
+          </p>
+          <p className="mt-6 max-w-160 text-base leading-prose text-lilac-soft sm:text-lead">
+            {t(p.intro, locale)}
+          </p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <a href="#projects" className={STAGE_BUTTON_PRIMARY}>
+              {dict.about.ctaProjects}
+            </a>
+            <a href="#connect" className={STAGE_BUTTON}>
+              {dict.about.ctaContact}
+            </a>
+            {github && (
+              <ExternalLink
+                href={github}
+                newTab={dict.common.newTab}
+                className={STAGE_BUTTON}
+              >
+                <GitHubMark />
+                <span translate="no">GitHub</span>
+              </ExternalLink>
+            )}
+          </div>
+          {facts.length > 0 && (
+            <dl className="mt-10 grid gap-x-10 gap-y-4 border-t border-stage-line pt-6 sm:grid-cols-2">
+              {facts.map((f) => (
+                <div key={f.label} className="min-w-0">
+                  <dt className="text-sm text-lilac-soft">{f.label}</dt>
+                  <dd className="mt-1 min-w-0 text-ui font-medium text-white">
+                    {f.node}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          )}
+        </div>
+        {p.avatar && (
+          <div className="relative hidden aspect-3/4 w-full max-w-sm justify-self-end overflow-hidden rounded-card bg-stage-2 ring-1 ring-stage-line lg:col-span-4 lg:block">
             <Image
               src={p.avatar}
-              alt={`${t(p.name, locale)} ${dict.about.photo}`}
+              alt={alt}
               fill
               loading="eager"
               fetchPriority="high"
-              sizes="200px"
+              sizes="24rem"
               className="object-cover"
             />
-          )}
-        </div>
-        <div className="min-w-0 self-center sm:self-start">
-          <h1
-            id="about-title"
-            className="flex flex-wrap items-baseline gap-x-3 gap-y-1"
-          >
-            <span
-              translate="no"
-              className="text-name-sm font-bold text-ink sm:text-name"
-            >
-              {t(p.name, locale)}
-            </span>
-            {p.name[other] !== p.name[locale] && (
-              <span
-                lang={other}
-                translate="no"
-                className="text-lead font-medium text-muted"
-              >
-                {p.name[other]}
-              </span>
-            )}
-          </h1>
-          <p className="mt-2 text-ui font-medium text-pretty text-ink sm:text-lead">
-            {t(p.headline, locale)}
-          </p>
-          <p className="mt-4 hidden max-w-136 text-base leading-prose text-ink-2 sm:block">
-            {intro}
-          </p>
-        </div>
-        <p className="col-span-2 text-base leading-prose text-ink-2 sm:hidden">
-          {intro}
-        </p>
-        {facts.length > 0 && (
-          <dl className="col-span-2 min-w-0 sm:col-span-1 sm:col-start-2">
-            {facts.map((f, i) => (
-              <FactRow
-                key={f.label}
-                label={f.label}
-                brand={f.brand}
-                last={i === facts.length - 1}
-              >
-                {f.node}
-              </FactRow>
-            ))}
-          </dl>
+          </div>
         )}
       </div>
     </section>
@@ -273,7 +234,7 @@ export function ProjectsSection({ content, dict, locale }: Props) {
           />
           <ol
             data-project-list
-            className="mt-4 grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3 lg:gap-x-8"
+            className="mt-8 grid gap-x-6 gap-y-14 sm:grid-cols-2 lg:grid-cols-3 lg:gap-x-8"
           >
             {shown.map((p) => (
               <ProjectEntry
@@ -368,7 +329,7 @@ export function ActivitiesSection({ content, dict, locale }: Props) {
         countLabel={dict.common.count}
       />
       {items.length ? (
-        <ul className="mt-4 divide-y divide-line border-t border-line">
+        <ul className="mt-6 divide-y divide-line border-t border-line">
           {items.map((a) => (
             <PlainRow
               key={a.id}
@@ -399,7 +360,7 @@ export function AwardsSection({ content, dict, locale }: Props) {
         countLabel={dict.common.count}
       />
       {items.length ? (
-        <ul className="mt-4 divide-y divide-line border-t border-line">
+        <ul className="mt-6 divide-y divide-line border-t border-line">
           {items.map((a) => (
             <PlainRow
               key={a.id}
@@ -454,8 +415,10 @@ function TimelineGroup({
 }) {
   return (
     <div>
-      <h3 className="pt-3 text-sm font-semibold text-muted">{title}</h3>
-      <ul className="divide-y divide-line">{children}</ul>
+      <h3 className="text-ui font-semibold text-primary">{title}</h3>
+      <ul className="mt-3 divide-y divide-line border-t border-line">
+        {children}
+      </ul>
     </div>
   );
 }
@@ -475,7 +438,7 @@ export function EducationSection({ content, dict, locale }: Props) {
     >
       <SectionHead id="education" title={dict.nav.education} />
       {items.length || career.length ? (
-        <div className="mt-4 divide-y divide-line border-t border-line">
+        <div className="mt-8 grid gap-10 lg:grid-cols-2 lg:gap-12">
           {items.length > 0 && (
             <TimelineGroup title={dict.education.school}>
               {items.map((e) => (
@@ -515,124 +478,168 @@ export function EducationSection({ content, dict, locale }: Props) {
   );
 }
 
+/**
+ * Closing band on the violet stage: one tile per channel (email first), each with its icon,
+ * name, value and — for email and a Discord username — a copy button.
+ */
 export function ContactSection({ content, dict }: Props) {
   const c = content.profile?.connect ?? {};
-  // the other labels are service names, kept away from auto-translate
-  const BRANDS = ["GitHub", "Instagram", "Discord"];
-  // the same label/value row as the intro facts; Copy sits beside its value
-  const row = (
-    label: string,
-    value: React.ReactNode,
-    button?: React.ReactNode,
-    brand = BRANDS.includes(label),
-  ) => (
-    <FactRow key={label} label={label} brand={brand}>
-      {button ? (
-        <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
-          {value}
-          {button}
-        </span>
-      ) : (
-        value
-      )}
-    </FactRow>
-  );
-  // the icon sits inside the value, before the text, on the text baseline
-  const withIcon =
-    "inline-flex min-w-0 items-baseline gap-1.5 [&>svg]:self-center";
-  const rows = [
-    c.email &&
-      row(
-        dict.about.facts.email,
+  const tiles: {
+    label: string;
+    icon: IconName;
+    brand: boolean;
+    node: React.ReactNode;
+    button?: React.ReactNode;
+  }[] = [];
+  if (c.email)
+    tiles.push({
+      label: dict.about.facts.email,
+      icon: "mail",
+      brand: false,
+      node: (
         <a
           href={`mailto:${c.email}`}
           translate="no"
-          className={cx(withIcon, LINK)}
+          className={cx("min-w-0", STAGE_LINK)}
         >
-          <Icon name="mail" />
-          <span data-copy-value="email" className="min-w-0 wrap-anywhere">
+          <span data-copy-value="email" className="wrap-anywhere">
             {c.email}
           </span>
-        </a>,
+        </a>
+      ),
+      button: (
         <CopyButton
           value={c.email}
           valueId="email"
           text={dict.copy}
           doneMessage={dict.copy.emailDone}
           sr={dict.copy.emailSr}
-        />,
+          tone="stage"
+        />
       ),
-    c.github &&
-      row(
-        "GitHub",
+    });
+  if (c.github)
+    tiles.push({
+      label: "GitHub",
+      icon: "github",
+      brand: true,
+      node: (
         <ExternalLink
           href={c.github}
           newTab={dict.common.newTab}
-          className={cx(withIcon, LINK)}
+          className={cx("min-w-0 wrap-anywhere", STAGE_LINK)}
         >
-          <Icon name="github" />
-          <span translate="no" className="min-w-0 wrap-anywhere">
-            {ghLabel(c.github)}
-          </span>
-        </ExternalLink>,
+          <span translate="no">{ghLabel(c.github)}</span>
+        </ExternalLink>
       ),
-    c.instagram &&
-      row(
-        "Instagram",
+    });
+  if (c.instagram)
+    tiles.push({
+      label: "Instagram",
+      icon: "instagram",
+      brand: true,
+      node: (
         <ExternalLink
           href={c.instagram}
           newTab={dict.common.newTab}
-          className={cx(withIcon, LINK)}
+          className={cx("min-w-0 wrap-anywhere", STAGE_LINK)}
         >
-          <Icon name="instagram" />
-          <span translate="no" className="min-w-0 wrap-anywhere">
+          <span translate="no">
             @
             {c.instagram
               .replace(/^https?:\/\/(www\.)?instagram\.com\//, "")
               .replace(/\/$/, "")}
           </span>
-        </ExternalLink>,
+        </ExternalLink>
       ),
-    c.discord &&
-      (/^https?:/.test(c.discord)
-        ? row(
-            "Discord",
-            <ExternalLink
-              href={c.discord}
-              newTab={dict.common.newTab}
-              className={cx(withIcon, LINK)}
-            >
-              <Icon name="discord" />
-              <span translate="no" className="min-w-0 wrap-anywhere">
-                {ghLabel(c.discord)}
-              </span>
-            </ExternalLink>,
-          )
-        : row(
-            "Discord",
-            <span className={cx(withIcon, "text-ink")}>
-              <Icon name="discord" />
+    });
+  if (c.discord)
+    tiles.push(
+      /^https?:/.test(c.discord)
+        ? {
+            label: "Discord",
+            icon: "discord",
+            brand: true,
+            node: (
+              <ExternalLink
+                href={c.discord}
+                newTab={dict.common.newTab}
+                className={cx("min-w-0 wrap-anywhere", STAGE_LINK)}
+              >
+                <span translate="no">{ghLabel(c.discord)}</span>
+              </ExternalLink>
+            ),
+          }
+        : {
+            label: "Discord",
+            icon: "discord",
+            brand: true,
+            node: (
               <span
                 translate="no"
                 data-copy-value="discord"
-                className="min-w-0 wrap-anywhere"
+                className="min-w-0 wrap-anywhere text-white"
               >
                 {c.discord}
               </span>
-            </span>,
-            <CopyButton
-              value={c.discord}
-              valueId="discord"
-              text={dict.copy}
-              doneMessage={dict.copy.discordDone}
-              sr={dict.copy.discordSr}
-            />,
-          )),
-  ].filter(Boolean);
+            ),
+            button: (
+              <CopyButton
+                value={c.discord}
+                valueId="discord"
+                text={dict.copy}
+                doneMessage={dict.copy.discordDone}
+                sr={dict.copy.discordSr}
+                tone="stage"
+              />
+            ),
+          },
+    );
   return (
-    <section id="connect" aria-labelledby="connect-title" className="min-w-0">
-      <SectionHead id="connect" title={dict.nav.connect} />
-      {rows.length ? <dl className="mt-4">{rows}</dl> : <Empty dict={dict} />}
+    <section
+      id="connect"
+      aria-labelledby="connect-title"
+      data-tone="stage"
+      className="bg-stage text-white"
+    >
+      <div className="shell py-16 lg:py-24">
+        <h2
+          id="connect-title"
+          className="text-display-sm font-extrabold text-white"
+        >
+          {dict.nav.connect}
+        </h2>
+        {tiles.length ? (
+          <>
+            <p className="mt-4 max-w-136 text-base leading-prose text-lilac-soft sm:text-lead">
+              {dict.about.contactLead}
+            </p>
+            <dl className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {tiles.map((tile) => (
+                <div
+                  key={tile.label}
+                  className="flex min-w-0 flex-col gap-3 rounded-card bg-stage-2 p-5 ring-1 ring-stage-line"
+                >
+                  <dt
+                    translate={tile.brand ? "no" : undefined}
+                    className="flex items-center gap-2 text-sm font-semibold text-lilac-soft"
+                  >
+                    <Icon name={tile.icon} className="size-5 text-lilac" />
+                    {tile.label}
+                  </dt>
+                  {/* the dd keeps CopyButton's same-row lookup and its hint line working */}
+                  <dd className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2 text-ui font-semibold">
+                    {tile.node}
+                    {tile.button}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </>
+        ) : (
+          <p className="mt-6 text-ui text-lilac-soft">{dict.common.empty}</p>
+        )}
+      </div>
     </section>
   );
 }

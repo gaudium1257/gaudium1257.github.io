@@ -31,9 +31,17 @@ function spy(links: HTMLAnchorElement[], key: "nav" | "toc") {
   };
   const update = () => {
     if (Date.now() < lock) return;
-    const line =
+    const base =
       (document.querySelector("header")?.getBoundingClientRect().bottom ?? 0) +
       24;
+    // in the last screenful the line slides down to the viewport bottom, so short closing
+    // sections (education, contact) each get their turn instead of the page jumping to the last one
+    const max = root.scrollHeight - innerHeight;
+    const progress = Math.min(
+      1,
+      Math.max(0, (scrollY - (max - innerHeight)) / innerHeight),
+    );
+    const line = base + progress * (innerHeight - base);
     const passed = secs.filter((x) => x.getBoundingClientRect().top <= line);
     let row = [secs[0]];
     if (passed.length) {

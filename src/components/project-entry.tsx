@@ -88,6 +88,10 @@ export function ProjectMeta({
   );
 }
 
+/** Opening a card lifts its picture (pointer hover, or press on touch); no motion under reduced-motion. */
+const LIFT =
+  "transition-[translate] duration-300 group-hover/p:shadow-lift group-has-[[data-stretch]:active]/p:shadow-lift motion-safe:group-hover/p:-translate-y-1";
+
 /** Chips shown on a card before "+N"; the full stack lives on the detail page. */
 const CARD_CHIPS = 6;
 
@@ -126,7 +130,7 @@ export function ProjectEntry({
       <article
         className={cx(
           // -m-3 + p-3 gives the hover surface room; the height adds those 1.5rem back so the card fills its row
-          "group/p relative -m-3 flex h-[calc(100%+1.5rem)] flex-col gap-4 rounded-panel p-3 transition-colors hover:bg-surface has-[[data-stretch]:active]:bg-primary-50",
+          "group/p relative -m-3 flex h-[calc(100%+1.5rem)] flex-col gap-4 rounded-panel p-3",
           ENTRY_FOCUS,
         )}
       >
@@ -136,12 +140,18 @@ export function ProjectEntry({
             src={wide.src}
             alt={t(wide.alt, locale)}
             kind={wide.kind}
-            className="shrink-0"
+            radius="rounded-card"
+            className={cx("shrink-0", LIFT)}
             load={eager}
           />
         ) : (
           phone && (
-            <div className="flex aspect-16/10 shrink-0 justify-center rounded-node bg-surface py-3 ring-1 ring-line ring-inset">
+            <div
+              className={cx(
+                "flex aspect-16/10 shrink-0 justify-center rounded-card bg-surface py-3 ring-1 ring-line ring-inset",
+                LIFT,
+              )}
+            >
               <Capture
                 src={phone.src}
                 alt={t(phone.alt, locale)}
@@ -153,7 +163,7 @@ export function ProjectEntry({
           )
         )}
         <div>
-          <Heading className="text-h3 font-semibold text-balance text-ink">
+          <Heading className="text-h3 font-bold text-balance text-ink">
             <a
               href={`/${locale}/projects/${project.id}/`}
               data-stretch

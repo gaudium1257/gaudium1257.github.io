@@ -44,6 +44,9 @@ const en: Dictionary = {
   about: {
     photo: "ID photo",
     facts: { affiliation: "Affiliation", email: "Email", github: "GitHub" },
+    ctaProjects: "See Projects",
+    ctaContact: "Get in Touch",
+    contactLead: "Reach me by email or through any of these channels.",
   },
   skills: {
     help: "Pick a technology to see only the projects that used it.",
