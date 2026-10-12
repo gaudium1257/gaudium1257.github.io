@@ -7,7 +7,8 @@
 1. 포트폴리오에 넣을 프로젝트 폴더에서 Claude Code 세션을 엽니다. 한 프로젝트가 여러 저장소로 나뉘어 있으면(예: 앱 · 관리자 웹 · 서버) 그 저장소들을 한 상위 폴더에 모아 두고 상위 폴더에서 엽니다. 팩트시트와 JSON은 **프로젝트 하나에 하나씩** 나옵니다.
 2. 아래 `--- 프롬프트 시작 ---`부터 `--- 프롬프트 끝 ---`까지 전부 복사해서 붙여넣습니다.
 3. Claude가 조사를 마치고 **질문 목록**을 주면 답합니다. 모르는 건 "모름"이라고 답하면 됩니다(빈칸은 지어내지 않고 비워 둡니다).
-4. 마지막에 나오는 **① 팩트시트(Markdown)** 와 **② JSON** 을 이 포트폴리오 저장소의 Claude 세션에 붙여넣고 "프로젝트 추가해줘"라고 하면 `add-content` 스킬이 검증 후 사이트에 반영합니다.
+4. 마지막에 "파일로 저장해줘"라고 하면 `portfolio-export/` 폴더에 **① 팩트시트(Markdown)**, **② JSON**, 이미지 후보 사본(`images/`)이 모입니다. 이 포트폴리오 저장소의 Claude 세션에 그 폴더 경로를 주고 "프로젝트 추가해줘"라고 하면 `add-content` 스킬이 검증 후 사이트에 반영합니다(붙여넣기도 됩니다).
+5. 사이트에서의 **순서·대표 이미지·로고 적용·관련 항목 연결**은 포트폴리오 저장소에서 정하니 여기서는 신경 쓰지 않아도 됩니다.
 
 > 이 파일의 JSON 템플릿은 `src/content/schema.ts`와 맞는지 `npm run validate:content`가 매번 검사합니다. 스키마를 바꾸면 이 템플릿도 같이 고쳐야 합니다.
 
@@ -49,7 +50,9 @@
 - **배포·현재 상태:** `vercel.json`, `netlify.toml`, `.github/workflows/*`, `fly.toml`, `render.yaml`, `firebase.json`, `app.json`/`eas.json`, `Procfile`, `package.json`의 `homepage`, README의 배포 링크 → 배포 플랫폼과 URL. 가능하면 URL에 접속해 HTTP 상태를 확인하고 날짜를 기록
 - **품질 신호:** 테스트 파일 수와 실행 방법, CI 여부, 린트 설정, 라이선스
 - **문제 해결 기록:** 커밋 메시지(`fix`, `refactor`, `perf` 등), 이슈/PR(`gh`가 있으면 `gh issue list --state all`, `gh pr list --state all`), 문서의 트러블슈팅 기록
-- **이미지 후보:** 저장소 안의 스크린샷·로고·데모 GIF 경로(`git ls-files | grep -iE '\.(png|jpe?g|gif|webp|svg)$'`)
+- **이미지 후보:** 저장소 안의 스크린샷·데모 GIF·스토어 그래픽 경로(`git ls-files | grep -iE '\.(png|jpe?g|gif|webp|svg)$'`)와 각 파일의 픽셀 크기. 화면 캡처는 무엇을 보여주는지 한 줄로 적는다(사이트의 대체 텍스트가 된다).
+- **앱 아이콘·로고:** 정사각형 원본을 찾는다. 예: Flutter `flutter_launcher_icons` 설정의 `image_path`, Android `android/app/src/main/res/mipmap-xxxhdpi/ic_launcher*.png`, iOS `ios/**/AppIcon.appiconset/`, Expo `app.json`의 `icon`, 웹 `public/` 또는 `app/`의 `icon.*`·`logo.*`·`favicon.svg`·`apple-touch-icon.png`, 디자인 폴더의 로고 SVG. 가장 큰(512px 이상이면 좋음) 파일과 크기를 적는다.
+- **가로 대표 이미지 후보:** 스토어 그래픽(예: 1024×500), OG 이미지(`og-image.*`, `opengraph-image.*`), README 배너처럼 가로로 넓은 홍보 이미지가 있으면 경로와 크기를 적는다.
 - **원격 저장소:** `git remote -v` (공개/비공개는 사용자에게 확인)
 - **여러 저장소(하나면 건너뜀):** 현재 폴더 아래에 git 저장소가 여러 개면(`find . -maxdepth 3 -name .git`) 각각을 위 항목대로 조사하고, 팩트시트에 저장소별로 내 기여를 나눠 적는다. 내 커밋이 없는 저장소는 기여에 넣지 않는다.
 
@@ -68,11 +71,13 @@
 - 이 프로젝트와 관련된 활동·수상·경력 이름(포트폴리오에서 서로 연결하려고 묻는 것)
 - 배운 점(본인의 말로, 선택)
 - README 등에 적힌 수치나 주장 중 확인이 필요한 것
-- 대표 이미지로 쓸 스크린샷이 있는지(없으면 무엇을 찍으면 좋을지 제안), 앱 아이콘·로고 원본 파일이 어디 있는지
+- 사이트에 올릴 화면: 1단계에서 찾은 후보 중 무엇을 쓸지, 없으면 무엇을 찍으면 좋을지 제안(상세 페이지에 **모든 화면이 접히지 않고 다 보이니** 기능별 대표 화면 4–8장 정도). 웹은 가로(16:10에 가까운) 캡처, 앱은 세로 휴대폰 캡처면 된다
+- 앱 아이콘·로고: 1단계에서 찾은 파일이 맞는지, 없으면 원본이 어디 있는지(없으면 비워 둔다 — 사이트는 아이콘 없이도 보인다)
+- 진행 중·비공개 프로젝트라면 이름·화면·로고를 어디까지 공개해도 되는지
 
 ### 3단계 — 최종 출력
 
-내 답을 반영해서 **출력 ①(최종 팩트시트)** 과 **출력 ②(JSON)** 를 준다. 내가 "파일로 저장해줘"라고 하면 `portfolio-export/<id>.factsheet.md`, `portfolio-export/<id>.json`으로 저장하고, 이 폴더를 커밋하지 않도록 알려줘.
+내 답을 반영해서 **출력 ①(최종 팩트시트)** 과 **출력 ②(JSON)** 를 준다. 내가 "파일로 저장해줘"라고 하면 `portfolio-export/<id>.factsheet.md`, `portfolio-export/<id>.json`으로 저장하고, 공개해도 된다고 답한 이미지(화면·아이콘·대표 이미지 후보)를 원본 그대로 `portfolio-export/images/`에 복사한다(이름은 `01-<화면>.png`처럼 순서가 보이게, 아이콘은 `icon.png`/`icon.svg`, 가로 대표 이미지는 `thumbnail.png`). 크기를 바꾸거나 자르지 않는다(비율 맞추기는 포트폴리오 저장소에서 한다). 그리고 이 폴더를 커밋하지 않도록 알려줘.
 
 ### 4단계 — 자체 점검
 
@@ -84,7 +89,7 @@
 - [ ] 금지어가 없다
 - [ ] ko와 en의 내용이 같다(한쪽에만 있는 주장이 없다)
 - [ ] 기술 스택은 실제로 코드에서 쓰인다
-- [ ] 비밀값·내부 URL·허락 없는 실명이 없다
+- [ ] 비밀값·내부 URL·허락 없는 실명이 없다(캡처 화면 속 개인정보·토큰도 확인했다)
 - [ ] JSON이 아래 템플릿과 같은 구조이고 유효한 JSON이다
 
 ## 출력 ① — 팩트시트 (Markdown)
@@ -142,7 +147,12 @@
 
 ## 10. 링크
 
-## 11. 이미지 후보 (경로)
+## 11. 이미지 후보
+
+| 파일 (`images/` 사본) | 종류                                 | 크기    | 무엇을 보여주는지 | 원본 경로 |
+| --------------------- | ------------------------------------ | ------- | ----------------- | --------- |
+| `images/icon.png`     | 아이콘                               | 512×512 | 앱 아이콘         | `…`       |
+| `images/01-….png`     | 앱 화면 / 웹 화면 / 사진 / 가로 대표 | …×…     | …                 | `…`       |
 
 ## 12. 관련 활동·수상·경력 (사용자 답변)
 
@@ -173,10 +183,11 @@
 - `techNotes`: `techStack`의 기술마다 이 프로젝트에서 **어디에 썼는지** 한 줄(ko/en). 키는 `techStack` 이름과 똑같이 쓰고, 팩트시트 6번 표의 근거(파일·기능)로 확인된 것만 넣는다. 누가 만들었는지는 쓰지 않는다(팀 프로젝트에서 기여처럼 읽히지 않게). 근거가 없으면 그 기술은 빼고, 하나도 없으면 `{}`.
 - Claude Code, Copilot, Cursor 같은 AI 코딩 도구는 `techStack`에 넣지 않고 `aiTools`(문자열 배열, 없으면 `[]`)에 넣는다. 사이트에서 기술 스택과 따로 한 줄로 보인다.
 - 기술 이름은 저장소가 달라도 같은 표기로 쓴다(포트폴리오의 기술 스택과 필터가 이름으로 묶는다). 예: `React Native`, `TypeScript`, `Vite`.
-- 분량: `tagline` ko 40자 / en 80자 이내, `summary` 2–4문장, `highlights` 최대 3개(카드에 보일 핵심), `contributions`·`features`는 항목당 한 문장.
+- 분량: `tagline` ko 40자 / en 80자 이내, `summary` 2–4문장, `highlights` 최대 3개(카드에 보일 핵심), `contributions`·`features`는 항목당 한 문장. `team.role`은 카드의 "역할" 한 줄과 상세 요약 칸에 그대로 나오니 짧게(ko 20자 안팎, 예: "프론트엔드 개발", "1인 개발 (기획·개발)").
+- `techStack`: 카드에는 분류 순서(언어 → 프론트엔드 → 모바일 → 백엔드 …)대로 앞의 6개만 보이고 나머지는 "+N"이 되니, 분류 안에서는 이 프로젝트의 **핵심 기술을 앞에** 둔다. 라이브러리를 전부 나열하지 말고 프로젝트를 설명하는 기술 위주로.
 - 문체: ko는 "~를 구현했습니다"처럼 서술형 문장, 목록 항목은 "~ 구현", "~ 설계"처럼 명사형으로 통일. en은 과거형 동사로 시작(Built, Designed, Implemented…).
 - 확인 안 된 값은 넣지 않는다: 선택 필드(`architecture`, `deployment.platform`, `deployment.url`, `deployment.checkedAt`)는 키를 빼고, 배열 필드(`outcomes`, `challenges`, `learnings`, `links`)는 `[]`로 둔다. `team.size`를 모르면 `null`.
-- `related`, `featured`, `logo`, `thumbnail`, `screenshots`는 포트폴리오 저장소에서 정하므로 항상 `"related": []`, `"featured": false`로 두고 `logo`·`thumbnail`·`screenshots`는 넣지 않는다(이미지 후보는 팩트시트 11번에 경로로 적는다. 앱 아이콘·로고 파일이 있으면 그 경로도 함께).
+- `related`, `logo`, `thumbnail`, `screenshots`와 사이트에서의 순서는 포트폴리오 저장소에서 정하므로 항상 `"related": []`로 두고 `logo`·`thumbnail`·`screenshots`는 넣지 않는다(후보는 팩트시트 11번 표와 `images/` 사본으로 넘긴다).
 
 <!-- schema-template:start -->
 
@@ -268,8 +279,7 @@
     }
   ],
   "related": [],
-  "tags": ["web", "realtime"],
-  "featured": false
+  "tags": ["web", "realtime"]
 }
 ```
 
