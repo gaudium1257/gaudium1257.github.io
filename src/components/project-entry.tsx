@@ -6,7 +6,7 @@ import { fill, formatPeriod } from "@/lib/format";
 import { itemHref } from "@/lib/href";
 import { heroShots } from "@/lib/media";
 import { groupedStack, projectTechSlugs } from "@/lib/tech";
-import { Capture } from "./media";
+import { Capture, ProjectLogo } from "./media";
 import { RepoLine } from "./repo";
 import { TechChip } from "./tech";
 import { cx, ENTRY_FOCUS, LINK, STRETCH } from "./ui";
@@ -99,7 +99,7 @@ const CARD_CHIPS = 6;
  * One project card (home, project list): lead capture → identity (title, one-liner, meta) →
  * evidence (role, highlights, relations) → tech chips and repo pinned to the bottom so cards in a
  * row line up.
- * `featured` only sorts first (decided by the caller); every card has the same shape.
+ * Order comes from content/project-order.json (applied by the loader); every card has the same shape.
  */
 export function ProjectEntry({
   project,
@@ -163,15 +163,20 @@ export function ProjectEntry({
           )
         )}
         <div>
-          <Heading className="text-h3 font-bold text-balance text-ink">
-            <a
-              href={`/${locale}/projects/${project.id}/`}
-              data-stretch
-              className={cx(STRETCH, "group-hover/p:text-primary")}
-            >
-              {t(project.title, locale)}
-            </a>
-          </Heading>
+          <div className="flex items-center gap-3">
+            {project.logo && (
+              <ProjectLogo src={project.logo} className="size-9 rounded-node" />
+            )}
+            <Heading className="min-w-0 text-h3 font-bold text-balance text-ink">
+              <a
+                href={`/${locale}/projects/${project.id}/`}
+                data-stretch
+                className={cx(STRETCH, "group-hover/p:text-primary")}
+              >
+                {t(project.title, locale)}
+              </a>
+            </Heading>
+          </div>
           <p className="mt-1.5 text-ui leading-copy text-pretty text-ink-2">
             {t(project.tagline, locale)}
           </p>

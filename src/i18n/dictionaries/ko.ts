@@ -138,7 +138,6 @@ const ko = {
     relatedAward: "관련 수상",
     shared: "같은 기술을 쓴 다른 프로젝트",
     allScreens: "화면 {n}개 모두 보기",
-    moreScreens: "화면 더 보기 ({n})",
     fullSize: "원본 크기로 보기",
     aiTools: "AI 도구",
     mediaKind: { web: "웹 화면", mobile: "휴대폰 화면", photo: "사진" },

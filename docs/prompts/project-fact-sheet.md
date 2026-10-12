@@ -68,7 +68,7 @@
 - 이 프로젝트와 관련된 활동·수상·경력 이름(포트폴리오에서 서로 연결하려고 묻는 것)
 - 배운 점(본인의 말로, 선택)
 - README 등에 적힌 수치나 주장 중 확인이 필요한 것
-- 대표 이미지로 쓸 스크린샷이 있는지(없으면 무엇을 찍으면 좋을지 제안)
+- 대표 이미지로 쓸 스크린샷이 있는지(없으면 무엇을 찍으면 좋을지 제안), 앱 아이콘·로고 원본 파일이 어디 있는지
 
 ### 3단계 — 최종 출력
 
@@ -176,7 +176,7 @@
 - 분량: `tagline` ko 40자 / en 80자 이내, `summary` 2–4문장, `highlights` 최대 3개(카드에 보일 핵심), `contributions`·`features`는 항목당 한 문장.
 - 문체: ko는 "~를 구현했습니다"처럼 서술형 문장, 목록 항목은 "~ 구현", "~ 설계"처럼 명사형으로 통일. en은 과거형 동사로 시작(Built, Designed, Implemented…).
 - 확인 안 된 값은 넣지 않는다: 선택 필드(`architecture`, `deployment.platform`, `deployment.url`, `deployment.checkedAt`)는 키를 빼고, 배열 필드(`outcomes`, `challenges`, `learnings`, `links`)는 `[]`로 둔다. `team.size`를 모르면 `null`.
-- `related`, `featured`, `thumbnail`, `screenshots`는 포트폴리오 저장소에서 정하므로 항상 `"related": []`, `"featured": false`로 두고 `thumbnail`·`screenshots`는 넣지 않는다(이미지 후보는 팩트시트 11번에 경로로 적는다).
+- `related`, `featured`, `logo`, `thumbnail`, `screenshots`는 포트폴리오 저장소에서 정하므로 항상 `"related": []`, `"featured": false`로 두고 `logo`·`thumbnail`·`screenshots`는 넣지 않는다(이미지 후보는 팩트시트 11번에 경로로 적는다. 앱 아이콘·로고 파일이 있으면 그 경로도 함께).
 
 <!-- schema-template:start -->
 

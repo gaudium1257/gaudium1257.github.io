@@ -9,12 +9,17 @@ export const MEDIA_RATIO: Record<MediaKind, number> = {
   photo: 4 / 3,
 };
 
-/** Lead captures: one wide (thumbnail, else the first web/photo shot) and the first phone shot. */
+/**
+ * Lead captures: a prepared thumbnail leads alone (it usually already shows the screens); otherwise
+ * the first web/photo shot and the first phone shot.
+ */
 export function heroShots(p: Project): { wide?: Shot; phone?: Shot } {
-  const wide: Shot | undefined = p.thumbnail
-    ? { src: p.thumbnail, alt: p.title, kind: "web" }
-    : p.screenshots.find((s) => s.kind !== "mobile");
-  return { wide, phone: p.screenshots.find((s) => s.kind === "mobile") };
+  if (p.thumbnail)
+    return { wide: { src: p.thumbnail, alt: p.title, kind: "web" } };
+  return {
+    wide: p.screenshots.find((s) => s.kind !== "mobile"),
+    phone: p.screenshots.find((s) => s.kind === "mobile"),
+  };
 }
 
 /**
@@ -59,19 +64,4 @@ export function galleryRows(shots: Shot[]): Shot[][] {
   }
   while (phones.length) rows.push(phones.splice(0, 4));
   return rows;
-}
-
-/** Rows shown up front (at most `limit` shots, unless everything fits) and the rest behind "more". */
-export function foldRows(rows: Shot[][], limit = 4) {
-  const total = rows.reduce((n, r) => n + r.length, 0);
-  const shown: Shot[][] = [];
-  const rest: Shot[][] = [];
-  let count = 0;
-  for (const row of rows) {
-    if (!rest.length && (total <= limit || count + row.length <= limit)) {
-      shown.push(row);
-      count += row.length;
-    } else rest.push(row);
-  }
-  return { shown, rest, hidden: total - count };
 }

@@ -2,10 +2,33 @@ import Image from "next/image";
 import type { MediaKind } from "@/content/schema";
 import { t, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
-import { fill } from "@/lib/format";
-import { foldRows, galleryRows, rowClass, type Shot } from "@/lib/media";
-import { Icon } from "./icons";
-import { BUTTON, cx } from "./ui";
+import { galleryRows, rowClass, type Shot } from "@/lib/media";
+import { cx } from "./ui";
+
+/**
+ * A project's square app icon / logo beside its title. Decorative (alt=""): the title next to it
+ * already names the project. Callers give the size and the radius (one radius utility per element).
+ */
+export function ProjectLogo({
+  src,
+  className,
+}: {
+  src: string;
+  className: string;
+}) {
+  return (
+    <Image
+      src={src}
+      alt=""
+      width={512}
+      height={512}
+      className={cx(
+        "shrink-0 bg-white object-cover ring-1 ring-line",
+        className,
+      )}
+    />
+  );
+}
 
 const BOX: Record<MediaKind, string> = {
   web: "aspect-16/10",
@@ -111,7 +134,6 @@ export function Gallery({
   dict: Dictionary;
   locale: Locale;
 }) {
-  const { shown, rest, hidden } = foldRows(galleryRows(shots));
   const fullSize = { label: dict.project.fullSize, newTab: dict.common.newTab };
   const row = (r: Shot[]) => (
     <div
@@ -139,26 +161,6 @@ export function Gallery({
       ))}
     </div>
   );
-  return (
-    <div className="grid gap-6">
-      {shown.map(row)}
-      {rest.length > 0 && (
-        <details className="group/more">
-          <summary
-            className={cx(
-              BUTTON,
-              "cursor-pointer list-none [&::-webkit-details-marker]:hidden",
-            )}
-          >
-            {fill(dict.project.moreScreens, { n: hidden })}
-            <Icon
-              name="chevron"
-              className="text-muted group-open/more:rotate-180"
-            />
-          </summary>
-          <div className="mt-6 grid gap-6">{rest.map(row)}</div>
-        </details>
-      )}
-    </div>
-  );
+  // every screen up front (owner's call): the gallery is the evidence, so nothing hides behind "more"
+  return <div className="grid gap-6">{galleryRows(shots).map(row)}</div>;
 }

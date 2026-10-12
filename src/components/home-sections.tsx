@@ -176,13 +176,20 @@ export function Identity({ content, dict, locale }: Props) {
               {chips.map((chip) => (
                 <div
                   key={chip.label}
-                  className="inline-flex min-h-10 max-w-full items-center gap-2 rounded-full bg-white px-4 py-2 ring-1 ring-primary-100"
+                  className="relative inline-flex min-h-10 max-w-full items-center gap-2 rounded-full bg-white px-4 py-2 ring-1 ring-primary-100"
                 >
                   <Icon name={chip.icon} className="text-primary" />
                   <dt className="shrink-0 text-muted">{chip.label}</dt>
                   <dd className="min-w-0 font-medium text-ink">
                     {chip.href ? (
-                      <a href={chip.href} className={LINK}>
+                      // the whole chip is the hit area, not just the 16px line of text
+                      <a
+                        href={chip.href}
+                        className={cx(
+                          "after:absolute after:inset-0 after:rounded-full",
+                          LINK,
+                        )}
+                      >
                         {chip.value}
                       </a>
                     ) : (
@@ -199,12 +206,10 @@ export function Identity({ content, dict, locale }: Props) {
   );
 }
 
-const HOME_LIMIT = 6; // two rows of three; featured first, the rest live on the list page
+const HOME_LIMIT = 6; // two rows of three, in the owner's order (content/project-order.json); the rest live on the list page
 
 export function ProjectsSection({ content, dict, locale }: Props) {
-  const all = [...content.projects].sort((a, b) =>
-    a.featured === b.featured ? 0 : a.featured ? -1 : 1,
-  );
+  const all = content.projects;
   const shown = all.slice(0, HOME_LIMIT);
   return (
     <section id="projects" aria-labelledby="projects-title" className="min-w-0">
