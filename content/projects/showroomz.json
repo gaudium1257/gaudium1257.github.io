@@ -227,10 +227,7 @@
   },
   "aiTools": ["Claude Code"],
   "deployment": {
-    "status": "live",
-    "platform": "Vercel",
-    "url": "https://front-end-partners-one.vercel.app/",
-    "checkedAt": "2026-10-12"
+    "status": "not-deployed"
   },
   "architecture": {
     "ko": "웹 콘솔 3종(React + Vite)과 소비자 앱(React Native + Expo)이 하나의 백엔드 REST API를 역할별 경로(/user, /seller, /creator, /admin)로 호출합니다. 서버 상태는 TanStack Query로 관리하고 Axios 인터셉터가 토큰 갱신을 처리하며, 첨부 파일은 S3 presigned URL로 직접 업로드합니다.",
@@ -333,7 +330,7 @@
   ],
   "related": [],
   "tags": ["web", "mobile", "commerce", "startup"],
-  "featured": false,
+  "featured": true,
   "screenshots": [
     {
       "src": "/images/projects/showroomz/partners-contract-detail.png",
@@ -348,14 +345,6 @@
       "alt": {
         "ko": "파트너센터 공구 상세: 준비 조건 3개와 진행 상태",
         "en": "Partner center group-buy detail: three readiness conditions and status"
-      },
-      "kind": "web"
-    },
-    {
-      "src": "/images/projects/showroomz/partners-contract-list.png",
-      "alt": {
-        "ko": "파트너센터 계약 목록",
-        "en": "Partner center contract list"
       },
       "kind": "web"
     },

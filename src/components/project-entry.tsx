@@ -119,7 +119,8 @@ export function ProjectEntry({
       <RepoLine project={project} dict={dict} newTab={dict.common.newTab} />
     </>
   );
-  const { wide, phone } = featured ? heroShots(project) : {};
+  // every entry shows its lead capture (owner request 2026.10); only the featured one adds highlights
+  const { wide, phone } = heroShots(project);
   const lead = Boolean(wide || phone);
   return (
     <li
@@ -131,14 +132,14 @@ export function ProjectEntry({
       <article
         className={cx(
           "group/p relative -mx-3 grid gap-x-10 rounded-panel px-3 py-5 transition-colors hover:bg-surface md:grid-cols-12",
-          featured ? "gap-y-4 md:grid-rows-[auto_1fr]" : "gap-y-3",
+          lead ? "gap-y-4 md:grid-rows-[auto_1fr]" : "gap-y-3",
           ENTRY_FOCUS,
         )}
       >
         <div
           className={cx(
             "flex min-w-0 flex-col md:col-span-7",
-            featured ? "gap-3 md:row-span-2 md:row-start-1" : "gap-2",
+            lead ? "gap-3 md:row-span-2 md:row-start-1" : "gap-2",
           )}
         >
           {title}
