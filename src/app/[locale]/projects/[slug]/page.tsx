@@ -430,7 +430,9 @@ export default async function ProjectPage({
     ),
   ]);
 
-  const buttons = p.links.filter((l) => l.type !== "github");
+  // the first github link is the repo card; further repos (e.g. a backend) are buttons with their label
+  const mainRepo = p.links.find((l) => l.type === "github");
+  const buttons = p.links.filter((l) => l !== mainRepo);
   // the live URL gets its own button unless a demo or a link to the same URL (e.g. a store page) exists
   const liveUrl = p.deployment.url;
   if (

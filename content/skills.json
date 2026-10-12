@@ -48,6 +48,9 @@
         },
         {
           "name": "Axios"
+        },
+        {
+          "name": "VS Code Extension API"
         }
       ]
     },
@@ -79,6 +82,33 @@
       ]
     },
     {
+      "category": "backend",
+      "label": {
+        "ko": "백엔드",
+        "en": "Backend"
+      },
+      "items": [
+        {
+          "name": "Node.js"
+        }
+      ]
+    },
+    {
+      "category": "ai-ml",
+      "label": {
+        "ko": "AI",
+        "en": "AI"
+      },
+      "items": [
+        {
+          "name": "Kiro"
+        },
+        {
+          "name": "Model Context Protocol"
+        }
+      ]
+    },
+    {
       "category": "database",
       "label": {
         "ko": "DB",
@@ -87,6 +117,9 @@
       "items": [
         {
           "name": "SQLite"
+        },
+        {
+          "name": "Drizzle ORM"
         }
       ]
     },
@@ -111,6 +144,24 @@
       "items": [
         {
           "name": "Vercel"
+        }
+      ]
+    },
+    {
+      "category": "tooling",
+      "label": {
+        "ko": "도구",
+        "en": "Tooling"
+      },
+      "items": [
+        {
+          "name": "Vitest"
+        },
+        {
+          "name": "fast-check"
+        },
+        {
+          "name": "esbuild"
         }
       ]
     },
