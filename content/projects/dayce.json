@@ -147,12 +147,9 @@
     {
       "category": "database",
       "items": ["SQLite"]
-    },
-    {
-      "category": "tooling",
-      "items": ["Claude Code"]
     }
   ],
+  "aiTools": ["Claude Code"],
   "deployment": {
     "status": "not-deployed"
   },

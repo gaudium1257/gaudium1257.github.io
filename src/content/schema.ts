@@ -164,6 +164,8 @@ export const Project = z.object({
       }),
     )
     .min(1),
+  /** AI coding assistants used (e.g. "Claude Code"). Kept out of techStack and shown on its own line. */
+  aiTools: z.array(z.string().trim().min(1)).default([]),
   deployment: z.object({
     status: DeploymentStatus,
     platform: z.string().trim().min(1).optional(),

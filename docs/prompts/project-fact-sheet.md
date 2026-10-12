@@ -170,6 +170,7 @@
   - `techStack[].category`: language, frontend, backend, mobile, ai-ml, data, database, infra, tooling, other
   - `links[].type`: github, demo, docs, video, slides, article, store, certificate, other
 - 저장소가 여러 개면 `github` 링크를 저장소마다 하나씩 넣고 `label`(`{ "ko": "관리자 웹", "en": "Admin web" }`처럼)을 붙인다. **첫 번째 `github` 링크가 대표 저장소**로 카드와 상세 머리에 나오니, 내 기여가 가장 큰 저장소를 맨 앞에 둔다.
+- Claude Code, Copilot, Cursor 같은 AI 코딩 도구는 `techStack`에 넣지 않고 `aiTools`(문자열 배열, 없으면 `[]`)에 넣는다. 사이트에서 기술 스택과 따로 한 줄로 보인다.
 - 기술 이름은 저장소가 달라도 같은 표기로 쓴다(포트폴리오의 기술 스택과 필터가 이름으로 묶는다). 예: `React Native`, `TypeScript`, `Vite`.
 - 분량: `tagline` ko 40자 / en 80자 이내, `summary` 2–4문장, `highlights` 최대 3개(카드에 보일 핵심), `contributions`·`features`는 항목당 한 문장.
 - 문체: ko는 "~를 구현했습니다"처럼 서술형 문장, 목록 항목은 "~ 구현", "~ 설계"처럼 명사형으로 통일. en은 과거형 동사로 시작(Built, Designed, Implemented…).
@@ -217,6 +218,7 @@
     { "category": "frontend", "items": ["React", "Tailwind CSS"] },
     { "category": "backend", "items": ["Supabase"] }
   ],
+  "aiTools": [],
   "deployment": {
     "status": "live",
     "platform": "Vercel",

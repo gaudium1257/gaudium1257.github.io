@@ -35,18 +35,6 @@
           "name": "SQLite"
         }
       ]
-    },
-    {
-      "category": "tooling",
-      "label": {
-        "ko": "도구",
-        "en": "Tooling"
-      },
-      "items": [
-        {
-          "name": "Claude Code"
-        }
-      ]
     }
   ]
 }
