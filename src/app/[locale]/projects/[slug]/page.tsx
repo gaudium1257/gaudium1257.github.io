@@ -15,7 +15,7 @@ import { ScreensLink } from "@/components/screens-link";
 import { TechList } from "@/components/tech";
 import { BUTTON, cx, LABEL_COLS, LINK } from "@/components/ui";
 import type { Project } from "@/content/schema";
-import { getContent, getRelated } from "@/content/load";
+import { getActivitiesOf, getContent, getRelated } from "@/content/load";
 import { hasLocale, locales, t, type Locale } from "@/i18n/config";
 import { getDictionary, type Dictionary } from "@/i18n/dictionaries";
 import {
@@ -510,6 +510,28 @@ export default async function ProjectPage({
               <p className="mt-3 max-w-160 text-lead leading-copy text-ink-2">
                 {t(p.tagline, locale)}
               </p>
+              {/* where it was made: the contest / program behind the project (activities have no section) */}
+              {getActivitiesOf(p.id).map((a) => (
+                <p
+                  key={a.id}
+                  className="mt-4 flex w-fit max-w-full items-start gap-2.5 rounded-panel bg-white px-4 py-2.5 text-sm ring-1 ring-primary-100"
+                >
+                  <Icon name="flag" className="mt-0.5 text-primary" />
+                  <span className="min-w-0">
+                    <span className="block font-semibold text-ink">
+                      {fill(dict.project.madeFor, {
+                        title: t(a.title, locale),
+                      })}
+                    </span>
+                    <span className="block text-muted">
+                      {t(a.organization, locale)} ·{" "}
+                      <span className="tabular-nums">
+                        {formatPeriod(a.period, dict.common.present)}
+                      </span>
+                    </span>
+                  </span>
+                </p>
+              ))}
             </div>
             <div className="min-w-0 lg:col-span-7 lg:row-span-2 lg:row-start-2">
               {/* the basics (when, who, what role) before the stack: what a reader checks first */}

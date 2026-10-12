@@ -38,7 +38,7 @@ Schemas: `src/content/schema.ts` — read it before writing JSON. Ids are global
 Interview with short, concrete questions — only the fields the schema needs, both languages. Offer an English translation for the owner to approve rather than asking them to write it. Examples:
 
 - 수상: 대회/상 이름, 상 등급, 주최, 날짜(YYYY-MM), 관련 프로젝트, 증빙 링크
-- 활동: 활동명, 기관, 유형, 기간, 역할, 한 일, 관련 프로젝트
+- 활동: 활동명, 기관, 유형, 기간, 역할, 한 일, 관련 프로젝트 (필수 — 활동은 홈 섹션이 없고(주인 결정 2026.10) 관련 프로젝트 상세 머리에 "…에서 만든 프로젝트" 표지로만 보입니다. 관련 프로젝트가 없으면 어디에도 안 보이고 검사기가 경고합니다)
 - 학력: 학교, 전공, 학위, 재학 상태, 기간 (모르는 항목은 비워 둠)
 - 경력: 기관·단체, 역할, 기간 (모르는 항목은 비워 둠)
 
