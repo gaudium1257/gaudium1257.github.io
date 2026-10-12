@@ -39,7 +39,7 @@ export async function generateMetadata({
 const DESK =
   "relative flex h-16 items-center px-2.5 text-ui font-medium text-muted transition-colors hover:text-ink active:bg-primary-50 focus-visible:z-10 focus-visible:-outline-offset-2 data-[current=true]:text-ink after:absolute after:inset-x-2.5 after:bottom-0 after:h-0.5 after:bg-primary after:opacity-0 data-[current=true]:after:opacity-100 forced-colors:after:bg-[CanvasText] xl:px-3 xl:after:inset-x-3";
 const MOB =
-  "relative flex h-9 items-center justify-center text-sm font-medium text-muted transition-colors hover:text-ink active:bg-primary-50 focus-visible:z-10 focus-visible:-outline-offset-2 data-[current=true]:font-semibold data-[current=true]:text-ink after:absolute after:inset-x-3 after:bottom-0 after:h-0.5 after:bg-primary after:opacity-0 data-[current=true]:after:opacity-100 forced-colors:after:bg-[CanvasText] whitespace-nowrap md:h-11 md:px-3 md:text-ui";
+  "relative flex h-9 items-center justify-center text-sm font-medium text-muted transition-colors hover:text-ink active:bg-primary-50 focus-visible:z-10 focus-visible:-outline-offset-2 data-[current=true]:text-ink after:absolute after:inset-x-3 after:bottom-0 after:h-0.5 after:bg-primary after:opacity-0 data-[current=true]:after:opacity-100 forced-colors:after:bg-[CanvasText] whitespace-nowrap md:h-11 md:px-3 md:text-ui";
 
 export default async function LocaleLayout({
   children,
@@ -78,7 +78,7 @@ export default async function LocaleLayout({
             <a
               href={`/${locale}/`}
               translate="no"
-              className="text-lg font-bold tracking-tight text-ink decoration-2 underline-offset-[6px] hover:underline active:text-primary-700"
+              className="text-lead font-bold tracking-tight text-ink decoration-2 underline-offset-[6px] hover:underline active:text-primary-700"
             >
               {name}
             </a>

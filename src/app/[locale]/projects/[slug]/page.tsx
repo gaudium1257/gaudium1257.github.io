@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BrandText } from "@/components/brand-text";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Icon, linkIcon } from "@/components/icons";
 import { Capture, Gallery, MediaCaption } from "@/components/media";
 import { LiveBadge } from "@/components/project-entry";
 import { ExternalLink, RepoCard } from "@/components/repo";
 import { ScreensLink } from "@/components/screens-link";
 import { TechList } from "@/components/tech";
-import { cx, LINK } from "@/components/ui";
+import { BUTTON, cx, LABEL_COLS, LINK } from "@/components/ui";
 import type { Project } from "@/content/schema";
 import { getContent, getRelated } from "@/content/load";
 import { hasLocale, locales, t, type Locale } from "@/i18n/config";
@@ -78,7 +79,7 @@ const sharedProjects = ({ p, usage }: Ctx) =>
 
 function Bullets({ items }: { items: string[] }) {
   return (
-    <ul className="grid max-w-160 gap-2">
+    <ul className="grid max-w-160 gap-3">
       {items.map((x, i) => (
         <li key={i} className="flex gap-3 text-base leading-prose text-ink-2">
           <span
@@ -105,7 +106,7 @@ const BLOCKS: {
     id: "summary",
     has: () => true,
     render: ({ p, locale }) => (
-      <p className="max-w-160 text-lead leading-prose text-ink-2">
+      <p className="max-w-160 text-base leading-prose text-ink-2 sm:text-lead">
         {t(p.summary, locale)}
       </p>
     ),
@@ -128,7 +129,7 @@ const BLOCKS: {
     id: "features",
     has: () => true,
     render: ({ p, locale }) => (
-      <dl className="max-w-160 divide-y divide-line border-t border-line">
+      <dl className="divide-y divide-line border-t border-line">
         {p.features.map((f, i) => (
           <div
             key={i}
@@ -137,7 +138,9 @@ const BLOCKS: {
             <dt className="text-base font-semibold text-ink">
               {t(f.title, locale)}
             </dt>
-            <dd className="text-ui text-ink-2">{t(f.description, locale)}</dd>
+            <dd className="max-w-152 text-ui text-ink-2">
+              {t(f.description, locale)}
+            </dd>
           </div>
         ))}
       </dl>
@@ -159,7 +162,7 @@ const BLOCKS: {
         <>
           {hasNotes && (
             // where each tech was used: category | tech | use (stacks below 640px)
-            <div className="max-w-200 divide-y divide-line border-t border-line">
+            <div className="divide-y divide-line border-t border-line">
               {groupedStack(c.p).map((g) => (
                 <div
                   key={g.category}
@@ -271,28 +274,38 @@ const BLOCKS: {
     id: "challenges",
     has: ({ p }) => p.challenges.length > 0,
     render: ({ p, dict, locale }) => (
-      <ol className="max-w-184 divide-y divide-line border-t border-line">
-        {p.challenges.map((c, i) => (
-          <li key={i} className="grid gap-x-8 gap-y-3 py-4 md:grid-cols-2">
-            <div>
-              <p className="text-sm font-semibold text-ink-2">
-                {dict.project.problem}
-              </p>
-              <p className="mt-1 text-base leading-prose">
-                {t(c.problem, locale)}
-              </p>
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-ink-2">
-                {dict.project.solution}
-              </p>
-              <p className="mt-1 text-base leading-prose">
-                {t(c.solution, locale)}
-              </p>
-            </div>
-          </li>
-        ))}
-      </ol>
+      <>
+        {/* column headers once, like a table (md+); each row keeps its labels for screen readers */}
+        <div
+          aria-hidden="true"
+          className="hidden gap-x-8 pb-2 text-sm text-muted md:grid md:grid-cols-2"
+        >
+          <span>{dict.project.problem}</span>
+          <span>{dict.project.solution}</span>
+        </div>
+        <ol className="divide-y divide-line border-t border-line">
+          {p.challenges.map((c, i) => (
+            <li key={i} className="grid gap-x-8 gap-y-3 py-4 md:grid-cols-2">
+              <div>
+                <p className="text-sm text-muted md:sr-only">
+                  {dict.project.problem}
+                </p>
+                <p className="mt-1 text-base leading-prose text-ink-2 md:mt-0">
+                  {t(c.problem, locale)}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-muted md:sr-only">
+                  {dict.project.solution}
+                </p>
+                <p className="mt-1 text-base leading-prose text-ink-2 md:mt-0">
+                  {t(c.solution, locale)}
+                </p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </>
     ),
   },
   {
@@ -309,13 +322,16 @@ const BLOCKS: {
               <span className="text-muted">{dict.project.relatedAward}</span>
               <a
                 href={itemHref(locale, award.id, "award")}
-                className={cx("font-semibold", LINK)}
+                className={cx("font-medium", LINK)}
               >
                 {t(award.title, locale)}{" "}
                 <span className="text-award">{t(award.prize, locale)}</span>
               </a>
+              <span className="text-sm text-muted">
+                {t(award.organizer, locale)}
+              </span>
               <span className="text-sm text-muted tabular-nums">
-                {t(award.organizer, locale)}&nbsp;&nbsp;{formatYm(award.date)}
+                {formatYm(award.date)}
               </span>
             </p>
           )}
@@ -334,7 +350,7 @@ const BLOCKS: {
     id: "related",
     has: ({ p }) => relatedRest(p).length > 0,
     render: ({ p, dict, locale }) => (
-      <ul className="max-w-184 divide-y divide-line border-t border-line">
+      <ul className="divide-y divide-line border-t border-line">
         {relatedRest(p).map((r) => (
           <li key={r.id} className="py-3">
             <p className="flex min-w-0 flex-wrap items-baseline gap-x-2.5 gap-y-1">
@@ -343,7 +359,7 @@ const BLOCKS: {
               </span>
               <a
                 href={itemHref(locale, r.id, r.kind)}
-                className={cx("font-semibold", LINK)}
+                className={cx("font-medium", LINK)}
               >
                 {t(r.title, locale)}
                 {r.prize && (
@@ -357,9 +373,6 @@ const BLOCKS: {
     ),
   },
 ];
-
-const CRUMB =
-  "relative inline-flex min-h-6 items-center underline decoration-edge underline-offset-4 transition-colors after:absolute after:-inset-x-1.5 after:-inset-y-2.5 hover:text-primary hover:decoration-primary active:text-primary-700";
 
 export default async function ProjectPage({
   params,
@@ -445,7 +458,7 @@ export default async function ProjectPage({
           href={`/${locale}/projects/`}
           className={cx(cls, "flex items-center", right && "sm:justify-end")}
         >
-          <span className="text-lg font-bold text-ink transition-colors group-hover:text-primary">
+          <span className="text-lead font-semibold text-ink transition-colors group-hover:text-primary">
             {fill(dict.project.allProjects, { n: projects.length })}
           </span>
         </a>
@@ -453,7 +466,7 @@ export default async function ProjectPage({
     return (
       <a href={`/${locale}/projects/${q.id}/`} className={cls}>
         <span className="block text-sm text-muted">{label}</span>
-        <span className="mt-1 block text-lg font-bold text-ink transition-colors group-hover:text-primary">
+        <span className="mt-1 block text-lead font-semibold text-ink transition-colors group-hover:text-primary">
           {t(q.title, locale)}
         </span>
         <span className="mt-0.5 block text-sm text-muted tabular-nums">
@@ -466,27 +479,14 @@ export default async function ProjectPage({
   return (
     <main id="main" data-layout="default">
       <div className="shell pt-6 pb-10 lg:pt-10 lg:pb-12">
-        <nav aria-label={dict.project.crumbs}>
-          <ol className="flex flex-wrap items-center gap-x-2 text-sm text-muted">
-            <li>
-              <a href={`/${locale}/`} className={CRUMB}>
-                {dict.project.home}
-              </a>
-            </li>
-            <li aria-hidden="true">/</li>
-            <li>
-              <a href={`/${locale}/projects/`} className={CRUMB}>
-                {dict.nav.projects}
-              </a>
-            </li>
-            <li aria-hidden="true">/</li>
-            <li>
-              <span aria-current="page" className="text-ink-2">
-                {t(p.title, locale)}
-              </span>
-            </li>
-          </ol>
-        </nav>
+        <Breadcrumbs
+          label={dict.project.crumbs}
+          items={[
+            { href: `/${locale}/`, label: dict.project.home },
+            { href: `/${locale}/projects/`, label: dict.nav.projects },
+          ]}
+          current={t(p.title, locale)}
+        />
         <div className="mt-5 grid gap-x-12 gap-y-8 lg:grid-cols-12 lg:grid-rows-[auto_auto_1fr]">
           <div className="min-w-0 lg:col-span-7">
             <h1 className="text-title-sm font-bold text-ink sm:text-title">
@@ -500,7 +500,7 @@ export default async function ProjectPage({
             <TechList project={p} dict={dict} locale={locale} link />
             {p.aiTools.length > 0 && (
               // plain text, not chips/nodes: AI assistants are not part of the tech stack
-              <p className="mt-3 flex flex-wrap items-baseline gap-x-2 text-sm">
+              <p className={cx(LABEL_COLS, "mt-2.5 items-baseline text-sm")}>
                 <span className="text-muted">{dict.project.aiTools}</span>
                 <span translate="no" className="text-ink-2">
                   {p.aiTools.join(", ")}
@@ -514,7 +514,7 @@ export default async function ProjectPage({
                     key={l.url}
                     href={l.url}
                     newTab={dict.common.newTab}
-                    className="inline-flex min-h-11 items-center gap-2 rounded-node border border-edge bg-white px-4 py-2 text-left text-ui font-semibold text-ink transition-colors hover:border-primary hover:bg-primary-50 active:bg-primary-100"
+                    className={cx(BUTTON, "text-left")}
                   >
                     <Icon name={linkIcon(l.url, l.type)} />
                     {l.label ? t(l.label, locale) : dict.project.links[l.type]}
@@ -526,7 +526,7 @@ export default async function ProjectPage({
               {facts.map(([k, v]) => (
                 <div key={k} className="min-w-0 border-t border-line py-3 pr-4">
                   <dt className="text-sm text-muted">{k}</dt>
-                  <dd className="mt-1 text-ui font-semibold text-ink">{v}</dd>
+                  <dd className="mt-1 text-ui font-medium text-ink">{v}</dd>
                 </div>
               ))}
             </dl>
@@ -604,7 +604,7 @@ export default async function ProjectPage({
         </div>
       </div>
       <div className="border-t border-line">
-        <div className="shell grid gap-x-12 pt-8 lg:grid-cols-12 lg:pt-10">
+        <div className="shell grid gap-x-12 pt-10 lg:grid-cols-12 lg:pt-12">
           <nav
             aria-labelledby="toc-title"
             className="mb-8 lg:col-span-3 lg:mb-0"
@@ -619,7 +619,7 @@ export default async function ProjectPage({
                     <a
                       href={`#${b.id}`}
                       data-toc={b.id}
-                      className="relative block py-1.5 pl-3 text-ui text-muted transition-colors before:absolute before:inset-y-1 before:left-0 before:w-0.5 before:bg-line hover:text-ink data-[current=true]:font-semibold data-[current=true]:text-ink data-[current=true]:before:bg-primary forced-colors:data-[current=true]:before:bg-[CanvasText]"
+                      className="relative block py-1.5 pl-3 text-ui text-muted transition-colors before:absolute before:inset-y-1 before:left-0 before:w-0.5 before:bg-line hover:text-ink active:bg-primary-50 data-[current=true]:font-semibold data-[current=true]:text-ink data-[current=true]:before:bg-primary forced-colors:data-[current=true]:before:bg-[CanvasText]"
                     >
                       {dict.project.sections[b.id]}
                     </a>
@@ -639,7 +639,7 @@ export default async function ProjectPage({
               >
                 <h2
                   id={`${b.id}-title`}
-                  className="mb-4 text-h2 font-bold text-ink"
+                  className="mb-4 text-h2 font-semibold text-ink"
                 >
                   {dict.project.sections[b.id]}
                 </h2>

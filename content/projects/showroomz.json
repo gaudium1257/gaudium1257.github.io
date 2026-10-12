@@ -10,7 +10,7 @@
   },
   "summary": {
     "ko": "브랜드와 인플루언서가 계약을 맺고 공동구매(공구)를 진행하는 커머스 플랫폼으로, 창업팀에서 프론트엔드를 맡았습니다. 2026년 7월에 합류해 기존 소비자 앱·파트너센터·운영자 콘솔을 이어받아 확장했고, 파트너센터의 설정을 바탕으로 인플루언서용 스튜디오 웹을 구축했습니다. 계약·공구 흐름을 브랜드·인플루언서·운영자 화면에, 연결·소통 메시지를 브랜드·인플루언서 화면에 구현했고, 소비자 앱에는 주문·결제·반품 흐름을 구현했습니다.",
-    "en": "A commerce platform where brands and influencers sign contracts and run group buys; I handled the front end in a startup team. After joining in July 2026, I took over and extended the existing consumer app, partner center and admin console, and built the influencer studio web app from the partner center's setup. I implemented the contract and group-buy flows across the brand, influencer and admin screens, messaging on the brand and influencer screens, and the order, payment and return flows in the consumer app."
+    "en": "A commerce platform where brands and influencers sign contracts and run group buys; I handled the front end in a startup team. After joining in July 2026, I took over and extended the existing consumer app, partner center and admin console, and built the influencer studio web app from the partner center’s setup. I implemented the contract and group-buy flows across the brand, influencer and admin screens, messaging on the brand and influencer screens, and the order, payment and return flows in the consumer app."
   },
   "category": "team",
   "status": "in-progress",
@@ -28,7 +28,7 @@
   "contributions": [
     {
       "ko": "파트너센터의 설정과 구조를 바탕으로 인플루언서용 스튜디오 웹 구축(소셜 로그인 4종, 연결·소통, 계약, 공구, 게시물, 쇼룸 관리)",
-      "en": "Built the influencer studio web app on the partner center's setup, covering four social logins, messaging, contracts, group buys, posts and showroom settings"
+      "en": "Built the influencer studio web app on the partner center’s setup, covering four social logins, messaging, contracts, group buys, posts and showroom settings"
     },
     {
       "ko": "계약 관리와 공구 관리 화면을 파트너센터·스튜디오·운영자 콘솔 3곳에 구현",

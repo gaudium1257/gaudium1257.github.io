@@ -10,7 +10,7 @@
   },
   "summary": {
     "ko": "한국관광공사 위치기반 관광정보로 주변 장소를 퀘스트로 만들고, 사용자가 GPS로 도착을 인증하면 경험치와 배지를 주는 Android 앱입니다. 혼잡도가 낮은 장소, 처음 가는 지역, 평일 오전 방문에는 경험치 배율을 더 줍니다. 2026 관광데이터 활용 공모전 웹·앱 구현 부문에 팀으로 참가해 원스토어에 출시했습니다.",
-    "en": "An Android app that turns nearby places from the Korea Tourism Organization's location-based tourism data into quests and awards EXP and badges when users verify their arrival by GPS. It applies higher EXP multipliers to less crowded places, first visits to a region, and weekday-morning visits. Our team built it for the web/app track of the 2026 Tourism Data Contest and released it on ONE store."
+    "en": "An Android app that turns nearby places from the Korea Tourism Organization’s location-based tourism data into quests and awards EXP and badges when users verify their arrival by GPS. It applies higher EXP multipliers to less crowded places, first visits to a region, and weekday-morning visits. Our team built it for the web/app track of the 2026 Tourism Data Contest and released it on ONE store."
   },
   "category": "team",
   "status": "completed",
@@ -27,8 +27,8 @@
   },
   "contributions": [
     {
-      "ko": "디자인 시스템 \"Parchment & Seal\" v1.0과 앱 전체 화면 디자인",
-      "en": "Designed the \"Parchment & Seal\" v1.0 design system and every screen of the app"
+      "ko": "디자인 시스템 “Parchment & Seal” v1.0과 앱 전체 화면 디자인",
+      "en": "Designed the “Parchment & Seal” v1.0 design system and every screen of the app"
     },
     {
       "ko": "디자인 토큰과 공용 위젯 기반으로 로그인·온보딩·홈 등 앱 화면 재작성",
@@ -52,7 +52,7 @@
     },
     {
       "ko": "토큰 자동 갱신과 네트워크 끊김·세션 만료 구분을 처리하는 앱 API 클라이언트 구현",
-      "en": "Implemented the app's API client with automatic token refresh and separate handling of network loss and session expiry"
+      "en": "Implemented the app’s API client with automatic token refresh and separate handling of network loss and session expiry"
     },
     {
       "ko": "화면 크기 3종과 큰 글자 설정에서 화면 넘침을 검사하는 레이아웃 테스트 작성",
@@ -75,7 +75,7 @@
       },
       "description": {
         "ko": "한국관광공사 TourAPI로 받은 주변 장소를 방문·사진·수집·기록 퀘스트로 만듭니다.",
-        "en": "Turns nearby places from the Korea Tourism Organization's TourAPI into visit, photo, collection or note quests."
+        "en": "Turns nearby places from the Korea Tourism Organization’s TourAPI into visit, photo, collection or note quests."
       }
     },
     {
@@ -115,7 +115,7 @@
       },
       "description": {
         "ko": "카카오맵에서 보이는 영역의 퀘스트를 유형·난이도별 마커로 보여 주고, 기기 센서로 바라보는 방향을 표시합니다.",
-        "en": "Shows quests in the visible Kakao Maps area with markers by type and difficulty, and displays the user's heading from device sensors."
+        "en": "Shows quests in the visible Kakao Maps area with markers by type and difficulty, and displays the user’s heading from device sensors."
       }
     },
     {
@@ -156,7 +156,7 @@
   "techNotes": {
     "Dart": {
       "ko": "Flutter 앱 코드",
-      "en": "The Flutter app's code"
+      "en": "The Flutter app’s code"
     },
     "Flutter": {
       "ko": "Android 앱과 그 화면",
@@ -187,7 +187,7 @@
   },
   "architecture": {
     "ko": "Flutter Android 앱이 Express REST API를 호출하고, 서버는 Prisma로 PostgreSQL에 데이터를 저장하며 한국관광공사 TourAPI로 주변 장소를 받아 퀘스트를 만듭니다. 인증 사진은 앱이 AWS S3 presigned URL로 직접 올리고, 푸시 알림은 Firebase Cloud Messaging으로 보냅니다.",
-    "en": "The Flutter Android app calls an Express REST API; the server stores data in PostgreSQL through Prisma and creates quests from nearby places fetched from the Korea Tourism Organization's TourAPI. The app uploads verification photos directly to AWS S3 with presigned URLs, and push notifications are sent through Firebase Cloud Messaging."
+    "en": "The Flutter Android app calls an Express REST API; the server stores data in PostgreSQL through Prisma and creates quests from nearby places fetched from the Korea Tourism Organization’s TourAPI. The app uploads verification photos directly to AWS S3 with presigned URLs, and push notifications are sent through Firebase Cloud Messaging."
   },
   "outcomes": [
     {

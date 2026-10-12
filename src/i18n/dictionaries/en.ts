@@ -51,8 +51,7 @@ const en: Dictionary = {
     srNone: "no recorded projects",
     label: "Tech Stack",
     linkSr: "see projects using this technology",
-    more: "Show {n} More",
-    less: "Show Less",
+    countSr: "technologies: {n}",
     category: {
       language: "Language",
       frontend: "Frontend",
@@ -80,7 +79,6 @@ const en: Dictionary = {
     moreTechSr: "and {n} more technologies",
     starsSr: "GitHub stars",
     lastCommit: "Last commit",
-    backHome: "Back to Home",
   },
   category: {
     personal: "Solo project",

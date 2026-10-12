@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BrandText } from "@/components/brand-text";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Empty } from "@/components/home-sections";
 import { FilterBar } from "@/components/project-filter";
 import { ProjectEntry } from "@/components/project-entry";
 import { StackRows } from "@/components/tech";
-import { cx, LINK } from "@/components/ui";
 import { getContent } from "@/content/load";
 import { hasLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
@@ -46,20 +46,16 @@ export default async function ProjectsPage({
   );
 
   return (
-    <main id="main" className="shell py-8 lg:py-12">
-      <a
-        href={`/${locale}/`}
-        className={cx(
-          "inline-flex min-h-6 items-center text-ui font-medium",
-          LINK,
-        )}
-      >
-        {dict.projects.backHome}
-      </a>
+    <main id="main" className="shell pt-6 pb-10 lg:pt-10 lg:pb-12">
+      <Breadcrumbs
+        label={dict.project.crumbs}
+        items={[{ href: `/${locale}/`, label: dict.project.home }]}
+        current={dict.nav.projects}
+      />
       <h1 className="mt-5 flex items-baseline gap-3 text-title-sm font-bold text-ink sm:text-title">
         {dict.nav.projects}
         {list.length > 0 && (
-          <span className="text-lead font-semibold text-muted tabular-nums">
+          <span className="text-lead leading-none font-medium text-muted tabular-nums">
             {fill(dict.common.count, { n: list.length })}
           </span>
         )}
@@ -90,7 +86,7 @@ export default async function ProjectsPage({
           />
           <ol
             data-project-list
-            className="mt-6 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3"
+            className="mt-6 grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3 lg:gap-x-8"
           >
             {list.map((p, i) => (
               <ProjectEntry
