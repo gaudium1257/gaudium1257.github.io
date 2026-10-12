@@ -331,6 +331,7 @@
   "related": [],
   "tags": ["web", "mobile", "commerce", "startup"],
   "featured": true,
+  "logo": "/images/projects/showroomz/logo.svg",
   "screenshots": [
     {
       "src": "/images/projects/showroomz/partners-contract-detail.png",

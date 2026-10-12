@@ -270,6 +270,7 @@
   "related": ["tourism-data-contest-2026"],
   "tags": ["mobile", "android", "location-based", "tourism", "gamification"],
   "featured": false,
+  "logo": "/images/projects/local-quest/logo.png",
   "thumbnail": "/images/projects/local-quest/thumbnail.png",
   "screenshots": [
     {
