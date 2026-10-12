@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
 import { LanguageToggle } from "@/components/language-toggle";
 import { ScrollSpy } from "@/components/scroll-spy";
-import { cx, STAGE_LINK } from "@/components/ui";
+import { cx, LINK } from "@/components/ui";
 import { sections } from "@/config/sections";
 import { getContent } from "@/content/load";
 import { hasLocale, locales, t } from "@/i18n/config";
@@ -104,11 +104,8 @@ export default async function LocaleLayout({
           </nav>
         </header>
         {children}
-        <footer
-          data-tone="stage"
-          className="border-t border-stage-line bg-stage"
-        >
-          <div className="shell flex flex-wrap items-center justify-between gap-4 py-6 text-sm text-lilac-soft">
+        <footer className="border-t border-line">
+          <div className="shell flex flex-wrap items-center justify-between gap-4 py-6 text-sm text-muted">
             <p>
               {"©\u00a0"}
               {year} <span translate="no">{name}</span>
@@ -117,7 +114,7 @@ export default async function LocaleLayout({
               href="#main"
               className={cx(
                 "inline-flex min-h-6 items-center font-medium",
-                STAGE_LINK,
+                LINK,
               )}
             >
               {dict.common.backToTop}
