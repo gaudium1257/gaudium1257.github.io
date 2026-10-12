@@ -14,7 +14,7 @@ import { getDictionary } from "@/i18n/dictionaries";
 import { techUsage } from "@/lib/tech";
 
 /**
- * Full-bleed bands. Background contrast (white / surface / the violet stage) separates chapters
+ * Full-bleed bands. Background contrast (white / surface) separates chapters
  * instead of hairlines, so the page reads as a portfolio rather than a document.
  */
 function Band({

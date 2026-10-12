@@ -10,7 +10,7 @@ import { FilterBar } from "./project-filter";
 import { ProjectEntry, RelatedLinks } from "./project-entry";
 import { Icon, type IconName } from "./icons";
 import { ExternalLink, GitHubMark } from "./repo";
-import { cx, LINK, STAGE_BUTTON, STAGE_BUTTON_PRIMARY, STAGE_LINK } from "./ui";
+import { BUTTON, BUTTON_PRIMARY, cx, LINK } from "./ui";
 
 type Props = { content: Content; dict: Dictionary; locale: Locale };
 
@@ -57,9 +57,8 @@ const ghLabel = (url: string) =>
   url.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
 
 /**
- * Hero on the deep-violet stage (owner request 2026.10: read like a portfolio, not a document).
- * The statement is the one loud thing; name, intro, actions and two facts stay quiet. Email and
- * GitHub live in the contact band (the GitHub button here is the one shortcut).
+ * Hero (owner's pick, option D): a light lilac panel holding the statement, intro and actions,
+ * with a small framed portrait on the right from 1024px and three summary chips underneath.
  */
 export function Identity({ content, dict, locale }: Props) {
   const p = content.profile;
@@ -68,11 +67,17 @@ export function Identity({ content, dict, locale }: Props) {
   const { github } = p.connect;
   const career = content.education.career[0];
   const edu = content.education.items.find((e) => e.status === "enrolled");
-  const facts: { label: string; node: React.ReactNode }[] = [];
+  const chips: {
+    icon: IconName;
+    label: string;
+    value: string;
+    href?: string;
+  }[] = [];
   if (edu)
-    facts.push({
+    chips.push({
+      icon: "school",
       label: dict.about.facts.affiliation,
-      node:
+      value:
         locale === "ko"
           ? [
               t(edu.school, locale),
@@ -84,109 +89,111 @@ export function Identity({ content, dict, locale }: Props) {
           : `${[edu.major && t(edu.major, locale), t(edu.school, locale)].filter(Boolean).join(", ")} (${dict.education.status.enrolled.toLowerCase()})`,
     });
   if (career)
-    facts.push({
+    chips.push({
+      icon: "briefcase",
       label: dict.education.career,
-      node: (
-        <a href="#education" className={STAGE_LINK}>
-          {fill(dict.education.careerLine, {
-            organization: t(career.organization, locale),
-            role: t(career.role, locale),
-          })}
-        </a>
-      ),
+      value: fill(dict.education.careerLine, {
+        organization: t(career.organization, locale),
+        role: t(career.role, locale),
+      }),
+      href: "#education",
     });
-  const alt = `${t(p.name, locale)} ${dict.about.photo}`;
+  if (content.projects.length)
+    chips.push({
+      icon: "folder",
+      label: dict.nav.projects,
+      value: fill(dict.common.count, { n: content.projects.length }),
+      href: "#projects",
+    });
   return (
-    <section
-      id="about"
-      aria-labelledby="about-title"
-      data-tone="stage"
-      className="bg-stage text-white"
-    >
-      <div className="shell grid gap-x-16 gap-y-8 pt-10 pb-14 sm:pt-14 lg:grid-cols-12 lg:items-center lg:pt-20 lg:pb-24">
-        <div className="min-w-0 lg:col-span-8">
-          <div className="flex items-center gap-4">
-            {p.avatar && (
-              // below 1024px a small portrait beside the name keeps the actions on the first screen
-              <div className="relative size-16 shrink-0 overflow-hidden rounded-full bg-stage-2 ring-2 ring-stage-line sm:size-20 lg:hidden">
-                <Image
-                  src={p.avatar}
-                  alt={alt}
-                  fill
-                  loading="eager"
-                  sizes="5rem"
-                  className="object-cover"
-                />
-              </div>
-            )}
+    <section id="about" aria-labelledby="about-title" className="bg-white">
+      <div className="shell py-8 lg:py-14">
+        <div className="grid items-center gap-10 rounded-hero bg-primary-50 p-6 ring-1 ring-primary-100 sm:p-10 lg:grid-cols-12 lg:p-14">
+          <div className="min-w-0 lg:col-span-8">
             <h1
               id="about-title"
               className="flex flex-wrap items-baseline gap-x-3 gap-y-1"
             >
-              <span translate="no" className="text-h2 font-bold text-white">
+              <span
+                translate="no"
+                className="text-h2 font-bold text-primary-700"
+              >
                 {t(p.name, locale)}
               </span>
               {p.name[other] !== p.name[locale] && (
                 <span
                   lang={other}
                   translate="no"
-                  className="text-lead font-medium text-lilac-soft"
+                  className="text-lead font-medium text-muted"
                 >
                   {p.name[other]}
                 </span>
               )}
             </h1>
+            <p className="mt-4 text-title-sm font-extrabold text-balance text-ink sm:text-display-sm">
+              {t(p.headline, locale)}
+            </p>
+            <p className="mt-5 max-w-160 text-base leading-prose text-ink-2">
+              {t(p.intro, locale)}
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <a href="#projects" className={BUTTON_PRIMARY}>
+                {dict.about.ctaProjects}
+              </a>
+              <a href="#connect" className={BUTTON}>
+                {dict.about.ctaContact}
+              </a>
+              {github && (
+                <ExternalLink
+                  href={github}
+                  newTab={dict.common.newTab}
+                  className={BUTTON}
+                >
+                  <GitHubMark />
+                  <span translate="no">GitHub</span>
+                </ExternalLink>
+              )}
+            </div>
           </div>
-          <p className="mt-6 text-display-sm font-extrabold text-balance text-white sm:text-display lg:text-display-sm xl:text-display">
-            {t(p.headline, locale)}
-          </p>
-          <p className="mt-6 max-w-160 text-base leading-prose text-lilac-soft sm:text-lead">
-            {t(p.intro, locale)}
-          </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <a href="#projects" className={STAGE_BUTTON_PRIMARY}>
-              {dict.about.ctaProjects}
-            </a>
-            <a href="#connect" className={STAGE_BUTTON}>
-              {dict.about.ctaContact}
-            </a>
-            {github && (
-              <ExternalLink
-                href={github}
-                newTab={dict.common.newTab}
-                className={STAGE_BUTTON}
-              >
-                <GitHubMark />
-                <span translate="no">GitHub</span>
-              </ExternalLink>
-            )}
-          </div>
-          {facts.length > 0 && (
-            <dl className="mt-10 grid gap-x-10 gap-y-4 border-t border-stage-line pt-6 sm:grid-cols-2">
-              {facts.map((f) => (
-                <div key={f.label} className="min-w-0">
-                  <dt className="text-sm text-lilac-soft">{f.label}</dt>
-                  <dd className="mt-1 min-w-0 text-ui font-medium text-white">
-                    {f.node}
+          {p.avatar && (
+            // the portrait stays small (owner: a large photo felt heavy); phones skip it
+            <div className="hidden lg:col-span-4 lg:flex lg:justify-end">
+              <div className="relative aspect-3/4 w-56 overflow-hidden rounded-card bg-white ring-4 ring-white">
+                <Image
+                  src={p.avatar}
+                  alt={`${t(p.name, locale)} ${dict.about.photo}`}
+                  fill
+                  loading="eager"
+                  fetchPriority="high"
+                  sizes="14rem"
+                  className="object-cover"
+                />
+              </div>
+            </div>
+          )}
+          {chips.length > 0 && (
+            <dl className="flex flex-wrap gap-2 text-sm lg:col-span-12">
+              {chips.map((chip) => (
+                <div
+                  key={chip.label}
+                  className="inline-flex min-h-10 max-w-full items-center gap-2 rounded-full bg-white px-4 py-2 ring-1 ring-primary-100"
+                >
+                  <Icon name={chip.icon} className="text-primary" />
+                  <dt className="shrink-0 text-muted">{chip.label}</dt>
+                  <dd className="min-w-0 font-medium text-ink">
+                    {chip.href ? (
+                      <a href={chip.href} className={LINK}>
+                        {chip.value}
+                      </a>
+                    ) : (
+                      chip.value
+                    )}
                   </dd>
                 </div>
               ))}
             </dl>
           )}
         </div>
-        {p.avatar && (
-          <div className="relative hidden aspect-3/4 w-full max-w-sm justify-self-end overflow-hidden rounded-card bg-stage-2 ring-1 ring-stage-line lg:col-span-4 lg:block">
-            <Image
-              src={p.avatar}
-              alt={alt}
-              fill
-              loading="eager"
-              fetchPriority="high"
-              sizes="24rem"
-              className="object-cover"
-            />
-          </div>
-        )}
       </div>
     </section>
   );
@@ -479,7 +486,7 @@ export function EducationSection({ content, dict, locale }: Props) {
 }
 
 /**
- * Closing band on the violet stage: one tile per channel (email first), each with its icon,
+ * Closing band on a light lilac field: one tile per channel (email first), each with its icon,
  * name, value and — for email and a Discord username — a copy button.
  */
 export function ContactSection({ content, dict }: Props) {
@@ -500,7 +507,7 @@ export function ContactSection({ content, dict }: Props) {
         <a
           href={`mailto:${c.email}`}
           translate="no"
-          className={cx("min-w-0", STAGE_LINK)}
+          className={cx("min-w-0", LINK)}
         >
           <span data-copy-value="email" className="wrap-anywhere">
             {c.email}
@@ -514,7 +521,6 @@ export function ContactSection({ content, dict }: Props) {
           text={dict.copy}
           doneMessage={dict.copy.emailDone}
           sr={dict.copy.emailSr}
-          tone="stage"
         />
       ),
     });
@@ -527,7 +533,7 @@ export function ContactSection({ content, dict }: Props) {
         <ExternalLink
           href={c.github}
           newTab={dict.common.newTab}
-          className={cx("min-w-0 wrap-anywhere", STAGE_LINK)}
+          className={cx("min-w-0 wrap-anywhere", LINK)}
         >
           <span translate="no">{ghLabel(c.github)}</span>
         </ExternalLink>
@@ -542,7 +548,7 @@ export function ContactSection({ content, dict }: Props) {
         <ExternalLink
           href={c.instagram}
           newTab={dict.common.newTab}
-          className={cx("min-w-0 wrap-anywhere", STAGE_LINK)}
+          className={cx("min-w-0 wrap-anywhere", LINK)}
         >
           <span translate="no">
             @
@@ -564,7 +570,7 @@ export function ContactSection({ content, dict }: Props) {
               <ExternalLink
                 href={c.discord}
                 newTab={dict.common.newTab}
-                className={cx("min-w-0 wrap-anywhere", STAGE_LINK)}
+                className={cx("min-w-0 wrap-anywhere", LINK)}
               >
                 <span translate="no">{ghLabel(c.discord)}</span>
               </ExternalLink>
@@ -578,7 +584,7 @@ export function ContactSection({ content, dict }: Props) {
               <span
                 translate="no"
                 data-copy-value="discord"
-                className="min-w-0 wrap-anywhere text-white"
+                className="min-w-0 wrap-anywhere text-ink"
               >
                 {c.discord}
               </span>
@@ -590,7 +596,6 @@ export function ContactSection({ content, dict }: Props) {
                 text={dict.copy}
                 doneMessage={dict.copy.discordDone}
                 sr={dict.copy.discordSr}
-                tone="stage"
               />
             ),
           },
@@ -599,32 +604,31 @@ export function ContactSection({ content, dict }: Props) {
     <section
       id="connect"
       aria-labelledby="connect-title"
-      data-tone="stage"
-      className="bg-stage text-white"
+      className="bg-primary-50"
     >
       <div className="shell py-16 lg:py-24">
         <h2
           id="connect-title"
-          className="text-display-sm font-extrabold text-white"
+          className="text-display-sm font-extrabold text-ink"
         >
           {dict.nav.connect}
         </h2>
         {tiles.length ? (
           <>
-            <p className="mt-4 max-w-136 text-base leading-prose text-lilac-soft sm:text-lead">
+            <p className="mt-4 max-w-136 text-base leading-prose text-ink-2 sm:text-lead">
               {dict.about.contactLead}
             </p>
             <dl className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {tiles.map((tile) => (
                 <div
                   key={tile.label}
-                  className="flex min-w-0 flex-col gap-3 rounded-card bg-stage-2 p-5 ring-1 ring-stage-line"
+                  className="flex min-w-0 flex-col gap-3 rounded-card bg-white p-5 ring-1 ring-primary-100"
                 >
                   <dt
                     translate={tile.brand ? "no" : undefined}
-                    className="flex items-center gap-2 text-sm font-semibold text-lilac-soft"
+                    className="flex items-center gap-2 text-sm font-semibold text-muted"
                   >
-                    <Icon name={tile.icon} className="size-5 text-lilac" />
+                    <Icon name={tile.icon} className="size-5 text-primary" />
                     {tile.label}
                   </dt>
                   {/* the dd keeps CopyButton's same-row lookup and its hint line working */}
@@ -637,7 +641,7 @@ export function ContactSection({ content, dict }: Props) {
             </dl>
           </>
         ) : (
-          <p className="mt-6 text-ui text-lilac-soft">{dict.common.empty}</p>
+          <p className="mt-6 text-ui text-muted">{dict.common.empty}</p>
         )}
       </div>
     </section>

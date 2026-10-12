@@ -4,7 +4,7 @@ Icons in `src/components/icons.tsx`:
 
 - **Simple Icons** 16.35 (YouTube, Instagram, Discord, Notion marks): CC0 1.0, no notice required. The marks are trademarks of their owners and are used only to label links to those services.
 - **GitHub Octicons** mark-github (GitHub logo): used only to label links to GitHub.
-- **Lucide** 1.55 (mail, globe, book-open, circle-play, presentation, file-text, shopping-bag, award, link, chevron-down): ISC License below. `shopping-bag`, `link` and `chevron-down` are derived from Feather and also fall under the MIT License below.
+- **Lucide** 1.55 (mail, globe, book-open, circle-play, presentation, file-text, shopping-bag, award, link, chevron-down, graduation-cap, briefcase, folder): ISC License below. `shopping-bag`, `link` and `chevron-down` are derived from Feather and also fall under the MIT License below.
 
 ## Lucide license (verbatim)
 
