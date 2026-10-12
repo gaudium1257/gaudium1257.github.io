@@ -28,9 +28,10 @@ Schemas: `src/content/schema.ts` — read it before writing JSON. Ids are global
 4. Run the `content-fact-checker` subagent on the pair. Resolve every finding: remove unsupported claims or ask the user — do not reword them to sound safer.
 5. Images: if the fact sheet lists candidates and the user provides files, copy to `public/images/projects/<id>/` and set `thumbnail` / `screenshots` with real alt text. Give each screenshot its `kind` (`web` 16:10 · `mobile` 6:13 · `photo` 4:3). Boxes never crop and the validator rejects a ratio off by more than 1%, so pad (don't crop) files to the exact ratio first.
 6. Relations: map section 12 of the fact sheet ("관련 활동·수상·경력") to existing ids and fill `related` (one side is enough; the loader links both ways). If the target doesn't exist yet, offer to add it.
-7. AI coding assistants (Claude Code, Copilot, Cursor…) go in `aiTools`, never in `techStack` or `skills.json` (owner decision 2026.10: they are shown on a separate line so the stack doesn’t read as AI-dependent).
-8. Skills: for each `techStack` item not in `content/skills.json` (validator warns), ask whether to add it to 개발 역량 and under which group. Keep spelling identical.
-9. Ask whether it should be `featured`.
+7. `techNotes` (where each tech was used, keyed by the exact `techStack` name): keep only notes the fact sheet supports; the validator rejects keys that are not in `techStack`. Ask for missing ones rather than inventing.
+8. AI coding assistants (Claude Code, Copilot, Cursor…) go in `aiTools`, never in `techStack` or `skills.json` (owner decision 2026.10: they are shown on a separate line so the stack doesn’t read as AI-dependent).
+9. Skills: for each `techStack` item not in `content/skills.json` (validator warns), ask whether to add it to 개발 역량 and under which group. Keep spelling identical.
+10. Ask whether it should be `featured`.
 
 ## Other kinds (from the owner's answers)
 

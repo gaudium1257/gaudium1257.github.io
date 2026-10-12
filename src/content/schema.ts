@@ -164,6 +164,8 @@ export const Project = z.object({
       }),
     )
     .min(1),
+  /** Where each tech was used in this project, keyed by its exact `techStack` name. Only with evidence. */
+  techNotes: z.record(z.string(), Localized).default({}),
   /** AI coding assistants used (e.g. "Claude Code"). Kept out of techStack and shown on its own line. */
   aiTools: z.array(z.string().trim().min(1)).default([]),
   deployment: z.object({

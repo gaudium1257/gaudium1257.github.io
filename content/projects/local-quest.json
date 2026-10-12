@@ -153,6 +153,32 @@
       "items": ["TourAPI"]
     }
   ],
+  "techNotes": {
+    "Dart": {
+      "ko": "Flutter 앱 코드",
+      "en": "The Flutter app's code"
+    },
+    "Flutter": {
+      "ko": "Android 앱과 그 화면",
+      "en": "The Android app and its screens"
+    },
+    "Kakao Maps API": {
+      "ko": "퀘스트 지도의 유형·난이도별 마커, 진행 화면의 목적지·인증 반경·현위치·방향 표시",
+      "en": "Quest-map markers by type and difficulty; destination, verification radius, current position and heading on the progress screen"
+    },
+    "Kakao Login": {
+      "ko": "카카오 계정 로그인",
+      "en": "Sign-in with a Kakao account"
+    },
+    "Google Sign-In": {
+      "ko": "구글 계정 로그인",
+      "en": "Sign-in with a Google account"
+    },
+    "TourAPI": {
+      "ko": "위치기반 관광정보(locationBasedList2)로 주변 장소를 받아 퀘스트 생성",
+      "en": "Fetches nearby places from location-based tourism data (locationBasedList2) to create quests"
+    }
+  },
   "deployment": {
     "status": "live",
     "platform": "ONE store",

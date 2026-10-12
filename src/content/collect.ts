@@ -218,6 +218,13 @@ export function collectContent(): CollectResult {
     if (p.period.end && p.period.end < p.period.start)
       errors.push(`project "${p.id}": period.end is before period.start`);
 
+    const stack = new Set(p.techStack.flatMap((g) => g.items));
+    for (const name of Object.keys(p.techNotes))
+      if (!stack.has(name))
+        errors.push(
+          `project "${p.id}": techNotes["${name}"] has no matching techStack item`,
+        );
+
     // capture boxes never crop, so each file must exist and match its box ratio
     const shots = [
       ...(p.thumbnail ? [{ src: p.thumbnail, kind: "web" as const }] : []),
