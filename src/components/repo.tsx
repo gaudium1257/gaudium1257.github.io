@@ -1,7 +1,9 @@
 import type { Project } from "@/content/schema";
 import type { Dictionary } from "@/i18n/dictionaries";
-import { fill, formatYm } from "@/lib/format";
+import type { Locale } from "@/i18n/config";
+import { fill, formatNumber, formatYm, formatYmd } from "@/lib/format";
 import { repoOf, snapshotDate } from "@/lib/github";
+import { BrandText } from "./brand-text";
 import { Icon } from "./icons";
 import { cx, LINK } from "./ui";
 
@@ -35,10 +37,12 @@ export function ExternalLink({
 export function RepoLine({
   project,
   dict,
+  locale,
   newTab,
 }: {
   project: Project;
   dict: Dictionary;
+  locale: Locale;
   newTab: string;
 }) {
   const repo = repoOf(project);
@@ -60,7 +64,10 @@ export function RepoLine({
       {d?.stars !== undefined && (
         <span className="tabular-nums">
           <span aria-hidden="true">★</span>
-          <span className="sr-only">{dict.projects.starsSr}</span> {d.stars}
+          <span className="sr-only">
+            <BrandText text={dict.projects.starsSr} />
+          </span>{" "}
+          {formatNumber(d.stars, locale)}
         </span>
       )}
       {d?.lastCommit && (
@@ -76,17 +83,22 @@ export function RepoLine({
 export function RepoCard({
   project,
   dict,
+  locale,
   newTab,
 }: {
   project: Project;
   dict: Dictionary;
+  locale: Locale;
   newTab: string;
 }) {
   const repo = repoOf(project);
   if (!repo) return null;
   const d = repo.data;
   const facts = [
-    d?.stars !== undefined && [dict.project.stars, String(d.stars)],
+    d?.stars !== undefined && [
+      dict.project.stars,
+      formatNumber(d.stars, locale),
+    ],
     d?.lastCommit && [dict.projects.lastCommit, formatYm(d.lastCommit)],
     d?.license && [dict.project.license, d.license],
   ].filter(Boolean) as [string, string][];
@@ -100,7 +112,7 @@ export function RepoCard({
         className="flex items-center gap-2 text-ui font-semibold text-ink-2"
       >
         <GitHubMark />
-        {dict.project.repoTitle}
+        <BrandText text={dict.project.repoTitle} />
       </h2>
       <p className="mt-2 text-lead font-semibold">
         <ExternalLink
@@ -121,16 +133,23 @@ export function RepoCard({
           {facts.map(([k, v]) => (
             <div key={k}>
               <dt className="text-sm text-muted">{k}</dt>
-              <dd className="mt-0.5 text-ui font-semibold tabular-nums">{v}</dd>
+              <dd
+                translate={k === dict.project.license ? "no" : undefined}
+                className="mt-0.5 text-ui font-semibold tabular-nums"
+              >
+                {v}
+              </dd>
             </div>
           ))}
         </dl>
       )}
       {facts.length > 0 && snapshotDate && (
         <p className="mt-4 border-t border-line pt-3 text-ui text-muted">
-          {fill(dict.project.repoNote, {
-            date: snapshotDate.replaceAll("-", "."),
-          })}
+          <BrandText
+            text={fill(dict.project.repoNote, {
+              date: formatYmd(snapshotDate),
+            })}
+          />
         </p>
       )}
     </section>

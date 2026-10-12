@@ -2,8 +2,9 @@ import Image from "next/image";
 import type { Content } from "@/content/collect";
 import { t, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
-import { fill, formatPeriod, formatYm } from "@/lib/format";
+import { fill, formatPeriod, formatYm, formatYmd } from "@/lib/format";
 import { snapshotDate } from "@/lib/github";
+import { BrandText } from "./brand-text";
 import { CopyButton } from "./copy-button";
 import { FilterBar } from "./project-filter";
 import { ProjectEntry, RelatedLinks } from "./project-entry";
@@ -56,10 +57,13 @@ function FactRow({
   label,
   children,
   last,
+  brand,
 }: {
   label: string;
   children: React.ReactNode;
   last?: boolean;
+  /** label is a brand name (GitHub…): keep auto-translate off it */
+  brand?: boolean;
 }) {
   return (
     <div
@@ -68,7 +72,9 @@ function FactRow({
         last && "border-b",
       )}
     >
-      <dt className="text-ui text-muted">{label}</dt>
+      <dt translate={brand ? "no" : undefined} className="text-ui text-muted">
+        {label}
+      </dt>
       <dd className="min-w-0 text-ui text-ink">{children}</dd>
     </div>
   );
@@ -84,7 +90,7 @@ export function Identity({ content, dict, locale }: Props) {
   const { email, github } = p.connect;
   const career = content.education.career[0];
   const intro = t(p.intro, locale);
-  const facts: { label: string; node: React.ReactNode }[] = [];
+  const facts: { label: string; node: React.ReactNode; brand?: boolean }[] = [];
   const edu = content.education.items.find((e) => e.status === "enrolled");
   if (edu)
     facts.push({
@@ -140,6 +146,7 @@ export function Identity({ content, dict, locale }: Props) {
   if (github)
     facts.push({
       label: dict.about.facts.github,
+      brand: true,
       node: (
         <ExternalLink
           href={github}
@@ -160,7 +167,8 @@ export function Identity({ content, dict, locale }: Props) {
               src={p.avatar}
               alt={`${t(p.name, locale)} ${dict.about.photo}`}
               fill
-              priority
+              loading="eager"
+              fetchPriority="high"
               sizes="200px"
               className="object-cover"
             />
@@ -203,6 +211,7 @@ export function Identity({ content, dict, locale }: Props) {
               <FactRow
                 key={f.label}
                 label={f.label}
+                brand={f.brand}
                 last={i === facts.length - 1}
               >
                 {f.node}
@@ -215,14 +224,13 @@ export function Identity({ content, dict, locale }: Props) {
   );
 }
 
-const HOME_LIMIT = 5; // featured first; the rest live on the list page
+const HOME_LIMIT = 6; // two rows of three; featured first, the rest live on the list page
 
 export function ProjectsSection({ content, dict, locale }: Props) {
   const all = [...content.projects].sort((a, b) =>
     a.featured === b.featured ? 0 : a.featured ? -1 : 1,
   );
   const shown = all.slice(0, HOME_LIMIT);
-  const featuredId = shown[0]?.id;
   return (
     <section id="projects" aria-labelledby="projects-title" className="min-w-0">
       <SectionHead
@@ -251,24 +259,32 @@ export function ProjectsSection({ content, dict, locale }: Props) {
           <FilterBar
             template={dict.projects.filterStatus}
             clearLabel={dict.projects.filterClear}
+            clearedMessage={dict.projects.filterCleared}
+            noneMessage={dict.projects.filterNone}
+            noneLink={dict.projects.filterNoneLink}
+            listHref={`/${locale}/projects/`}
           />
-          <ol data-project-list className="mt-2 divide-y divide-line">
+          <ol
+            data-project-list
+            className="mt-5 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3"
+          >
             {shown.map((p) => (
               <ProjectEntry
                 key={p.id}
                 project={p}
                 dict={dict}
                 locale={locale}
-                featured={p.id === featuredId}
                 onHome
               />
             ))}
           </ol>
           {snapshotDate && (
             <p className="mt-4 border-t border-line pt-4 text-ui text-muted">
-              {fill(dict.projects.provenance, {
-                date: snapshotDate.replaceAll("-", "."),
-              })}
+              <BrandText
+                text={fill(dict.projects.provenance, {
+                  date: formatYmd(snapshotDate),
+                })}
+              />
             </p>
           )}
         </>
@@ -494,17 +510,25 @@ export function EducationSection({ content, dict, locale }: Props) {
 
 export function ContactSection({ content, dict }: Props) {
   const c = content.profile?.connect ?? {};
+  // the other labels are service names, kept away from auto-translate
+  const BRANDS = ["GitHub", "Instagram", "Discord"];
   const row = (
     label: string,
     value: React.ReactNode,
     button?: React.ReactNode,
+    brand = BRANDS.includes(label),
   ) => (
     <div
       key={label}
       className="flex flex-wrap items-center gap-x-4 gap-y-1 py-3"
     >
-      <dt className="w-24 shrink-0 text-sm text-muted">{label}</dt>
-      <dd className="flex min-w-0 flex-1 items-center justify-between gap-3">
+      <dt
+        translate={brand ? "no" : undefined}
+        className="w-24 shrink-0 text-sm text-muted"
+      >
+        {label}
+      </dt>
+      <dd className="flex min-w-0 flex-1 flex-wrap items-center justify-between gap-x-3 gap-y-1">
         {value}
         {button}
       </dd>
@@ -544,7 +568,9 @@ export function ContactSection({ content, dict }: Props) {
           className={cx(withIcon, value, LINK)}
         >
           <Icon name="github" />
-          <span translate="no">{ghLabel(c.github)}</span>
+          <span translate="no" className="min-w-0 wrap-anywhere">
+            {ghLabel(c.github)}
+          </span>
         </ExternalLink>,
       ),
     c.instagram &&
@@ -556,7 +582,7 @@ export function ContactSection({ content, dict }: Props) {
           className={cx(withIcon, value, LINK)}
         >
           <Icon name="instagram" />
-          <span translate="no">
+          <span translate="no" className="min-w-0 wrap-anywhere">
             @
             {c.instagram
               .replace(/^https?:\/\/(www\.)?instagram\.com\//, "")
@@ -574,14 +600,20 @@ export function ContactSection({ content, dict }: Props) {
               className={cx(withIcon, value, LINK)}
             >
               <Icon name="discord" />
-              <span translate="no">{ghLabel(c.discord)}</span>
+              <span translate="no" className="min-w-0 wrap-anywhere">
+                {ghLabel(c.discord)}
+              </span>
             </ExternalLink>,
           )
         : row(
             "Discord",
             <span className={cx(withIcon, value, "text-ink")}>
               <Icon name="discord" />
-              <span translate="no" data-copy-value="discord">
+              <span
+                translate="no"
+                data-copy-value="discord"
+                className="min-w-0 wrap-anywhere"
+              >
                 {c.discord}
               </span>
             </span>,

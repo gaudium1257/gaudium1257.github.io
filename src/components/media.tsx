@@ -22,20 +22,23 @@ export function Capture({
   alt,
   kind = "web",
   fullSize,
-  priority = false,
+  load,
   className,
 }: {
   src: string;
   alt: string;
   kind?: MediaKind;
   fullSize?: { label: string; newTab: string };
-  priority?: boolean;
+  /** above the fold: "eager" loads now, "high" also raises fetch priority (one per page) */
+  load?: "eager" | "high";
   className?: string;
 }) {
   const img = (
     <span
       className={cx(
         "relative block overflow-hidden rounded-node bg-surface ring-1 ring-line ring-inset",
+        fullSize &&
+          "transition-colors group-hover/cap:ring-edge group-active/cap:ring-primary",
         BOX[kind],
         className,
       )}
@@ -49,7 +52,8 @@ export function Capture({
             ? "(min-width: 640px) 12rem, 50vw"
             : "(min-width: 1024px) 40vw, 100vw"
         }
-        priority={priority}
+        loading={load ? "eager" : undefined}
+        fetchPriority={load === "high" ? "high" : undefined}
         className="object-contain"
       />
     </span>
@@ -60,7 +64,7 @@ export function Capture({
       href={src}
       target="_blank"
       rel="noopener noreferrer"
-      className="block cursor-zoom-in rounded-node"
+      className="group/cap block cursor-zoom-in rounded-node"
     >
       {img}
       <span className="sr-only">
