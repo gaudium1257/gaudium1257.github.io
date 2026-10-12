@@ -64,12 +64,19 @@ export function RelatedLinks({
 export function ProjectMeta({
   project,
   dict,
+  className,
 }: {
   project: Project;
   dict: Dictionary;
+  className?: string;
 }) {
   return (
-    <p className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted">
+    <p
+      className={cx(
+        "flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted",
+        className,
+      )}
+    >
       <span>{dict.category[project.category]}</span>
       <span className="tabular-nums">
         {formatPeriod(project.period, dict.common.present)}
@@ -85,8 +92,9 @@ export function ProjectMeta({
 const CARD_CHIPS = 6;
 
 /**
- * One project card (home, project list): lead capture → title and one-liner → meta → highlights →
- * relations → tech chips and repo pinned to the bottom so cards in a row line up.
+ * One project card (home, project list): lead capture → identity (title, one-liner, meta) →
+ * evidence (role, highlights, relations) → tech chips and repo pinned to the bottom so cards in a
+ * row line up.
  * `featured` only sorts first (decided by the caller); every card has the same shape.
  */
 export function ProjectEntry({
@@ -118,7 +126,7 @@ export function ProjectEntry({
       <article
         className={cx(
           // -m-3 + p-3 gives the hover surface room; the height adds those 1.5rem back so the card fills its row
-          "group/p relative -m-3 flex h-[calc(100%+1.5rem)] flex-col gap-3 rounded-panel p-3 transition-colors hover:bg-surface has-[[data-stretch]:active]:bg-primary-50",
+          "group/p relative -m-3 flex h-[calc(100%+1.5rem)] flex-col gap-4 rounded-panel p-3 transition-colors hover:bg-surface has-[[data-stretch]:active]:bg-primary-50",
           ENTRY_FOCUS,
         )}
       >
@@ -145,7 +153,7 @@ export function ProjectEntry({
           )
         )}
         <div>
-          <Heading className="text-h3 font-bold text-balance text-ink">
+          <Heading className="text-h3 font-semibold text-balance text-ink">
             <a
               href={`/${locale}/projects/${project.id}/`}
               data-stretch
@@ -154,33 +162,43 @@ export function ProjectEntry({
               {t(project.title, locale)}
             </a>
           </Heading>
-          <p className="mt-1 text-ui leading-copy text-pretty text-ink-2">
+          <p className="mt-1.5 text-ui leading-copy text-pretty text-ink-2">
             {t(project.tagline, locale)}
           </p>
+          <ProjectMeta project={project} dict={dict} className="mt-2" />
         </div>
-        <ProjectMeta project={project} dict={dict} />
-        {project.highlights.length > 0 && (
-          <ul
-            aria-label={dict.projects.highlights}
-            className="grid gap-1 text-sm leading-copy text-ink-2"
-          >
-            {project.highlights.map((h, i) => (
-              <li key={i} className="flex gap-2">
-                <span
-                  aria-hidden="true"
-                  className="mt-2 size-1.5 shrink-0 rounded-full bg-edge"
-                />
-                <span className="min-w-0">{t(h, locale)}</span>
-              </li>
-            ))}
-          </ul>
-        )}
-        <RelatedLinks
-          id={project.id}
-          dict={dict}
-          locale={locale}
-          onHome={onHome}
-        />
+        {/* evidence: the owner’s role first, then highlights and relations */}
+        <div className="grid gap-2.5">
+          {/* label/value grid: a long role wraps beside "Role", never under it */}
+          <p className="grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-4 text-sm leading-copy">
+            <span className="text-muted">{dict.project.facts.role}</span>
+            <span className="min-w-0 font-medium text-ink-2">
+              {t(project.team.role, locale)}
+            </span>
+          </p>
+          {project.highlights.length > 0 && (
+            <ul
+              aria-label={dict.projects.highlights}
+              className="grid gap-1.5 text-ui leading-copy text-ink-2"
+            >
+              {project.highlights.map((h, i) => (
+                <li key={i} className="flex gap-2">
+                  <span
+                    aria-hidden="true"
+                    className="mt-2.5 size-1.5 shrink-0 rounded-full bg-edge"
+                  />
+                  <span className="min-w-0">{t(h, locale)}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+          <RelatedLinks
+            id={project.id}
+            dict={dict}
+            locale={locale}
+            onHome={onHome}
+          />
+        </div>
         <div className="mt-auto flex min-w-0 flex-col gap-2.5 pt-1">
           <ul
             aria-label={dict.skills.label}

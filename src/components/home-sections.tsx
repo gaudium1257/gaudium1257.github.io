@@ -10,7 +10,7 @@ import { FilterBar } from "./project-filter";
 import { ProjectEntry, RelatedLinks } from "./project-entry";
 import { Icon } from "./icons";
 import { ExternalLink, GitHubMark } from "./repo";
-import { cx, LINK } from "./ui";
+import { cx, LABEL_COLS, LINK } from "./ui";
 
 type Props = { content: Content; dict: Dictionary; locale: Locale };
 
@@ -31,11 +31,11 @@ export function SectionHead({
     <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
       <h2
         id={`${id}-title`}
-        className="flex items-baseline gap-2.5 text-h2 font-bold text-ink"
+        className="flex items-baseline gap-2.5 text-h2 font-semibold text-ink"
       >
         {title}
         {count !== undefined && count > 0 && countLabel && (
-          <span className="text-lead font-semibold text-muted tabular-nums">
+          <span className="text-lead leading-none font-medium text-muted tabular-nums">
             {fill(countLabel, { n: count })}
           </span>
         )}
@@ -47,7 +47,7 @@ export function SectionHead({
 
 export function Empty({ dict }: { dict: Dictionary }) {
   return (
-    <p className="mt-3 border-t border-line pt-4 text-ui text-muted">
+    <p className="mt-4 border-t border-line pt-4 text-ui text-muted">
       {dict.common.empty}
     </p>
   );
@@ -68,14 +68,15 @@ function FactRow({
   return (
     <div
       className={cx(
-        "grid grid-cols-[5rem_minmax(0,1fr)] items-baseline gap-x-3 border-t border-line py-2.5 sm:grid-cols-[5.5rem_minmax(0,1fr)]",
+        LABEL_COLS,
+        "items-baseline border-t border-line py-2.5",
         last && "border-b",
       )}
     >
-      <dt translate={brand ? "no" : undefined} className="text-ui text-muted">
+      <dt translate={brand ? "no" : undefined} className="text-sm text-muted">
         {label}
       </dt>
-      <dd className="min-w-0 text-ui text-ink">{children}</dd>
+      <dd className="min-w-0 text-ui font-medium text-ink">{children}</dd>
     </div>
   );
 }
@@ -126,7 +127,10 @@ export function Identity({ content, dict, locale }: Props) {
           <a
             href={`mailto:${email}`}
             translate="no"
-            className={cx("inline-flex min-w-0 items-center gap-1.5", LINK)}
+            className={cx(
+              "inline-flex min-w-0 items-baseline gap-1.5 [&>svg]:self-center",
+              LINK,
+            )}
           >
             <Icon name="mail" />
             <span data-copy-value="email" className="min-w-0 wrap-anywhere">
@@ -151,7 +155,10 @@ export function Identity({ content, dict, locale }: Props) {
         <ExternalLink
           href={github}
           newTab={dict.common.newTab}
-          className={cx("inline-flex items-center gap-1.5", LINK)}
+          className={cx(
+            "inline-flex items-baseline gap-1.5 [&>svg]:self-center",
+            LINK,
+          )}
         >
           <GitHubMark />
           <span translate="no">{ghLabel(github)}</span>
@@ -195,7 +202,7 @@ export function Identity({ content, dict, locale }: Props) {
               </span>
             )}
           </h1>
-          <p className="mt-2 text-ui font-medium text-pretty text-ink-2 sm:text-lead">
+          <p className="mt-2 text-ui font-medium text-pretty text-ink sm:text-lead">
             {t(p.headline, locale)}
           </p>
           <p className="mt-4 hidden max-w-136 text-base leading-prose text-ink-2 sm:block">
@@ -266,7 +273,7 @@ export function ProjectsSection({ content, dict, locale }: Props) {
           />
           <ol
             data-project-list
-            className="mt-5 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3"
+            className="mt-4 grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3 lg:gap-x-8"
           >
             {shown.map((p) => (
               <ProjectEntry
@@ -295,6 +302,9 @@ export function ProjectsSection({ content, dict, locale }: Props) {
   );
 }
 
+const ROW_DATE =
+  "mt-0.5 text-sm text-muted tabular-nums sm:col-start-2 sm:row-start-1 sm:mt-0 sm:whitespace-nowrap";
+
 function PlainRow({
   id,
   title,
@@ -313,28 +323,28 @@ function PlainRow({
   locale: Locale;
 }) {
   return (
-    <li id={id} className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-4 py-4">
-      <div className="min-w-0">
-        <h3 className="text-base font-semibold text-ink">
-          {title}
-          {prize && <span className="font-semibold text-award"> {prize}</span>}
-        </h3>
-        <p className="mt-1 flex flex-wrap gap-x-3 text-sm text-muted">
-          {sub.map((x) => (
-            <span key={x}>{x}</span>
-          ))}
-        </p>
-        <RelatedLinks
-          id={id}
-          dict={dict}
-          locale={locale}
-          onHome
-          className="mt-1.5"
-        />
-      </div>
-      <p className="text-sm whitespace-nowrap text-muted tabular-nums">
-        {date}
+    // below 640px the date goes under the title; above it sits on the title baseline
+    <li
+      id={id}
+      className="grid gap-x-4 py-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-baseline"
+    >
+      <h3 className="min-w-0 text-base font-semibold text-ink sm:col-start-1">
+        {title}
+        {prize && <span className="font-semibold text-award"> {prize}</span>}
+      </h3>
+      <p className={ROW_DATE}>{date}</p>
+      <p className="mt-1 flex min-w-0 flex-wrap gap-x-3 text-sm text-muted sm:col-start-1">
+        {sub.map((x) => (
+          <span key={x}>{x}</span>
+        ))}
       </p>
+      <RelatedLinks
+        id={id}
+        dict={dict}
+        locale={locale}
+        onHome
+        className="mt-1.5 sm:col-start-1"
+      />
     </li>
   );
 }
@@ -358,7 +368,7 @@ export function ActivitiesSection({ content, dict, locale }: Props) {
         countLabel={dict.common.count}
       />
       {items.length ? (
-        <ul className="mt-3 divide-y divide-line border-t border-line">
+        <ul className="mt-4 divide-y divide-line border-t border-line">
           {items.map((a) => (
             <PlainRow
               key={a.id}
@@ -389,7 +399,7 @@ export function AwardsSection({ content, dict, locale }: Props) {
         countLabel={dict.common.count}
       />
       {items.length ? (
-        <ul className="mt-3 divide-y divide-line border-t border-line">
+        <ul className="mt-4 divide-y divide-line border-t border-line">
           {items.map((a) => (
             <PlainRow
               key={a.id}
@@ -422,16 +432,15 @@ function TimelineRow({
   date?: string;
 }) {
   return (
-    <li id={id} className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-4 py-4">
-      <div className="min-w-0">
-        <h4 className="text-base font-semibold text-ink">{title}</h4>
-        {sub && <p className="mt-1 text-sm text-muted">{sub}</p>}
-      </div>
-      {date && (
-        <p className="text-sm whitespace-nowrap text-muted tabular-nums">
-          {date}
-        </p>
-      )}
+    <li
+      id={id}
+      className="grid gap-x-4 py-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-baseline"
+    >
+      <h4 className="min-w-0 text-base font-semibold text-ink sm:col-start-1">
+        {title}
+      </h4>
+      {date && <p className={ROW_DATE}>{date}</p>}
+      {sub && <p className="mt-1 text-sm text-muted sm:col-start-1">{sub}</p>}
     </li>
   );
 }
@@ -445,10 +454,8 @@ function TimelineGroup({
 }) {
   return (
     <div>
-      <h3 className="text-sm font-semibold text-muted">{title}</h3>
-      <ul className="mt-1 divide-y divide-line border-t border-line">
-        {children}
-      </ul>
+      <h3 className="pt-3 text-sm font-semibold text-muted">{title}</h3>
+      <ul className="divide-y divide-line">{children}</ul>
     </div>
   );
 }
@@ -468,7 +475,7 @@ export function EducationSection({ content, dict, locale }: Props) {
     >
       <SectionHead id="education" title={dict.nav.education} />
       {items.length || career.length ? (
-        <div className="mt-4 grid gap-6">
+        <div className="mt-4 divide-y divide-line border-t border-line">
           {items.length > 0 && (
             <TimelineGroup title={dict.education.school}>
               {items.map((e) => (
@@ -512,31 +519,27 @@ export function ContactSection({ content, dict }: Props) {
   const c = content.profile?.connect ?? {};
   // the other labels are service names, kept away from auto-translate
   const BRANDS = ["GitHub", "Instagram", "Discord"];
+  // the same label/value row as the intro facts; Copy sits beside its value
   const row = (
     label: string,
     value: React.ReactNode,
     button?: React.ReactNode,
     brand = BRANDS.includes(label),
   ) => (
-    <div
-      key={label}
-      className="flex flex-wrap items-center gap-x-4 gap-y-1 py-3"
-    >
-      <dt
-        translate={brand ? "no" : undefined}
-        className="w-24 shrink-0 text-sm text-muted"
-      >
-        {label}
-      </dt>
-      <dd className="flex min-w-0 flex-1 flex-wrap items-center justify-between gap-x-3 gap-y-1">
-        {value}
-        {button}
-      </dd>
-    </div>
+    <FactRow key={label} label={label} brand={brand}>
+      {button ? (
+        <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          {value}
+          {button}
+        </span>
+      ) : (
+        value
+      )}
+    </FactRow>
   );
-  const value = "text-ui font-medium";
-  // same as the intro facts: the icon sits inside the value, before the text
-  const withIcon = "inline-flex min-w-0 items-center gap-1.5";
+  // the icon sits inside the value, before the text, on the text baseline
+  const withIcon =
+    "inline-flex min-w-0 items-baseline gap-1.5 [&>svg]:self-center";
   const rows = [
     c.email &&
       row(
@@ -544,7 +547,7 @@ export function ContactSection({ content, dict }: Props) {
         <a
           href={`mailto:${c.email}`}
           translate="no"
-          className={cx(withIcon, value, LINK)}
+          className={cx(withIcon, LINK)}
         >
           <Icon name="mail" />
           <span data-copy-value="email" className="min-w-0 wrap-anywhere">
@@ -565,7 +568,7 @@ export function ContactSection({ content, dict }: Props) {
         <ExternalLink
           href={c.github}
           newTab={dict.common.newTab}
-          className={cx(withIcon, value, LINK)}
+          className={cx(withIcon, LINK)}
         >
           <Icon name="github" />
           <span translate="no" className="min-w-0 wrap-anywhere">
@@ -579,7 +582,7 @@ export function ContactSection({ content, dict }: Props) {
         <ExternalLink
           href={c.instagram}
           newTab={dict.common.newTab}
-          className={cx(withIcon, value, LINK)}
+          className={cx(withIcon, LINK)}
         >
           <Icon name="instagram" />
           <span translate="no" className="min-w-0 wrap-anywhere">
@@ -597,7 +600,7 @@ export function ContactSection({ content, dict }: Props) {
             <ExternalLink
               href={c.discord}
               newTab={dict.common.newTab}
-              className={cx(withIcon, value, LINK)}
+              className={cx(withIcon, LINK)}
             >
               <Icon name="discord" />
               <span translate="no" className="min-w-0 wrap-anywhere">
@@ -607,7 +610,7 @@ export function ContactSection({ content, dict }: Props) {
           )
         : row(
             "Discord",
-            <span className={cx(withIcon, value, "text-ink")}>
+            <span className={cx(withIcon, "text-ink")}>
               <Icon name="discord" />
               <span
                 translate="no"
@@ -629,13 +632,7 @@ export function ContactSection({ content, dict }: Props) {
   return (
     <section id="connect" aria-labelledby="connect-title" className="min-w-0">
       <SectionHead id="connect" title={dict.nav.connect} />
-      {rows.length ? (
-        <dl className="mt-3 divide-y divide-line border-t border-line">
-          {rows}
-        </dl>
-      ) : (
-        <Empty dict={dict} />
-      )}
+      {rows.length ? <dl className="mt-4">{rows}</dl> : <Empty dict={dict} />}
     </section>
   );
 }

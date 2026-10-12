@@ -4,10 +4,10 @@ import type { Dictionary } from "@/i18n/dictionaries";
 import { fill } from "@/lib/format";
 import { groupedStack, TIER, techSlug } from "@/lib/tech";
 import { Icon } from "./icons";
-import { cx } from "./ui";
+import { cx, LABEL_COLS } from "./ui";
 
 const NODE =
-  "inline-flex min-h-10 items-center rounded-node border border-edge bg-white px-3 py-1 text-ui font-semibold text-ink transition-colors hover:border-primary hover:text-primary active:bg-primary-50";
+  "inline-flex min-h-10 items-center rounded-node border border-edge bg-white px-3 py-1 text-ui font-medium text-ink transition-colors hover:border-primary hover:text-primary active:bg-primary-50";
 
 /** Static tech label in project entries; highlighted when it matches the active filter. */
 export function TechChip({
@@ -79,16 +79,19 @@ export function TechList({
   link?: boolean;
 }) {
   return (
-    <dl
-      aria-label={dict.skills.label}
-      className="flex flex-wrap gap-x-5 gap-y-2"
-    >
+    <dl aria-label={dict.skills.label} className="grid gap-y-2.5">
       {groupedStack(project).map((g) => (
-        <div key={g.category} className="flex min-w-0 items-center gap-2">
-          <dt className="shrink-0 text-sm text-muted">
+        // a spec sheet: one row per category, labels in a fixed column
+        <div key={g.category} className={cx(LABEL_COLS, "items-start")}>
+          <dt
+            className={cx(
+              "flex items-center text-sm text-muted",
+              link ? "min-h-10" : "min-h-7",
+            )}
+          >
             {dict.skills.category[g.category]}
           </dt>
-          <dd>
+          <dd className="min-w-0">
             <ul className="flex flex-wrap gap-1.5">
               {g.items.map((name) =>
                 link ? (
@@ -167,11 +170,11 @@ export function StackRows({
             open={allSupport || !SUPPORT.includes(g.category)}
             className="group/cat"
           >
-            <summary className="-mx-2 flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-node px-2 py-1.5 transition-colors hover:bg-white active:bg-primary-50 [&::-webkit-details-marker]:hidden">
-              <h3 className="text-sm font-semibold text-ink-2 sm:text-ui">
+            <summary className="group/sum -mx-2 flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-node px-2 py-1.5 transition-colors hover:bg-white active:bg-primary-100 [&::-webkit-details-marker]:hidden">
+              <h3 className="text-sm font-semibold text-ink-2 transition-colors group-hover/sum:text-ink group-active/sum:text-ink sm:text-ui">
                 {g.label ?? dict.skills.category[g.category]}
               </h3>
-              <span className="text-sm text-muted tabular-nums">
+              <span className="text-sm text-muted tabular-nums transition-colors group-hover/sum:text-ink-2">
                 <span aria-hidden="true">{g.names.length}</span>
                 <span className="sr-only">
                   {fill(dict.skills.countSr, { n: g.names.length })}
@@ -179,7 +182,7 @@ export function StackRows({
               </span>
               <Icon
                 name="chevron"
-                className="ml-auto text-muted group-open/cat:rotate-180"
+                className="ml-auto text-muted transition-colors group-open/cat:rotate-180 group-hover/sum:text-ink-2"
               />
             </summary>
             <ul className="flex flex-wrap gap-2 pt-1 pb-3">
@@ -240,7 +243,7 @@ export function StackMap({
   const hasUnrecorded = groups.some((g) => g.names.some((n) => !usage.has(n)));
   return (
     <section id="skills" aria-labelledby="skills-title" className="min-w-0">
-      <h2 id="skills-title" className="text-h2 font-bold text-ink">
+      <h2 id="skills-title" className="text-h2 font-semibold text-ink">
         {title}
       </h2>
       {groups.length ? (
@@ -268,7 +271,7 @@ export function StackMap({
           )}
         </>
       ) : (
-        <p className="mt-3 border-t border-line pt-4 text-ui text-muted">
+        <p className="mt-4 border-t border-line pt-4 text-ui text-muted">
           {dict.common.empty}
         </p>
       )}

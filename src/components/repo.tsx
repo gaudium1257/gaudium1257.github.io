@@ -135,7 +135,7 @@ export function RepoCard({
               <dt className="text-sm text-muted">{k}</dt>
               <dd
                 translate={k === dict.project.license ? "no" : undefined}
-                className="mt-0.5 text-ui font-semibold tabular-nums"
+                className="mt-0.5 text-ui font-medium tabular-nums"
               >
                 {v}
               </dd>

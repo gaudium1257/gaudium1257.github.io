@@ -22,7 +22,7 @@ function Band({
 }) {
   return (
     <div className="border-t border-line">
-      <div className={`shell py-8 lg:py-10 ${className}`}>{children}</div>
+      <div className={`shell py-8 lg:py-12 ${className}`}>{children}</div>
     </div>
   );
 }
@@ -37,7 +37,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
 
   return (
     <main id="main">
-      <div className="shell grid gap-x-12 gap-y-10 pt-8 pb-10 lg:grid-cols-12 lg:pt-12 lg:pb-12">
+      <div className="shell grid gap-x-12 gap-y-10 py-8 lg:grid-cols-12 lg:py-12">
         <div className="min-w-0 lg:col-span-7">
           <Identity {...props} />
         </div>
@@ -54,15 +54,20 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       <Band>
         <ProjectsSection {...props} />
       </Band>
-      <Band className="grid gap-10 lg:grid-cols-2 lg:gap-12">
-        <ActivitiesSection {...props} />
-        <AwardsSection {...props} />
+      {/* every paired band sits on the hero's 7/5 axis */}
+      <Band className="grid gap-y-10 lg:grid-cols-12 lg:gap-x-12">
+        <div className="min-w-0 lg:col-span-7">
+          <ActivitiesSection {...props} />
+        </div>
+        <div className="min-w-0 lg:col-span-5">
+          <AwardsSection {...props} />
+        </div>
       </Band>
-      <Band className="grid gap-10 lg:grid-cols-12 lg:gap-12">
-        <div className="lg:col-span-5">
+      <Band className="grid gap-y-10 lg:grid-cols-12 lg:gap-x-12">
+        <div className="min-w-0 lg:col-span-7">
           <EducationSection {...props} />
         </div>
-        <div className="lg:col-span-7">
+        <div className="min-w-0 lg:col-span-5">
           <ContactSection {...props} />
         </div>
       </Band>

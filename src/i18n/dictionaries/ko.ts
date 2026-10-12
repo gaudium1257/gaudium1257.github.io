@@ -76,7 +76,6 @@ const ko = {
     moreTechSr: "외 기술 {n}개",
     starsSr: "GitHub 별",
     lastCommit: "최근 커밋",
-    backHome: "홈으로",
   },
   category: {
     personal: "개인 프로젝트",

@@ -4,7 +4,8 @@ import { t, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { fill } from "@/lib/format";
 import { foldRows, galleryRows, rowClass, type Shot } from "@/lib/media";
-import { cx } from "./ui";
+import { Icon } from "./icons";
+import { BUTTON, cx } from "./ui";
 
 const BOX: Record<MediaKind, string> = {
   web: "aspect-16/10",
@@ -127,7 +128,7 @@ export function Gallery({
             kind={s.kind}
             fullSize={fullSize}
           />
-          <figcaption className="mt-2 leading-snug">
+          <figcaption className="mt-2 text-sm leading-copy">
             <MediaCaption shot={s} dict={dict} locale={locale} />
           </figcaption>
         </figure>
@@ -139,8 +140,17 @@ export function Gallery({
       {shown.map(row)}
       {rest.length > 0 && (
         <details className="group/more">
-          <summary className="inline-flex h-11 cursor-pointer list-none items-center gap-2 rounded-node border border-line px-4 text-ui font-semibold text-ink transition-colors hover:border-edge active:bg-primary-50 [&::-webkit-details-marker]:hidden">
+          <summary
+            className={cx(
+              BUTTON,
+              "cursor-pointer list-none [&::-webkit-details-marker]:hidden",
+            )}
+          >
             {fill(dict.project.moreScreens, { n: hidden })}
+            <Icon
+              name="chevron"
+              className="text-muted group-open/more:rotate-180"
+            />
           </summary>
           <div className="mt-6 grid gap-6">{rest.map(row)}</div>
         </details>

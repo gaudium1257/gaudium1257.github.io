@@ -79,7 +79,6 @@ const en: Dictionary = {
     moreTechSr: "and {n} more technologies",
     starsSr: "GitHub stars",
     lastCommit: "Last commit",
-    backHome: "Back to Home",
   },
   category: {
     personal: "Solo project",
