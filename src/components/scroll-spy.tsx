@@ -6,7 +6,8 @@ import { useEffect } from "react";
  * Scrollspy for `[data-nav]` (home nav) and `[data-toc]` (project TOC). Exactly one link is current:
  * the last section whose top passed the line just under the sticky header (where an anchor jump lands).
  * Sections side by side share a top: the first wins unless the other was clicked. A clicked link stays
- * current until its jump has arrived, and at the page bottom when its section can't reach the line.
+ * current until its jump has arrived, then while its section still holds the upper half of the screen
+ * (near the page end the line slides past short sections, so the click must win there).
  */
 function spy(links: HTMLAnchorElement[], key: "nav" | "toc") {
   const root = document.documentElement;
@@ -52,8 +53,10 @@ function spy(links: HTMLAnchorElement[], key: "nav" | "toc") {
     }
     const bottom = innerHeight + scrollY >= root.scrollHeight - 2;
     let cur = row[0].id;
-    if (clicked) {
-      if (bottom || row.some((x) => x.id === clicked)) cur = clicked;
+    const held = clicked && document.getElementById(clicked);
+    if (held) {
+      const r = held.getBoundingClientRect();
+      if (r.top <= innerHeight / 2 && r.bottom > base) cur = held.id;
       else clicked = null;
     } else if (bottom) cur = secs[secs.length - 1].id;
     set(cur);

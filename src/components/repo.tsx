@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import type { Project } from "@/content/schema";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { Locale } from "@/i18n/config";
@@ -120,7 +121,19 @@ export function RepoCard({
           newTab={newTab}
           className={cx("wrap-anywhere", LINK)}
         >
-          <span translate="no">{repo.slug}</span>
+          {/* a narrow card breaks after the owner's slash before it splits the repo name */}
+          <span translate="no">
+            {repo.slug.split("/").map((part, i) => (
+              <Fragment key={i}>
+                {i > 0 && (
+                  <>
+                    /<wbr />
+                  </>
+                )}
+                {part}
+              </Fragment>
+            ))}
+          </span>
         </ExternalLink>
         {d?.archived && (
           <span className="ml-2 text-sm font-medium text-muted">

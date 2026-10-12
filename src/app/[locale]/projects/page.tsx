@@ -41,9 +41,7 @@ export default async function ProjectsPage({
       category as (typeof projects)[number]["techStack"][number]["category"],
     names: [...names],
   }));
-  const list = [...projects].sort((a, b) =>
-    b.period.start.localeCompare(a.period.start),
-  );
+  const list = projects; // the owner's order (content/project-order.json), same as the home page
 
   return (
     <main id="main">

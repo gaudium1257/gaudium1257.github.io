@@ -26,12 +26,12 @@ Schemas: `src/content/schema.ts` — read it before writing JSON. Ids are global
 2. Save the fact sheet verbatim to `content/sources/projects/<id>.md` (the audit trail; not rendered on the site).
 3. Save the JSON to `content/projects/<id>.json`. The post-edit hook validates it; fix any schema errors by asking or by correcting obvious format mistakes only (never by changing facts).
 4. Run the `content-fact-checker` subagent on the pair. Resolve every finding: remove unsupported claims or ask the user — do not reword them to sound safer.
-5. Images: if the fact sheet lists candidates and the user provides files, copy to `public/images/projects/<id>/` and set `thumbnail` / `screenshots` with real alt text. Give each screenshot its `kind` (`web` 16:10 · `mobile` 6:13 · `photo` 4:3). Boxes never crop and the validator rejects a ratio off by more than 1%, so pad (don't crop) files to the exact ratio first.
+5. Images: if the fact sheet lists candidates and the user provides files, copy to `public/images/projects/<id>/` and set `thumbnail` / `screenshots` with real alt text (`logo`: a square app icon or logo mark, PNG/WebP/SVG ≥256px — the validator rejects non-square files; `thumbnail`: a 16:10 lead image that leads alone on cards and the detail header). Give each screenshot its `kind` (`web` 16:10 · `mobile` 6:13 · `photo` 4:3). Boxes never crop and the validator rejects a ratio off by more than 1%, so pad (don't crop) files to the exact ratio first.
 6. Relations: map section 12 of the fact sheet ("관련 활동·수상·경력") to existing ids and fill `related` (one side is enough; the loader links both ways). If the target doesn't exist yet, offer to add it.
 7. `techNotes` (where each tech was used, keyed by the exact `techStack` name): keep only notes the fact sheet supports; the validator rejects keys that are not in `techStack`. Ask for missing ones rather than inventing.
 8. AI coding assistants (Claude Code, Copilot, Cursor…) go in `aiTools`, never in `techStack` or `skills.json` (owner decision 2026.10: they are shown on a separate line so the stack doesn’t read as AI-dependent).
 9. Skills: for each `techStack` item not in `content/skills.json` (validator warns), ask whether to add it to 개발 역량 and under which group. Keep spelling identical.
-10. Ask whether it should be `featured`.
+10. Ask where it goes in `content/project-order.json` (the owner's order for home and the list; unlisted projects follow, newest first).
 
 ## Other kinds (from the owner's answers)
 

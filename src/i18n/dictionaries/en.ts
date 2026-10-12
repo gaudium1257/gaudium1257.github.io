@@ -141,7 +141,6 @@ const en: Dictionary = {
     relatedAward: "Related award",
     shared: "Other projects using the same technology",
     allScreens: "See All Screens ({n})",
-    moreScreens: "More Screens ({n})",
     fullSize: "View full size",
     aiTools: "AI Tools",
     mediaKind: { web: "Web screen", mobile: "Phone screen", photo: "Photo" },

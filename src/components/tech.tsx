@@ -166,12 +166,15 @@ export function StackRows({
     .filter((g) => g.names.length);
   // when every row is a supporting one, nothing would be open: open them all
   const allSupport = rows.every((g) => SUPPORT.includes(g.category));
-  const item = (g: (typeof rows)[number]) => (
+  const item = (g: (typeof rows)[number], tall?: boolean) => (
     <li
       key={g.category + (g.label ?? "")}
       className={
         cards
-          ? "rounded-card bg-white px-4 py-2 ring-1 ring-line"
+          ? cx(
+              "rounded-card bg-white px-4 py-2 ring-1 ring-line",
+              tall && "sm:max-lg:row-span-2",
+            )
           : "border-t border-line first:border-t-0"
       }
     >
@@ -230,21 +233,28 @@ export function StackRows({
       </details>
     </li>
   );
-  if (!cards) return <ul>{rows.map(item)}</ul>;
+  if (!cards) return <ul>{rows.map((g) => item(g))}</ul>;
   // cards: the open build categories share a row height; the folded support ones get their own
   // compact row so a short closed card never sits next to a tall open one
   const build = rows.filter((g) => allSupport || !SUPPORT.includes(g.category));
   const support = allSupport
     ? []
     : rows.filter((g) => SUPPORT.includes(g.category));
+  // two columns (tablet) with an odd count: the fullest card spans two rows so the short ones stack
+  // beside it instead of leaving a hole under a two-chip card
+  const fullest =
+    build.length % 2 === 1 && build.length > 1
+      ? build.reduce((a, b) => (b.names.length > a.names.length ? b : a))
+      : undefined;
   return (
     <>
-      <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {build.map(item)}
+      {/* items-start: a short category (언어) keeps its own height instead of a hollow card */}
+      <ul className="grid items-start gap-4 sm:grid-flow-row-dense sm:grid-cols-2 lg:grid-cols-3">
+        {build.map((g) => item(g, g === fullest))}
       </ul>
       {support.length > 0 && (
         <ul className="mt-4 grid items-start gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {support.map(item)}
+          {support.map((g) => item(g))}
         </ul>
       )}
     </>

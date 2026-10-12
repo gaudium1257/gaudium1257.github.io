@@ -3,6 +3,10 @@
     {
       "id": "korea-university",
       "school": { "ko": "고려대학교", "en": "Korea University" },
+      "major": {
+        "ko": "컴퓨터학과",
+        "en": "Computer Science and Engineering"
+      },
       "status": "enrolled",
       "period": { "start": "2026-03", "end": null }
     }

@@ -33,6 +33,7 @@ content/                    ← all portfolio data (JSON), validated by src/cont
   awards/<id>.json          수상경력
   skills.json               기술 스택 (names must match projects' techStack)
   education.json            학력 및 경력사항 (items = 학력, career = 경력)
+  project-order.json        프로젝트 순서 (홈·목록 공통, 소유자가 직접 지정; 빠진 건 최신순으로 뒤에)
 src/content/schema.ts       zod schemas (single source of truth)
 src/content/collect.ts      reads + validates content, builds the global id index and relation graph
 src/content/load.ts         getContent() / getRelated() for pages (throws on invalid content)

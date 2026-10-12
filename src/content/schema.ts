@@ -191,7 +191,12 @@ export const Project = z.object({
   related: Related,
   tags: z.array(z.string().trim().min(1)).default([]),
   featured: z.boolean().default(false),
-  /** Lead web capture (16:10). Without it the first web/photo screenshot leads. */
+  /** Square app icon / logo mark (PNG, WebP or SVG; ≥256px, ideally 512×512), shown beside the title. */
+  logo: PublicImage.optional(),
+  /**
+   * Lead image (16:10) prepared for cards and the detail header — a store graphic or a composite of
+   * screens. When set it leads alone; without it the first web/photo screenshot leads.
+   */
   thumbnail: PublicImage.optional(),
   /** First `mobile` shot = the phone box beside the lead; the gallery lists them all. */
   screenshots: z
@@ -277,6 +282,16 @@ export const Skills = z.object({
     .default([]),
 });
 export type Skills = z.infer<typeof Skills>;
+
+// ---------------------------------------------------------------------------
+// Project order (프로젝트 순서) — the owner's own ranking for the home page and the list
+// ---------------------------------------------------------------------------
+
+export const ProjectOrder = z.object({
+  /** Project ids, first shown first. Projects not listed follow, newest start first. */
+  order: z.array(Id).default([]),
+});
+export type ProjectOrder = z.infer<typeof ProjectOrder>;
 
 // ---------------------------------------------------------------------------
 // Education & career (학력 및 경력사항)

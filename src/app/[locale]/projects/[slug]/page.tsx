@@ -3,7 +3,12 @@ import { notFound } from "next/navigation";
 import { BrandText } from "@/components/brand-text";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Icon, linkIcon } from "@/components/icons";
-import { Capture, Gallery, MediaCaption } from "@/components/media";
+import {
+  Capture,
+  Gallery,
+  MediaCaption,
+  ProjectLogo,
+} from "@/components/media";
 import { LiveBadge } from "@/components/project-entry";
 import { ExternalLink, RepoCard } from "@/components/repo";
 import { ScreensLink } from "@/components/screens-link";
@@ -491,14 +496,34 @@ export default async function ProjectPage({
           />
           <div className="mt-5 grid gap-x-12 gap-y-8 lg:grid-cols-12 lg:grid-rows-[auto_auto_1fr]">
             <div className="min-w-0 lg:col-span-7">
-              <h1 className="text-title-sm font-extrabold text-ink sm:text-display-sm">
-                {t(p.title, locale)}
-              </h1>
+              <div className="flex items-center gap-4">
+                {p.logo && (
+                  <ProjectLogo
+                    src={p.logo}
+                    className="size-12 rounded-panel sm:size-16"
+                  />
+                )}
+                <h1 className="min-w-0 text-title-sm font-extrabold text-ink sm:text-display-sm">
+                  {t(p.title, locale)}
+                </h1>
+              </div>
               <p className="mt-3 max-w-160 text-lead leading-copy text-ink-2">
                 {t(p.tagline, locale)}
               </p>
             </div>
             <div className="min-w-0 lg:col-span-7 lg:row-span-2 lg:row-start-2">
+              {/* the basics (when, who, what role) before the stack: what a reader checks first */}
+              <dl className="mb-6 grid grid-cols-2 sm:grid-cols-3">
+                {facts.map(([k, v]) => (
+                  <div
+                    key={k}
+                    className="min-w-0 border-t border-line py-3 pr-4"
+                  >
+                    <dt className="text-sm text-muted">{k}</dt>
+                    <dd className="mt-1 text-ui font-medium text-ink">{v}</dd>
+                  </div>
+                ))}
+              </dl>
               <TechList project={p} dict={dict} locale={locale} link />
               {p.aiTools.length > 0 && (
                 // plain text, not chips/nodes: AI assistants are not part of the tech stack
@@ -526,17 +551,6 @@ export default async function ProjectPage({
                   ))}
                 </div>
               )}
-              <dl className="mt-6 grid grid-cols-2 sm:grid-cols-3">
-                {facts.map(([k, v]) => (
-                  <div
-                    key={k}
-                    className="min-w-0 border-t border-line py-3 pr-4"
-                  >
-                    <dt className="text-sm text-muted">{k}</dt>
-                    <dd className="mt-1 text-ui font-medium text-ink">{v}</dd>
-                  </div>
-                ))}
-              </dl>
             </div>
             {lead && (
               <div className="min-w-0 lg:col-span-5 lg:col-start-8 lg:row-span-2 lg:row-start-1">

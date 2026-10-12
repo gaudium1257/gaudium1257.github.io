@@ -15,6 +15,7 @@ import {
   Education,
   Profile,
   Project,
+  ProjectOrder,
   Skills,
   type Localized,
 } from "./schema";
@@ -147,6 +148,23 @@ export function collectContent(): CollectResult {
     relations: new Map(),
   };
 
+  // --- project order: the owner's list first, the rest newest first ---------
+  const orderFile = "project-order.json";
+  const { order } = parseSingle(ProjectOrder, orderFile, errors, { order: [] });
+  const ids = new Set(content.projects.map((p) => p.id));
+  order.forEach((id, i) => {
+    if (!ids.has(id))
+      errors.push(`content/${orderFile}: unknown project id "${id}"`);
+    if (order.indexOf(id) !== i)
+      errors.push(`content/${orderFile}: "${id}" is listed twice`);
+  });
+  const rank = (id: string) =>
+    order.includes(id) ? order.indexOf(id) : order.length;
+  content.projects.sort(
+    (a, b) =>
+      rank(a.id) - rank(b.id) || b.period.start.localeCompare(a.period.start),
+  );
+
   // --- id index (ids are global so `related` can point anywhere) -----------
   const declared: { id: string; related: string[] }[] = [];
   const register = (
@@ -230,6 +248,16 @@ export function collectContent(): CollectResult {
       ...(p.thumbnail ? [{ src: p.thumbnail, kind: "web" as const }] : []),
       ...p.screenshots,
     ];
+    if (p.logo) {
+      const file = path.join(PUBLIC_DIR, p.logo);
+      const size = fs.existsSync(file) ? imageSize(file) : null;
+      if (!fs.existsSync(file))
+        errors.push(`project "${p.id}": image ${p.logo} not found in public/`);
+      else if (size && size.width !== size.height)
+        errors.push(
+          `project "${p.id}": logo ${p.logo} is ${size.width}×${size.height}; it must be square`,
+        );
+    }
     for (const { src, kind } of shots) {
       const file = path.join(PUBLIC_DIR, src);
       if (!fs.existsSync(file)) {
