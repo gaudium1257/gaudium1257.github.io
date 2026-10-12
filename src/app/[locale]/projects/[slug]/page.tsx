@@ -357,8 +357,14 @@ export default async function ProjectPage({
   ]);
 
   const buttons = p.links.filter((l) => l.type !== "github");
-  if (live && p.deployment.url && !buttons.some((l) => l.type === "demo"))
-    buttons.unshift({ type: "demo", url: p.deployment.url });
+  // the live URL gets its own button unless a demo or a link to the same URL (e.g. a store page) exists
+  const liveUrl = p.deployment.url;
+  if (
+    live &&
+    liveUrl &&
+    !buttons.some((l) => l.type === "demo" || l.url === liveUrl)
+  )
+    buttons.unshift({ type: "demo", url: liveUrl });
   const { wide, phone } = heroShots(p);
   const lead = Boolean(wide || phone);
   const shots = galleryShots(p);
