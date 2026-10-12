@@ -203,6 +203,16 @@ export function collectContent(): CollectResult {
   }
 
   // --- soft checks (errors under --strict) ----------------------------------
+  // activities have no section: one linked to no project would not show anywhere
+  for (const a of content.activities)
+    if (
+      ![...(content.relations.get(a.id) ?? [])].some(
+        (r) => content.index.get(r)?.kind === "project",
+      )
+    )
+      warnings.push(
+        `activity "${a.id}" is related to no project, so it is not shown anywhere`,
+      );
   const known = new Set(
     content.skills.groups.flatMap((g) => g.items.map((i) => i.name)),
   );

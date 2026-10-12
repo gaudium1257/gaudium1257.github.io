@@ -11,7 +11,6 @@ export const sections = [
   { id: "about", label: "about" },
   { id: "skills", label: "skills" },
   { id: "projects", label: "projects" },
-  { id: "activities", label: "activities" },
   { id: "awards", label: "awards" },
   { id: "education", label: "education", wide: true },
   { id: "connect", label: "connect" },

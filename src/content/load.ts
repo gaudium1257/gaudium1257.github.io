@@ -19,12 +19,24 @@ export function getContent(): Content {
   return content;
 }
 
-/** Related items of `id`, in both directions, with their kind, title and (awards) prize. */
+/**
+ * Related items of `id`, in both directions, with their kind, title and (awards) prize.
+ * Activities are left out: they have no section to link to (see `getActivitiesOf`).
+ */
 export function getRelated(id: string) {
   const { relations, index, awards } = getContent();
-  return [...(relations.get(id) ?? [])].map((rid) => ({
-    id: rid,
-    ...index.get(rid)!,
-    prize: awards.find((a) => a.id === rid)?.prize,
-  }));
+  return [...(relations.get(id) ?? [])]
+    .map((rid) => ({
+      id: rid,
+      ...index.get(rid)!,
+      prize: awards.find((a) => a.id === rid)?.prize,
+    }))
+    .filter((r) => r.kind !== "activity");
+}
+
+/** Activities (contests, programs) a project was made for — shown as a badge on its page. */
+export function getActivitiesOf(id: string) {
+  const { relations, activities } = getContent();
+  const rel = relations.get(id);
+  return activities.filter((a) => rel?.has(a.id));
 }

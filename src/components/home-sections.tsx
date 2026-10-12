@@ -324,43 +324,6 @@ function PlainRow({
 
 const byStartDesc = (a: string, b: string) => b.localeCompare(a);
 
-export function ActivitiesSection({ content, dict, locale }: Props) {
-  const items = [...content.activities].sort((a, b) =>
-    byStartDesc(a.period.start, b.period.start),
-  );
-  return (
-    <section
-      id="activities"
-      aria-labelledby="activities-title"
-      className="min-w-0"
-    >
-      <SectionHead
-        id="activities"
-        title={dict.nav.activities}
-        count={items.length}
-        countLabel={dict.common.count}
-      />
-      {items.length ? (
-        <ul className="mt-6 divide-y divide-line border-t border-line">
-          {items.map((a) => (
-            <PlainRow
-              key={a.id}
-              id={a.id}
-              title={t(a.title, locale)}
-              sub={[t(a.organization, locale), t(a.role, locale)]}
-              date={formatPeriod(a.period, dict.common.present)}
-              dict={dict}
-              locale={locale}
-            />
-          ))}
-        </ul>
-      ) : (
-        <Empty dict={dict} />
-      )}
-    </section>
-  );
-}
-
 export function AwardsSection({ content, dict, locale }: Props) {
   const items = [...content.awards].sort((a, b) => byStartDesc(a.date, b.date));
   return (

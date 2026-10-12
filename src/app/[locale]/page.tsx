@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import {
-  ActivitiesSection,
   AwardsSection,
   ContactSection,
   EducationSection,
@@ -56,16 +55,9 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       <Band>
         <ProjectsSection {...props} />
       </Band>
-      <Band
-        tone="surface"
-        className="grid gap-y-14 lg:grid-cols-12 lg:gap-x-12"
-      >
-        <div className="min-w-0 lg:col-span-7">
-          <ActivitiesSection {...props} />
-        </div>
-        <div className="min-w-0 lg:col-span-5">
-          <AwardsSection {...props} />
-        </div>
+      {/* activities have no section (owner, 2026.10): they show as a badge on their project's page */}
+      <Band tone="surface">
+        <AwardsSection {...props} />
       </Band>
       <Band>
         <EducationSection {...props} />
