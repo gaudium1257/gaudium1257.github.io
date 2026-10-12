@@ -7,6 +7,11 @@ export const defaultLocale: Locale = "ko";
 export const hasLocale = (value: string): value is Locale =>
   (locales as readonly string[]).includes(value);
 
+/** First supported language in a preference list (`navigator.languages`), else the default. */
+export const matchLocale = (langs: readonly string[]): Locale =>
+  langs.map((l) => l.slice(0, 2).toLowerCase()).find(hasLocale) ??
+  defaultLocale;
+
 /** Pick the string for the current locale from a content `Localized` field. */
 export const t = (value: Localized, locale: Locale) => value[locale];
 

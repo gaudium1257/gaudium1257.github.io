@@ -92,7 +92,8 @@
   }
   h1,
   h2,
-  h3 {
+  h3,
+  h4 {
     text-wrap: balance;
   }
   a,
@@ -106,5 +107,19 @@
   :focus-visible {
     outline: 2px solid var(--color-primary);
     outline-offset: 2px;
+  }
+  /* mouse/trackpad: no page rubber-band; touch keeps pull-to-refresh, -y keeps swipe navigation */
+  @media (pointer: fine) {
+    html {
+      overscroll-behavior-y: none;
+    }
+  }
+  /* the only motion is colour fades; drop them for reduced-motion users */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      transition-duration: 0s !important;
+    }
   }
 }

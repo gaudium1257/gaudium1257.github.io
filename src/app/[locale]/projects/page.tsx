@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { BrandText } from "@/components/brand-text";
 import { Empty } from "@/components/home-sections";
 import { FilterBar } from "@/components/project-filter";
 import { ProjectEntry } from "@/components/project-entry";
@@ -8,7 +9,7 @@ import { cx, LINK } from "@/components/ui";
 import { getContent } from "@/content/load";
 import { hasLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
-import { fill } from "@/lib/format";
+import { fill, formatYmd } from "@/lib/format";
 import { snapshotDate } from "@/lib/github";
 import { techUsage } from "@/lib/tech";
 
@@ -83,17 +84,21 @@ export default async function ProjectsPage({
           <FilterBar
             template={dict.projects.filterStatus}
             clearLabel={dict.projects.filterClear}
+            clearedMessage={dict.projects.filterCleared}
+            noneMessage={dict.projects.filterNone}
+            noneLink={dict.projects.filterNoneLink}
           />
           <ol
             data-project-list
-            className="mt-4 divide-y divide-line border-t border-line"
+            className="mt-6 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3"
           >
-            {list.map((p) => (
+            {list.map((p, i) => (
               <ProjectEntry
                 key={p.id}
                 project={p}
                 dict={dict}
                 locale={locale}
+                eager={i < 3 ? (i === 0 ? "high" : "eager") : undefined}
                 heading="h2"
                 onHome={false}
               />
@@ -101,9 +106,11 @@ export default async function ProjectsPage({
           </ol>
           {snapshotDate && (
             <p className="mt-4 border-t border-line pt-4 text-ui text-muted">
-              {fill(dict.projects.provenance, {
-                date: snapshotDate.replaceAll("-", "."),
-              })}
+              <BrandText
+                text={fill(dict.projects.provenance, {
+                  date: formatYmd(snapshotDate),
+                })}
+              />
             </p>
           )}
         </>

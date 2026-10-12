@@ -2,13 +2,13 @@ import type { Project } from "@/content/schema";
 import { getRelated } from "@/content/load";
 import { t, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
-import { formatPeriod } from "@/lib/format";
+import { fill, formatPeriod } from "@/lib/format";
 import { itemHref } from "@/lib/href";
 import { heroShots } from "@/lib/media";
-import { projectTechSlugs } from "@/lib/tech";
+import { groupedStack, projectTechSlugs } from "@/lib/tech";
 import { Capture } from "./media";
 import { RepoLine } from "./repo";
-import { TechList } from "./tech";
+import { TechChip } from "./tech";
 import { cx, ENTRY_FOCUS, LINK, STRETCH } from "./ui";
 
 export function LiveBadge({ label }: { label: string }) {
@@ -81,125 +81,130 @@ export function ProjectMeta({
   );
 }
 
-/** One project in a list (home, project list). Featured: highlights + lead capture. */
+/** Chips shown on a card before "+N"; the full stack lives on the detail page. */
+const CARD_CHIPS = 6;
+
+/**
+ * One project card (home, project list): lead capture → title and one-liner → meta → highlights →
+ * relations → tech chips and repo pinned to the bottom so cards in a row line up.
+ * `featured` only sorts first (decided by the caller); every card has the same shape.
+ */
 export function ProjectEntry({
   project,
   dict,
   locale,
-  featured = false,
   heading: Heading = "h3",
   onHome,
+  eager,
 }: {
   project: Project;
   dict: Dictionary;
   locale: Locale;
-  featured?: boolean;
   heading?: "h2" | "h3";
   onHome: boolean;
+  /** first row of a page that opens on the list: load the capture now ("high" = the LCP candidate) */
+  eager?: "eager" | "high";
 }) {
-  const title = (
-    <div>
-      <Heading className="text-h3 font-bold text-ink">
-        <a
-          href={`/${locale}/projects/${project.id}/`}
-          data-stretch
-          className={cx(STRETCH, "group-hover/p:text-primary")}
-        >
-          {t(project.title, locale)}
-        </a>
-      </Heading>
-      <p className="mt-1 text-base leading-copy text-ink-2">
-        {t(project.tagline, locale)}
-      </p>
-    </div>
-  );
-  const side = (
-    <>
-      <TechList project={project} dict={dict} locale={locale} />
-      <RepoLine project={project} dict={dict} newTab={dict.common.newTab} />
-    </>
-  );
-  // every entry shows its lead capture (owner request 2026.10); only the featured one adds highlights
   const { wide, phone } = heroShots(project);
-  const lead = Boolean(wide || phone);
+  const names = groupedStack(project).flatMap((g) => g.items);
+  const more = Math.max(0, names.length - CARD_CHIPS);
   return (
     <li
       data-project={project.id}
       data-techs={projectTechSlugs(project).join(" ")}
       data-show="true"
-      className="data-[show=false]:hidden"
+      className="min-w-0 data-[show=false]:hidden"
     >
       <article
         className={cx(
-          "group/p relative -mx-3 grid gap-x-10 rounded-panel px-3 py-5 transition-colors hover:bg-surface md:grid-cols-12",
-          lead ? "gap-y-4 md:grid-rows-[auto_1fr]" : "gap-y-3",
+          // -m-3 + p-3 gives the hover surface room; the height adds those 1.5rem back so the card fills its row
+          "group/p relative -m-3 flex h-[calc(100%+1.5rem)] flex-col gap-3 rounded-panel p-3 transition-colors hover:bg-surface has-[[data-stretch]:active]:bg-primary-50",
           ENTRY_FOCUS,
         )}
       >
-        <div
-          className={cx(
-            "flex min-w-0 flex-col md:col-span-7",
-            lead ? "gap-3 md:row-span-2 md:row-start-1" : "gap-2",
-          )}
-        >
-          {title}
-          <ProjectMeta project={project} dict={dict} />
-          {featured && project.highlights.length > 0 && (
-            <ul
-              aria-label={dict.projects.highlights}
-              className="grid gap-1 text-ui text-ink-2"
+        {/* one 16:10 box per card so a row lines up; a phone-only project sits centred in it */}
+        {wide ? (
+          <Capture
+            src={wide.src}
+            alt={t(wide.alt, locale)}
+            kind={wide.kind}
+            className="shrink-0"
+            load={eager}
+          />
+        ) : (
+          phone && (
+            <div className="flex aspect-16/10 shrink-0 justify-center rounded-node bg-surface py-3 ring-1 ring-line ring-inset">
+              <Capture
+                src={phone.src}
+                alt={t(phone.alt, locale)}
+                kind="mobile"
+                className="h-full w-auto"
+                load={eager}
+              />
+            </div>
+          )
+        )}
+        <div>
+          <Heading className="text-h3 font-bold text-balance text-ink">
+            <a
+              href={`/${locale}/projects/${project.id}/`}
+              data-stretch
+              className={cx(STRETCH, "group-hover/p:text-primary")}
             >
-              {project.highlights.map((h, i) => (
-                <li key={i} className="flex gap-2.5">
-                  <span
-                    aria-hidden="true"
-                    className="mt-2.5 size-1.5 shrink-0 rounded-full bg-edge"
-                  />
-                  {t(h, locale)}
-                </li>
-              ))}
-            </ul>
-          )}
-          <RelatedLinks
-            id={project.id}
+              {t(project.title, locale)}
+            </a>
+          </Heading>
+          <p className="mt-1 text-ui leading-copy text-pretty text-ink-2">
+            {t(project.tagline, locale)}
+          </p>
+        </div>
+        <ProjectMeta project={project} dict={dict} />
+        {project.highlights.length > 0 && (
+          <ul
+            aria-label={dict.projects.highlights}
+            className="grid gap-1 text-sm leading-copy text-ink-2"
+          >
+            {project.highlights.map((h, i) => (
+              <li key={i} className="flex gap-2">
+                <span
+                  aria-hidden="true"
+                  className="mt-2 size-1.5 shrink-0 rounded-full bg-edge"
+                />
+                <span className="min-w-0">{t(h, locale)}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+        <RelatedLinks
+          id={project.id}
+          dict={dict}
+          locale={locale}
+          onHome={onHome}
+        />
+        <div className="mt-auto flex min-w-0 flex-col gap-2.5 pt-1">
+          <ul
+            aria-label={dict.skills.label}
+            className="flex flex-wrap items-center gap-1.5"
+          >
+            {/* every chip is rendered so a filter match past the first few can still light up */}
+            {names.map((name, i) => (
+              <TechChip key={name} name={name} extra={i >= CARD_CHIPS} />
+            ))}
+            {more > 0 && (
+              <li className="text-sm font-medium text-muted tabular-nums">
+                <span aria-hidden="true">+{more}</span>
+                <span className="sr-only">
+                  {fill(dict.projects.moreTechSr, { n: more })}
+                </span>
+              </li>
+            )}
+          </ul>
+          <RepoLine
+            project={project}
             dict={dict}
             locale={locale}
-            onHome={onHome}
+            newTab={dict.common.newTab}
           />
-        </div>
-        {lead && (
-          <div
-            className={cx(
-              "grid min-w-0 gap-3 md:col-span-5 md:col-start-8 md:row-start-1",
-              wide && phone && "grid-cols-[minmax(0,208fr)_minmax(0,60fr)]",
-            )}
-          >
-            {wide && (
-              <Capture
-                src={wide.src}
-                alt={t(wide.alt, locale)}
-                kind={wide.kind}
-              />
-            )}
-            {phone && (
-              // a lone phone never stretches to the column
-              <div className={cx(!wide && "w-36 sm:w-40")}>
-                <Capture
-                  src={phone.src}
-                  alt={t(phone.alt, locale)}
-                  kind="mobile"
-                />
-              </div>
-            )}
-          </div>
-        )}
-        <div
-          className={cx(
-            "flex min-w-0 flex-col gap-2.5 md:col-span-5 md:col-start-8",
-            lead ? "md:row-start-2" : "md:row-start-1 md:pt-1",
-          )}
-        >
-          {side}
         </div>
       </article>
     </li>

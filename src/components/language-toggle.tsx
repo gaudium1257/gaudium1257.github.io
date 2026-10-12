@@ -24,7 +24,7 @@ export function LanguageToggle({
     <div
       role="group"
       aria-label={label}
-      className="ml-auto flex shrink-0 overflow-hidden rounded-node border border-line lg:ml-2"
+      className="ml-auto flex shrink-0 rounded-node border border-line lg:ml-2"
     >
       {locales.map((lc) => {
         const cur = lc === locale;
@@ -42,7 +42,8 @@ export function LanguageToggle({
                 // non-critical preference
               }
             }}
-            className={`relative flex h-8 min-w-10 items-center justify-center px-2.5 text-sm font-semibold transition-colors after:absolute after:inset-x-0 after:-inset-y-1.5 focus-visible:z-10 focus-visible:-outline-offset-2 forced-colors:aria-[current=true]:underline ${cur ? "bg-ink text-white" : "text-muted hover:text-ink active:bg-primary-50"}`}
+            // no overflow-hidden on the group: it would clip the ::after that grows the tap target to 44px
+            className={`relative flex h-8 min-w-10 items-center justify-center px-2.5 text-sm font-semibold transition-colors after:absolute after:inset-x-0 after:-inset-y-1.5 first:rounded-l-[calc(var(--radius-node)-1px)] last:rounded-r-[calc(var(--radius-node)-1px)] focus-visible:z-10 forced-colors:aria-[current=true]:underline ${cur ? "bg-ink text-white" : "text-muted hover:text-ink active:bg-primary-50"}`}
           >
             {lc.toUpperCase()}
             <span className="sr-only"> {names[lc]}</span>

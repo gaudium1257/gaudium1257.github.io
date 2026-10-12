@@ -1,6 +1,7 @@
 import type { Project, Skills } from "@/content/schema";
 import { t, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
+import { fill } from "@/lib/format";
 import { groupedStack, TIER, techSlug } from "@/lib/tech";
 import { cx } from "./ui";
 
@@ -8,13 +9,21 @@ const NODE =
   "inline-flex min-h-10 items-center rounded-node border border-edge bg-white px-3 py-1 text-ui font-semibold text-ink transition-colors hover:border-primary hover:text-primary active:bg-primary-50";
 
 /** Static tech label in project entries; highlighted when it matches the active filter. */
-export function TechChip({ name }: { name: string }) {
+export function TechChip({
+  name,
+  extra = false,
+}: {
+  name: string;
+  /** past the card's visible chips: hidden unless the active filter matches it */
+  extra?: boolean;
+}) {
   return (
     <li
       data-node={techSlug(name)}
       data-match="false"
+      data-extra={extra ? "true" : undefined}
       translate="no"
-      className="inline-flex min-h-7 items-center rounded-tag border border-line bg-white px-2 py-0.5 text-sm font-medium text-ink-2 data-[match=true]:border-primary data-[match=true]:bg-primary-100 data-[match=true]:text-primary-700"
+      className="inline-flex min-h-7 items-center rounded-tag border border-line bg-white px-2 py-0.5 text-sm font-medium text-ink-2 data-[extra=true]:hidden data-[match=true]:border-primary data-[match=true]:bg-primary-100 data-[match=true]:text-primary-700 data-[extra=true]:data-[match=true]:inline-flex"
     >
       {name}
     </li>
@@ -45,7 +54,8 @@ export function TechNode({
         className={cx(
           NODE,
           filter &&
-            "aria-[current=true]:border-primary aria-[current=true]:bg-primary aria-[current=true]:text-white",
+            // the selected node keeps white text on hover and darkens on hover/press
+            "aria-[current=true]:border-primary aria-[current=true]:bg-primary aria-[current=true]:text-white aria-[current=true]:hover:border-primary-700 aria-[current=true]:hover:bg-primary-700 aria-[current=true]:hover:text-white aria-[current=true]:active:bg-primary-700",
         )}
       >
         {name}
@@ -100,6 +110,20 @@ export function TechList({
   );
 }
 
+type TechCategory = Project["techStack"][number]["category"];
+
+/**
+ * Folding rule (owner request 2026.10): the tech you build with — language, frontend, mobile,
+ * backend, AI — stays open; the tech that supports it — DB, data, infra, tooling, other — folds.
+ */
+const SUPPORT: TechCategory[] = [
+  "database",
+  "data",
+  "infra",
+  "tooling",
+  "other",
+];
+
 /** Rows of filter nodes by category (stack map on home, filter on the project list). */
 export function StackRows({
   groups,
@@ -111,7 +135,7 @@ export function StackRows({
   onHome,
 }: {
   groups: {
-    category: Project["techStack"][number]["category"];
+    category: TechCategory;
     label?: string;
     names: string[];
   }[];
@@ -129,57 +153,81 @@ export function StackRows({
       names: g.names.filter((n) => unrecorded || usage.has(n)),
     }))
     .filter((g) => g.names.length);
+  const main = rows.filter((g) => !SUPPORT.includes(g.category));
+  const support = rows.filter((g) => SUPPORT.includes(g.category));
+  // nothing to fold into when every row is a supporting one
+  const open = main.length ? main : support;
+  const folded = main.length ? support : [];
+  const label = (g: (typeof rows)[number]) =>
+    g.label ?? dict.skills.category[g.category];
+  const row = (g: (typeof rows)[number]) => (
+    <li
+      key={g.category + (g.label ?? "")}
+      className={cx(
+        "grid gap-x-4 gap-y-2 border-t border-line py-3 first:border-t-0 sm:grid-cols-[6rem_minmax(0,1fr)]",
+        narrow && "lg:grid-cols-1",
+      )}
+    >
+      <h3
+        className={cx(
+          "text-sm font-semibold text-ink-2 sm:pt-2.5 sm:text-ui",
+          narrow && "lg:pt-0",
+        )}
+      >
+        {label(g)}
+      </h3>
+      <ul className="flex flex-wrap gap-2">
+        {g.names.map((name) => {
+          if (!usage.has(name))
+            return (
+              <li key={name}>
+                <span
+                  translate="no"
+                  className="inline-flex min-h-10 items-center rounded-node border border-dashed border-edge px-3 py-1 text-ui text-muted"
+                >
+                  {name}
+                  <span className="sr-only">, {dict.skills.srNone}</span>
+                </span>
+              </li>
+            );
+          const slug = techSlug(name);
+          return (
+            <TechNode
+              key={name}
+              name={name}
+              href={
+                onHome ? `/${locale}/projects/?tech=${slug}` : `?tech=${slug}`
+              }
+              srText={dict.skills.linkSr}
+              filter
+            />
+          );
+        })}
+      </ul>
+    </li>
+  );
+  const hidden = folded.reduce((n, g) => n + g.names.length, 0);
   return (
-    <ul>
-      {rows.map((g) => (
-        <li
-          key={g.category + (g.label ?? "")}
-          className={cx(
-            "grid gap-x-4 gap-y-2 border-t border-line py-3 first:border-t-0 sm:grid-cols-[6rem_minmax(0,1fr)]",
-            narrow && "lg:grid-cols-1",
-          )}
-        >
-          <h3
-            className={cx(
-              "text-sm font-semibold text-ink-2 sm:pt-2.5 sm:text-ui",
-              narrow && "lg:pt-0",
-            )}
-          >
-            {g.label ?? dict.skills.category[g.category]}
-          </h3>
-          <ul className="flex flex-wrap gap-2">
-            {g.names.map((name) => {
-              if (!usage.has(name))
-                return (
-                  <li key={name}>
-                    <span
-                      translate="no"
-                      className="inline-flex min-h-10 items-center rounded-node border border-dashed border-edge px-3 py-1 text-ui text-muted"
-                    >
-                      {name}
-                      <span className="sr-only">, {dict.skills.srNone}</span>
-                    </span>
-                  </li>
-                );
-              const slug = techSlug(name);
-              return (
-                <TechNode
-                  key={name}
-                  name={name}
-                  href={
-                    onHome
-                      ? `/${locale}/projects/?tech=${slug}`
-                      : `?tech=${slug}`
-                  }
-                  srText={dict.skills.linkSr}
-                  filter
-                />
-              );
-            })}
-          </ul>
-        </li>
-      ))}
-    </ul>
+    <>
+      <ul>{open.map(row)}</ul>
+      {folded.length > 0 && (
+        // native disclosure: works without JS; the filter opens it when ?tech= points inside
+        <details className="group/fold border-t border-line">
+          <summary className="flex min-h-11 cursor-pointer list-none flex-wrap items-center gap-x-3 gap-y-0.5 py-2 text-ui font-semibold text-primary hover:text-primary-700 active:text-ink [&::-webkit-details-marker]:hidden">
+            <span className="group-open/fold:hidden">
+              {fill(dict.skills.more, { n: hidden })}
+            </span>
+            <span className="hidden group-open/fold:inline">
+              {dict.skills.less}
+            </span>
+            <span className="text-sm font-normal text-muted">
+              {folded.map(label).join(" · ")}
+            </span>
+          </summary>
+          <ul className="border-t border-line">{folded.map(row)}</ul>
+        </details>
+      )}
+    </>
   );
 }
 

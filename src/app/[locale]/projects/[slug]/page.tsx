@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { BrandText } from "@/components/brand-text";
 import { Icon, linkIcon } from "@/components/icons";
 import { Capture, Gallery, MediaCaption } from "@/components/media";
 import { LiveBadge } from "@/components/project-entry";
@@ -11,7 +12,13 @@ import type { Project } from "@/content/schema";
 import { getContent, getRelated } from "@/content/load";
 import { hasLocale, locales, t, type Locale } from "@/i18n/config";
 import { getDictionary, type Dictionary } from "@/i18n/dictionaries";
-import { fill, formatPeriod, formatYm } from "@/lib/format";
+import {
+  fill,
+  formatPercent,
+  formatPeriod,
+  formatYm,
+  formatYmd,
+} from "@/lib/format";
 import { repoOf, snapshotDate } from "@/lib/github";
 import { itemHref } from "@/lib/href";
 import { galleryShots, heroShots } from "@/lib/media";
@@ -207,11 +214,11 @@ const BLOCKS: {
               )}
             >
               <p className="text-ui font-semibold text-ink-2">
-                {c.dict.project.langsTitle}{" "}
+                <BrandText text={c.dict.project.langsTitle} />{" "}
                 {snapshotDate && (
                   <span className="font-normal text-muted">
                     {fill(c.dict.project.langsNote, {
-                      date: snapshotDate.replaceAll("-", "."),
+                      date: formatYmd(snapshotDate),
                     })}
                   </span>
                 )}
@@ -239,7 +246,9 @@ const BLOCKS: {
                       )}
                     />
                     <span translate="no">{l.name}</span>
-                    <span className="text-muted tabular-nums">{l.pct}%</span>
+                    <span className="text-muted tabular-nums">
+                      {formatPercent(l.pct, c.locale)}
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -390,7 +399,10 @@ export default async function ProjectPage({
       <span key="d">
         <LiveBadge label={dict.deploymentStatus.live} />
         {p.deployment.platform && (
-          <span className="mt-0.5 block text-sm font-normal text-muted">
+          <span
+            translate="no"
+            className="mt-0.5 block text-sm font-normal text-muted"
+          >
             {p.deployment.platform}
           </span>
         )}
@@ -502,7 +514,7 @@ export default async function ProjectPage({
                     key={l.url}
                     href={l.url}
                     newTab={dict.common.newTab}
-                    className="inline-flex h-11 items-center gap-2 rounded-node border border-edge bg-white px-4 text-ui font-semibold text-ink transition-colors hover:border-primary hover:text-primary active:bg-primary-50"
+                    className="inline-flex min-h-11 items-center gap-2 rounded-node border border-edge bg-white px-4 py-2 text-left text-ui font-semibold text-ink transition-colors hover:border-primary hover:bg-primary-50 active:bg-primary-100"
                   >
                     <Icon name={linkIcon(l.url, l.type)} />
                     {l.label ? t(l.label, locale) : dict.project.links[l.type]}
@@ -534,7 +546,7 @@ export default async function ProjectPage({
                     src={wide.src}
                     alt={t(wide.alt, locale)}
                     kind={wide.kind}
-                    priority
+                    load="high"
                     fullSize={fullSize}
                   />
                 )}
@@ -545,7 +557,7 @@ export default async function ProjectPage({
                       src={phone.src}
                       alt={t(phone.alt, locale)}
                       kind="mobile"
-                      priority={!wide}
+                      load={wide ? undefined : "high"}
                       fullSize={fullSize}
                     />
                   </div>
@@ -581,7 +593,12 @@ export default async function ProjectPage({
                 lead ? "lg:row-start-3" : "lg:row-span-3 lg:row-start-1",
               )}
             >
-              <RepoCard project={p} dict={dict} newTab={dict.common.newTab} />
+              <RepoCard
+                project={p}
+                dict={dict}
+                locale={locale}
+                newTab={dict.common.newTab}
+              />
             </div>
           )}
         </div>
