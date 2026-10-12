@@ -239,7 +239,7 @@
   ],
   "related": ["next-contest-2026"],
   "tags": ["mobile", "calendar", "diary", "offline", "vibe-coding"],
-  "featured": true,
+  "featured": false,
   "screenshots": [
     {
       "src": "/images/projects/dayce/01-month-view.png",
