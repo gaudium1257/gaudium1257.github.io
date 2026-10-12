@@ -15,7 +15,7 @@ import { fill, formatPeriod, formatYm } from "@/lib/format";
 import { repoOf, snapshotDate } from "@/lib/github";
 import { itemHref } from "@/lib/href";
 import { galleryShots, heroShots } from "@/lib/media";
-import { techUsage } from "@/lib/tech";
+import { groupedStack, techUsage } from "@/lib/tech";
 
 export const dynamicParams = false;
 
@@ -139,15 +139,54 @@ const BLOCKS: {
   {
     id: "stack",
     has: (c) =>
-      sharedProjects(c).length > 0 || !!repoOf(c.p)?.data?.languages?.length,
+      Object.keys(c.p.techNotes).length > 0 ||
+      sharedProjects(c).length > 0 ||
+      !!repoOf(c.p)?.data?.languages?.length,
     render: (c) => {
       const shared = sharedProjects(c);
       const langs = repoOf(c.p)?.data?.languages ?? [];
       const LANG = ["bg-lang-1", "bg-lang-2", "bg-lang-3", "bg-lang-4"];
+      const notes = c.p.techNotes;
+      const hasNotes = Object.keys(notes).length > 0;
       return (
         <>
+          {hasNotes && (
+            // where each tech was used: category | tech | use (stacks below 640px)
+            <div className="max-w-200 divide-y divide-line border-t border-line">
+              {groupedStack(c.p).map((g) => (
+                <div
+                  key={g.category}
+                  className="grid gap-x-6 gap-y-1 py-3 sm:grid-cols-[5.5rem_minmax(0,1fr)]"
+                >
+                  <p className="pt-0.5 text-sm text-muted">
+                    {c.dict.skills.category[g.category]}
+                  </p>
+                  <dl className="grid gap-y-2">
+                    {g.items.map((name) => (
+                      <div
+                        key={name}
+                        className="grid gap-x-6 gap-y-0.5 sm:grid-cols-[11rem_minmax(0,1fr)]"
+                      >
+                        <dt translate="no" className="font-semibold text-ink">
+                          {name}
+                        </dt>
+                        <dd className="text-ui leading-copy text-ink-2">
+                          {notes[name] ? t(notes[name], c.locale) : null}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+              ))}
+            </div>
+          )}
           {shared.length > 0 && (
-            <p className="flex flex-wrap items-baseline gap-x-3 text-ui">
+            <p
+              className={cx(
+                "flex flex-wrap items-baseline gap-x-3 text-ui",
+                hasNotes && "mt-6",
+              )}
+            >
               <span className="text-muted">{c.dict.project.shared}</span>
               {shared.map((q) => (
                 <a
@@ -161,7 +200,12 @@ const BLOCKS: {
             </p>
           )}
           {langs.length > 0 && (
-            <div className={cx("max-w-160", shared.length > 0 && "mt-6")}>
+            <div
+              className={cx(
+                "max-w-160",
+                (hasNotes || shared.length > 0) && "mt-6",
+              )}
+            >
               <p className="text-ui font-semibold text-ink-2">
                 {c.dict.project.langsTitle}{" "}
                 {snapshotDate && (

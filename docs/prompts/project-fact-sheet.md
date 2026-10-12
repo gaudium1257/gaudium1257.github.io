@@ -170,6 +170,7 @@
   - `techStack[].category`: language, frontend, backend, mobile, ai-ml, data, database, infra, tooling, other
   - `links[].type`: github, demo, docs, video, slides, article, store, certificate, other
 - 저장소가 여러 개면 `github` 링크를 저장소마다 하나씩 넣고 `label`(`{ "ko": "관리자 웹", "en": "Admin web" }`처럼)을 붙인다. **첫 번째 `github` 링크가 대표 저장소**로 카드와 상세 머리에 나오니, 내 기여가 가장 큰 저장소를 맨 앞에 둔다.
+- `techNotes`: `techStack`의 기술마다 이 프로젝트에서 **어디에 썼는지** 한 줄(ko/en). 키는 `techStack` 이름과 똑같이 쓰고, 팩트시트 6번 표의 근거(파일·기능)로 확인된 것만 넣는다. 누가 만들었는지는 쓰지 않는다(팀 프로젝트에서 기여처럼 읽히지 않게). 근거가 없으면 그 기술은 빼고, 하나도 없으면 `{}`.
 - Claude Code, Copilot, Cursor 같은 AI 코딩 도구는 `techStack`에 넣지 않고 `aiTools`(문자열 배열, 없으면 `[]`)에 넣는다. 사이트에서 기술 스택과 따로 한 줄로 보인다.
 - 기술 이름은 저장소가 달라도 같은 표기로 쓴다(포트폴리오의 기술 스택과 필터가 이름으로 묶는다). 예: `React Native`, `TypeScript`, `Vite`.
 - 분량: `tagline` ko 40자 / en 80자 이내, `summary` 2–4문장, `highlights` 최대 3개(카드에 보일 핵심), `contributions`·`features`는 항목당 한 문장.
@@ -218,6 +219,12 @@
     { "category": "frontend", "items": ["React", "Tailwind CSS"] },
     { "category": "backend", "items": ["Supabase"] }
   ],
+  "techNotes": {
+    "React": {
+      "ko": "관리자 화면과 예약 폼",
+      "en": "Admin screens and the booking form"
+    }
+  },
   "aiTools": [],
   "deployment": {
     "status": "live",
