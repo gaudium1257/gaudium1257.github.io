@@ -1,0 +1,379 @@
+{
+  "id": "showroomz",
+  "title": {
+    "ko": "SHOWROOMZ",
+    "en": "SHOWROOMZ"
+  },
+  "tagline": {
+    "ko": "인플루언서 공동구매 커머스 플랫폼의 프론트엔드 4종",
+    "en": "Four front-end apps for an influencer group-buy commerce platform"
+  },
+  "summary": {
+    "ko": "브랜드와 인플루언서가 계약을 맺고 공동구매(공구)를 진행하는 커머스 플랫폼으로, 창업팀에서 프론트엔드를 맡았습니다. 2026년 7월에 합류해 기존 소비자 앱·파트너센터·운영자 콘솔을 이어받아 확장했고, 파트너센터의 설정을 바탕으로 인플루언서용 스튜디오 웹을 구축했습니다. 계약·공구 흐름을 브랜드·인플루언서·운영자 화면에, 연결·소통 메시지를 브랜드·인플루언서 화면에 구현했고, 소비자 앱에는 주문·결제·반품 흐름을 구현했습니다.",
+    "en": "A commerce platform where brands and influencers sign contracts and run group buys; I handled the front end in a startup team. After joining in July 2026, I took over and extended the existing consumer app, partner center and admin console, and built the influencer studio web app from the partner center's setup. I implemented the contract and group-buy flows across the brand, influencer and admin screens, messaging on the brand and influencer screens, and the order, payment and return flows in the consumer app."
+  },
+  "category": "team",
+  "status": "in-progress",
+  "period": {
+    "start": "2026-07",
+    "end": null
+  },
+  "team": {
+    "size": 3,
+    "role": {
+      "ko": "프론트엔드 개발",
+      "en": "Frontend developer"
+    }
+  },
+  "contributions": [
+    {
+      "ko": "파트너센터의 설정과 구조를 바탕으로 인플루언서용 스튜디오 웹 구축(소셜 로그인 4종, 연결·소통, 계약, 공구, 게시물, 쇼룸 관리)",
+      "en": "Built the influencer studio web app on the partner center's setup, covering four social logins, messaging, contracts, group buys, posts and showroom settings"
+    },
+    {
+      "ko": "계약 관리와 공구 관리 화면을 파트너센터·스튜디오·운영자 콘솔 3곳에 구현",
+      "en": "Implemented contract and group-buy management in the partner center, the studio and the admin console"
+    },
+    {
+      "ko": "파트너센터의 연결·소통 메시지, 주문·클레임 화면, 상품 문의, 기본정보 관리 구현",
+      "en": "Implemented messaging, order and claim screens, product inquiries and account settings in the partner center"
+    },
+    {
+      "ko": "운영자 콘솔의 정보 변경 요청 심사, 1:1·상품 문의, 약관·공지, 소비자 회원 관리 구현과 기존 입점 심사·상품·FAQ 화면 재작성",
+      "en": "Implemented change-request review, inquiries, terms and notices, and consumer member management in the admin console, and rewrote the existing onboarding review, product and FAQ screens"
+    },
+    {
+      "ko": "소비자 앱의 주문·결제(PortOne)·반품/교환 흐름 구현과 게시물 피드·쇼룸·탭 구성 재편",
+      "en": "Implemented the order, PortOne payment and return/exchange flows in the consumer app, and restructured its post feed, showroom and tab layout"
+    },
+    {
+      "ko": "네 앱의 401 토큰 갱신 처리 개선(동시 요청이 refresh 하나를 공유)과 운영자 콘솔·파트너센터의 인증 쿠키 경로 고정",
+      "en": "Reworked 401 token refresh in all four apps so concurrent requests share one refresh, and pinned auth cookies to the root path in the admin console and partner center"
+    },
+    {
+      "ko": "정산·배송 정책 등 서버 API가 아직 없는 화면의 UI와 개발 환경 전용 목업 구현",
+      "en": "Built the UI and development-only mocks for screens whose server APIs are not available yet, such as settlement and shipping policy"
+    },
+    {
+      "ko": "소비자 앱 빌드 설정 정비(스플래시 config plugin, Pretendard 폰트, 소셜 로그인 URL 스킴, TestFlight 배포 설정)",
+      "en": "Fixed consumer app build settings: a splash config plugin, Pretendard fonts, social login URL schemes and TestFlight distribution settings"
+    }
+  ],
+  "features": [
+    {
+      "title": {
+        "ko": "계약 관리",
+        "en": "Contract management"
+      },
+      "description": {
+        "ko": "브랜드가 계약을 작성해 검토를 요청하면 운영자가 검토하고, 브랜드와 인플루언서가 서명하면 체결 문서가 만들어집니다. 양측은 서명 진행 상황과 체결 문서를 확인합니다.",
+        "en": "A brand drafts a contract and requests review, an admin reviews it, and once the brand and the influencer both sign, the signed documents are produced. Both sides can see the signing progress and the signed documents."
+      }
+    },
+    {
+      "title": {
+        "ko": "공구 관리",
+        "en": "Group-buy management"
+      },
+      "description": {
+        "ko": "체결된 계약으로 생성된 공구의 준비 조건(물량 확보·게시물 등록·운영자 승인)과 진행 상태를 브랜드·인플루언서·운영자가 각자 화면에서 확인하고 처리합니다.",
+        "en": "Brands, influencers and admins each see and act on the readiness conditions (stock secured, post submitted, admin approval) and status of group buys created from concluded contracts, from their own screens."
+      }
+    },
+    {
+      "title": {
+        "ko": "연결·소통 메시지",
+        "en": "Brand–influencer messaging"
+      },
+      "description": {
+        "ko": "브랜드와 인플루언서가 스레드로 메시지와 첨부 파일을 주고받으며, 업로드 진행률과 읽음 상태를 표시합니다.",
+        "en": "Brands and influencers exchange messages and attachments in threads, with upload progress and read status."
+      }
+    },
+    {
+      "title": {
+        "ko": "주문·반품 처리",
+        "en": "Order and return handling"
+      },
+      "description": {
+        "ko": "브랜드가 주문을 상태별 탭으로 조회하고 발주서 다운로드, 송장 일괄 업로드, 취소 승인, 반품 검수를 처리합니다.",
+        "en": "Brands view orders by status tab and handle purchase-order downloads, bulk invoice uploads, cancellation approvals and return inspections."
+      }
+    },
+    {
+      "title": {
+        "ko": "소비자 주문·결제",
+        "en": "Consumer checkout and payment"
+      },
+      "description": {
+        "ko": "소비자가 체크아웃에서 PortOne으로 결제하고 주문 상세·배송 조회·반품/교환 신청을 진행합니다.",
+        "en": "Consumers pay through PortOne at checkout and then view order details, track delivery and request returns or exchanges."
+      }
+    },
+    {
+      "title": {
+        "ko": "게시물 작성",
+        "en": "Post editor"
+      },
+      "description": {
+        "ko": "인플루언서가 사진과 본문을 작성하며 미리보기를 확인하고, 게시 후 인사이트를 봅니다.",
+        "en": "Influencers write posts with photos and text, check a preview, and view insights after publishing."
+      }
+    },
+    {
+      "title": {
+        "ko": "입점·변경 요청 심사",
+        "en": "Onboarding and change-request review"
+      },
+      "description": {
+        "ko": "운영자가 브랜드·인플루언서 입점 신청과 정보 변경 요청을 승인하거나 반려합니다.",
+        "en": "Admins approve or reject brand and influencer onboarding applications and change requests."
+      }
+    }
+  ],
+  "techStack": [
+    {
+      "category": "language",
+      "items": ["TypeScript"]
+    },
+    {
+      "category": "frontend",
+      "items": [
+        "React",
+        "Vite",
+        "Tailwind CSS",
+        "shadcn/ui",
+        "React Router",
+        "TanStack Query",
+        "Zustand",
+        "React Hook Form",
+        "Axios"
+      ]
+    },
+    {
+      "category": "mobile",
+      "items": ["React Native", "Expo"]
+    },
+    {
+      "category": "infra",
+      "items": ["Vercel"]
+    },
+    {
+      "category": "other",
+      "items": ["PortOne", "Firebase Cloud Messaging"]
+    }
+  ],
+  "techNotes": {
+    "TypeScript": {
+      "ko": "네 앱 전체(strict 모드)",
+      "en": "All four apps, in strict mode"
+    },
+    "React": {
+      "ko": "웹 콘솔 3종과 소비자 앱의 UI",
+      "en": "UI of the three web consoles and the consumer app"
+    },
+    "Vite": {
+      "ko": "웹 콘솔 3종의 개발 서버와 빌드",
+      "en": "Dev server and builds for the three web consoles"
+    },
+    "Tailwind CSS": {
+      "ko": "웹 콘솔 3종의 스타일링",
+      "en": "Styling for the three web consoles"
+    },
+    "shadcn/ui": {
+      "ko": "웹 콘솔의 기본 UI 컴포넌트",
+      "en": "Base UI components in the web consoles"
+    },
+    "React Router": {
+      "ko": "웹 콘솔 3종의 라우팅",
+      "en": "Routing in the three web consoles"
+    },
+    "TanStack Query": {
+      "ko": "서버 상태 조회와 사이드바 요약 배지 폴링",
+      "en": "Server-state fetching and polling for sidebar summary badges"
+    },
+    "Zustand": {
+      "ko": "소비자 앱과 파트너센터의 클라이언트 상태",
+      "en": "Client state in the consumer app and the partner center"
+    },
+    "React Hook Form": {
+      "ko": "파트너센터와 스튜디오의 입력 폼",
+      "en": "Input forms in the partner center and the studio"
+    },
+    "Axios": {
+      "ko": "네 앱의 API 클라이언트와 401 토큰 갱신 인터셉터",
+      "en": "API clients and 401 token-refresh interceptors in all four apps"
+    },
+    "React Native": {
+      "ko": "소비자 모바일 앱",
+      "en": "Consumer mobile app"
+    },
+    "Expo": {
+      "ko": "소비자 앱의 런타임과 config plugin",
+      "en": "Runtime and config plugins for the consumer app"
+    },
+    "Vercel": {
+      "ko": "웹 콘솔 3종의 개발·검수 배포",
+      "en": "Dev/QA deployments of the three web consoles"
+    },
+    "PortOne": {
+      "ko": "소비자 앱의 결제 모달",
+      "en": "Payment modal in the consumer app"
+    },
+    "Firebase Cloud Messaging": {
+      "ko": "스튜디오의 웹 푸시 알림",
+      "en": "Web push notifications in the studio"
+    }
+  },
+  "aiTools": ["Claude Code"],
+  "deployment": {
+    "status": "live",
+    "platform": "Vercel",
+    "url": "https://front-end-partners-one.vercel.app/",
+    "checkedAt": "2026-10-12"
+  },
+  "architecture": {
+    "ko": "웹 콘솔 3종(React + Vite)과 소비자 앱(React Native + Expo)이 하나의 백엔드 REST API를 역할별 경로(/user, /seller, /creator, /admin)로 호출합니다. 서버 상태는 TanStack Query로 관리하고 Axios 인터셉터가 토큰 갱신을 처리하며, 첨부 파일은 S3 presigned URL로 직접 업로드합니다.",
+    "en": "Three web consoles (React + Vite) and a consumer app (React Native + Expo) call one backend REST API through role-specific paths (/user, /seller, /creator, /admin). TanStack Query manages server state, Axios interceptors handle token refresh, and attachments are uploaded directly with S3 presigned URLs."
+  },
+  "outcomes": [],
+  "challenges": [
+    {
+      "problem": {
+        "ko": "토큰 만료 시 동시에 나간 요청들이 각자 refresh를 호출해, 서버의 refresh 토큰 회전 때문에 첫 요청 외에는 모두 401로 실패함",
+        "en": "When the token expired, concurrent requests each called refresh, and because the server rotates refresh tokens, all but the first failed with 401"
+      },
+      "solution": {
+        "ko": "진행 중인 refresh promise 하나를 모든 요청이 공유하고, 요청당 한 번만 재시도하도록 변경",
+        "en": "Made all requests share one in-flight refresh promise and retry at most once per request"
+      }
+    },
+    {
+      "problem": {
+        "ko": "경로 없이 저장된 인증 쿠키가 하위 경로에 남아 새 토큰을 가리면서 401이 반복됨",
+        "en": "Auth cookies saved without a path stayed under a sub-path and shadowed the new token, causing repeated 401s"
+      },
+      "solution": {
+        "ko": "인증 쿠키를 루트 경로에 저장하고 하위 경로의 사본을 지우도록 변경",
+        "en": "Wrote auth cookies to the root path and removed copies left under sub-paths"
+      }
+    },
+    {
+      "problem": {
+        "ko": "다른 출처의 첨부 파일이 다운로드되지 않고 새 탭으로 열려 작업 중이던 화면 상태가 사라짐",
+        "en": "Cross-origin attachments opened in a new tab instead of downloading, losing the current screen state"
+      },
+      "solution": {
+        "ko": "Content-Disposition이 붙은 서명 URL을 매번 새로 받아 저장하고, 여러 파일은 간격을 두고 순서대로 저장",
+        "en": "Requested a fresh signed URL with Content-Disposition for each download and saved multiple files one after another with a short gap"
+      }
+    },
+    {
+      "problem": {
+        "ko": "업로드된 사진을 다시 자를 때 CORS 때문에 canvas가 원본 이미지를 읽지 못함",
+        "en": "Re-cropping uploaded photos failed because CORS blocked the canvas from reading the original image"
+      },
+      "solution": {
+        "ko": "허용된 호스트와 https만 받고 크기 상한을 둔 같은 출처 이미지 프록시를 Vercel Functions로 추가",
+        "en": "Added a same-origin image proxy on Vercel Functions that accepts only allowed hosts over https and caps the file size"
+      }
+    },
+    {
+      "problem": {
+        "ko": "소비자 앱에서 iOS 글자가 Android보다 작게 보임",
+        "en": "Text in the consumer app rendered smaller on iOS than on Android"
+      },
+      "solution": {
+        "ko": "Pretendard 정적 폰트를 번들에 넣고 굵기별로 폰트 패밀리를 매핑",
+        "en": "Bundled static Pretendard fonts and mapped each font weight to its own font family"
+      }
+    }
+  ],
+  "learnings": [
+    {
+      "ko": "프론트엔드와 백엔드 저장소를 나눠 협업한 첫 프로젝트였습니다.",
+      "en": "This was my first project collaborating across separate front-end and back-end repositories."
+    },
+    {
+      "ko": "커밋·PR·머지를 잘 모르는 상태에서 시작해, 작업 브랜치에서 커밋하고 PR로 올려 머지하는 흐름을 이 프로젝트에서 익혔습니다.",
+      "en": "I started without much knowledge of commits, PRs and merges, and learned the flow of committing on a work branch, opening a PR and merging it on this project."
+    }
+  ],
+  "highlights": [
+    {
+      "ko": "계약·공구 흐름을 브랜드·인플루언서·운영자 3개 웹 콘솔에 구현",
+      "en": "Contract and group-buy flows across brand, influencer and admin consoles"
+    },
+    {
+      "ko": "인플루언서용 스튜디오 웹 구축",
+      "en": "Built the influencer studio web app"
+    },
+    {
+      "ko": "소비자 앱 주문·결제(PortOne)·반품 흐름 구현",
+      "en": "Order, PortOne payment and return flows in the consumer app"
+    }
+  ],
+  "links": [
+    {
+      "type": "demo",
+      "url": "https://front-end-partners-one.vercel.app/",
+      "label": {
+        "ko": "파트너센터 (개발·검수 서버)",
+        "en": "Partner center (dev/QA server)"
+      }
+    },
+    {
+      "type": "demo",
+      "url": "https://front-end-studio-one.vercel.app",
+      "label": {
+        "ko": "쇼룸 스튜디오 (개발·검수 서버)",
+        "en": "Showroom studio (dev/QA server)"
+      }
+    }
+  ],
+  "related": [],
+  "tags": ["web", "mobile", "commerce", "startup"],
+  "featured": false,
+  "screenshots": [
+    {
+      "src": "/images/projects/showroomz/partners-contract-detail.png",
+      "alt": {
+        "ko": "파트너센터 계약 상세: 서명 진행, 체결 문서, 이력",
+        "en": "Partner center contract detail: signing progress, signed documents and history"
+      },
+      "kind": "web"
+    },
+    {
+      "src": "/images/projects/showroomz/partners-group-buy-detail.png",
+      "alt": {
+        "ko": "파트너센터 공구 상세: 준비 조건 3개와 진행 상태",
+        "en": "Partner center group-buy detail: three readiness conditions and status"
+      },
+      "kind": "web"
+    },
+    {
+      "src": "/images/projects/showroomz/partners-contract-list.png",
+      "alt": {
+        "ko": "파트너센터 계약 목록",
+        "en": "Partner center contract list"
+      },
+      "kind": "web"
+    },
+    {
+      "src": "/images/projects/showroomz/studio-group-buy-detail.png",
+      "alt": {
+        "ko": "쇼룸 스튜디오 공구 상세",
+        "en": "Showroom studio group-buy detail"
+      },
+      "kind": "web"
+    },
+    {
+      "src": "/images/projects/showroomz/studio-post-editor.png",
+      "alt": {
+        "ko": "쇼룸 스튜디오 게시물 작성과 미리보기",
+        "en": "Showroom studio post editor with preview"
+      },
+      "kind": "web"
+    }
+  ]
+}
