@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Icon, linkIcon } from "@/components/icons";
 import { Capture, Gallery, MediaCaption } from "@/components/media";
 import { LiveBadge } from "@/components/project-entry";
 import { ExternalLink, RepoCard } from "@/components/repo";
@@ -444,6 +445,7 @@ export default async function ProjectPage({
                     newTab={dict.common.newTab}
                     className="inline-flex h-11 items-center gap-2 rounded-node border border-edge bg-white px-4 text-ui font-semibold text-ink transition-colors hover:border-primary hover:text-primary active:bg-primary-50"
                   >
+                    <Icon name={linkIcon(l.url, l.type)} />
                     {l.label ? t(l.label, locale) : dict.project.links[l.type]}
                   </ExternalLink>
                 ))}

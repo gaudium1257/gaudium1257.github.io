@@ -7,6 +7,7 @@ import { snapshotDate } from "@/lib/github";
 import { CopyButton } from "./copy-button";
 import { FilterBar } from "./project-filter";
 import { ProjectEntry, RelatedLinks } from "./project-entry";
+import { Icon } from "./icons";
 import { ExternalLink, GitHubMark } from "./repo";
 import { cx, LINK } from "./ui";
 
@@ -119,10 +120,12 @@ export function Identity({ content, dict, locale }: Props) {
           <a
             href={`mailto:${email}`}
             translate="no"
-            data-copy-value="email"
-            className={cx(LINK, "wrap-anywhere")}
+            className={cx("inline-flex min-w-0 items-center gap-1.5", LINK)}
           >
-            {email}
+            <Icon name="mail" />
+            <span data-copy-value="email" className="min-w-0 wrap-anywhere">
+              {email}
+            </span>
           </a>
           <CopyButton
             value={email}
@@ -508,6 +511,8 @@ export function ContactSection({ content, dict }: Props) {
     </div>
   );
   const value = "text-ui font-medium";
+  // same as the intro facts: the icon sits inside the value, before the text
+  const withIcon = "inline-flex min-w-0 items-center gap-1.5";
   const rows = [
     c.email &&
       row(
@@ -515,10 +520,12 @@ export function ContactSection({ content, dict }: Props) {
         <a
           href={`mailto:${c.email}`}
           translate="no"
-          data-copy-value="email"
-          className={cx("min-w-0 wrap-anywhere", value, LINK)}
+          className={cx(withIcon, value, LINK)}
         >
-          {c.email}
+          <Icon name="mail" />
+          <span data-copy-value="email" className="min-w-0 wrap-anywhere">
+            {c.email}
+          </span>
         </a>,
         <CopyButton
           value={c.email}
@@ -534,8 +541,9 @@ export function ContactSection({ content, dict }: Props) {
         <ExternalLink
           href={c.github}
           newTab={dict.common.newTab}
-          className={cx(value, LINK)}
+          className={cx(withIcon, value, LINK)}
         >
+          <Icon name="github" />
           <span translate="no">{ghLabel(c.github)}</span>
         </ExternalLink>,
       ),
@@ -545,8 +553,9 @@ export function ContactSection({ content, dict }: Props) {
         <ExternalLink
           href={c.instagram}
           newTab={dict.common.newTab}
-          className={cx(value, LINK)}
+          className={cx(withIcon, value, LINK)}
         >
+          <Icon name="instagram" />
           <span translate="no">
             @
             {c.instagram
@@ -562,19 +571,19 @@ export function ContactSection({ content, dict }: Props) {
             <ExternalLink
               href={c.discord}
               newTab={dict.common.newTab}
-              className={cx(value, LINK)}
+              className={cx(withIcon, value, LINK)}
             >
+              <Icon name="discord" />
               <span translate="no">{ghLabel(c.discord)}</span>
             </ExternalLink>,
           )
         : row(
             "Discord",
-            <span
-              translate="no"
-              data-copy-value="discord"
-              className={cx(value, "text-ink")}
-            >
-              {c.discord}
+            <span className={cx(withIcon, value, "text-ink")}>
+              <Icon name="discord" />
+              <span translate="no" data-copy-value="discord">
+                {c.discord}
+              </span>
             </span>,
             <CopyButton
               value={c.discord}
