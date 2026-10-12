@@ -24,6 +24,7 @@ export function Capture({
   kind = "web",
   fullSize,
   load,
+  radius = "rounded-node",
   className,
 }: {
   src: string;
@@ -32,12 +33,15 @@ export function Capture({
   fullSize?: { label: string; newTab: string };
   /** above the fold: "eager" loads now, "high" also raises fetch priority (one per page) */
   load?: "eager" | "high";
+  /** corner radius of the box (one radius utility per element, so callers pick it here) */
+  radius?: "rounded-node" | "rounded-card";
   className?: string;
 }) {
   const img = (
     <span
       className={cx(
-        "relative block overflow-hidden rounded-node bg-surface ring-1 ring-line ring-inset",
+        "relative block overflow-hidden bg-surface ring-1 ring-line ring-inset",
+        radius,
         fullSize &&
           "transition-colors group-hover/cap:ring-edge group-active/cap:ring-primary",
         BOX[kind],

@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { BrandText } from "./brand-text";
+import { cx } from "./ui";
 
 type Text = { idle: string; done: string; failed: string; hint: string };
 
@@ -17,12 +18,15 @@ export function CopyButton({
   text,
   doneMessage,
   sr,
+  tone = "light",
 }: {
   value: string;
   valueId: string;
   text: Text;
   doneMessage: string;
   sr: { pre: string; post: string };
+  /** "stage": sits on the deep-violet band, so the failure hint uses the light on-stage colour */
+  tone?: "light" | "stage";
 }) {
   const [state, setState] = useState<"idle" | "done" | "fail">("idle");
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -84,7 +88,13 @@ export function CopyButton({
         )}
       </button>
       {state === "fail" && (
-        <span aria-hidden="true" className="basis-full text-sm text-award">
+        <span
+          aria-hidden="true"
+          className={cx(
+            "basis-full text-sm",
+            tone === "stage" ? "text-lilac-soft" : "text-award",
+          )}
+        >
           {text.hint}
         </span>
       )}

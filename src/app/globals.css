@@ -19,6 +19,12 @@
   --color-primary-700: #5b21b6; /* text on primary-50/100, link hover */
   --color-award: #8a3b0b; /* prize words */
   --color-live: #15803d; /* "배포 중" dot + text */
+  /* stage: the deep-violet field behind the hero and the contact band (owner request 2026.10: "포트폴리오답게") */
+  --color-stage: #221046;
+  --color-stage-2: #2e1860; /* raised surface / hover on stage */
+  --color-stage-line: #4b3489; /* separators and outlines on stage */
+  --color-lilac: #c4b5fd; /* links, accents on stage — 9.2:1 */
+  --color-lilac-soft: #ddd6fe; /* secondary text on stage — 12:1 */
   /* GitHub language-ratio bar (measured bytes): names and % are always printed, colour is supplementary */
   --color-lang-1: #5b21b6;
   --color-lang-2: #8b5cf6;
@@ -47,12 +53,15 @@
   --text-title: 2.75rem;
   --text-title--line-height: 1.15;
   --text-title--letter-spacing: -0.03em;
-  --text-name-sm: 2.25rem;
-  --text-name-sm--line-height: 1.1;
-  --text-name-sm--letter-spacing: -0.03em;
-  --text-name: 3rem;
-  --text-name--line-height: 1.05;
-  --text-name--letter-spacing: -0.03em;
+  --text-section: 2.25rem; /* home section titles */
+  --text-section--line-height: 1.15;
+  --text-section--letter-spacing: -0.03em;
+  --text-display-sm: 2.5rem; /* hero statement, phones */
+  --text-display-sm--line-height: 1.15;
+  --text-display-sm--letter-spacing: -0.035em;
+  --text-display: 4rem; /* hero statement */
+  --text-display--line-height: 1.08;
+  --text-display--letter-spacing: -0.045em;
 
   --leading-copy: 1.7; /* taglines, relation rows */
   --leading-prose: 1.75; /* Korean paragraphs */
@@ -61,6 +70,10 @@
   --radius-tag: 0.25rem; /* static labels: tech chips, event type, copy button */
   --radius-node: 0.375rem; /* interactive tech nodes, buttons, media slots */
   --radius-panel: 0.75rem; /* panels built from code data: stack map, repo card */
+  --radius-card: 1rem; /* project media, stack category cards, hero photo */
+
+  /* one violet-tinted lift for things you can open (project cards) */
+  --shadow-lift: 0 24px 48px -24px rgb(46 24 96 / 0.45);
 }
 
 @utility shell {
@@ -107,6 +120,10 @@
   :focus-visible {
     outline: 2px solid var(--color-primary);
     outline-offset: 2px;
+  }
+  /* on the dark stage the purple ring would vanish: use lilac there */
+  [data-tone="stage"] :focus-visible {
+    outline-color: var(--color-lilac);
   }
   /* mouse/trackpad: no page rubber-band; touch keeps pull-to-refresh, -y keeps swipe navigation */
   @media (pointer: fine) {

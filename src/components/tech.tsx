@@ -4,10 +4,11 @@ import type { Dictionary } from "@/i18n/dictionaries";
 import { fill } from "@/lib/format";
 import { groupedStack, TIER, techSlug } from "@/lib/tech";
 import { Icon } from "./icons";
+import { TechIcon } from "./tech-icons";
 import { cx, LABEL_COLS } from "./ui";
 
 const NODE =
-  "inline-flex min-h-10 items-center rounded-node border border-edge bg-white px-3 py-1 text-ui font-medium text-ink transition-colors hover:border-primary hover:text-primary active:bg-primary-50";
+  "inline-flex min-h-10 items-center gap-2 rounded-node border border-edge bg-white px-3 py-1 text-ui font-medium text-ink transition-colors hover:border-primary hover:text-primary active:bg-primary-50";
 
 /** Static tech label in project entries; highlighted when it matches the active filter. */
 export function TechChip({
@@ -24,8 +25,9 @@ export function TechChip({
       data-match="false"
       data-extra={extra ? "true" : undefined}
       translate="no"
-      className="inline-flex min-h-7 items-center rounded-tag border border-line bg-white px-2 py-0.5 text-sm font-medium text-ink-2 data-[extra=true]:hidden data-[match=true]:border-primary data-[match=true]:bg-primary-100 data-[match=true]:text-primary-700 data-[extra=true]:data-[match=true]:inline-flex"
+      className="inline-flex min-h-7 items-center gap-1.5 rounded-tag border border-line bg-white px-2 py-0.5 text-sm font-medium text-ink-2 data-[extra=true]:hidden data-[match=true]:border-primary data-[match=true]:bg-primary-100 data-[match=true]:text-primary-700 data-[extra=true]:data-[match=true]:inline-flex"
     >
+      <TechIcon name={name} className="size-3.5" />
       {name}
     </li>
   );
@@ -59,6 +61,7 @@ export function TechNode({
             "aria-[current=true]:border-primary aria-[current=true]:bg-primary aria-[current=true]:text-white aria-[current=true]:hover:border-primary-700 aria-[current=true]:hover:bg-primary-700 aria-[current=true]:hover:text-white aria-[current=true]:active:bg-primary-700",
         )}
       >
+        <TechIcon name={name} />
         {name}
         <span className="sr-only">, {srText}</span>
       </a>
@@ -138,6 +141,7 @@ export function StackRows({
   locale,
   unrecorded = true,
   onHome,
+  variant = "rows",
 }: {
   groups: {
     category: TechCategory;
@@ -149,7 +153,10 @@ export function StackRows({
   locale: Locale;
   unrecorded?: boolean;
   onHome: boolean;
+  /** "cards" (home): one card per category in a grid; "rows" (list filter): ruled rows in a panel */
+  variant?: "rows" | "cards";
 }) {
+  const cards = variant === "cards";
   const rows = [...groups]
     .sort((a, b) => TIER.indexOf(a.category) - TIER.indexOf(b.category))
     .map((g) => ({
@@ -159,66 +166,88 @@ export function StackRows({
     .filter((g) => g.names.length);
   // when every row is a supporting one, nothing would be open: open them all
   const allSupport = rows.every((g) => SUPPORT.includes(g.category));
-  return (
-    <ul>
-      {rows.map((g) => (
-        <li
-          key={g.category + (g.label ?? "")}
-          className="border-t border-line first:border-t-0"
+  const item = (g: (typeof rows)[number]) => (
+    <li
+      key={g.category + (g.label ?? "")}
+      className={
+        cards
+          ? "rounded-card bg-white px-4 py-2 ring-1 ring-line"
+          : "border-t border-line first:border-t-0"
+      }
+    >
+      <details
+        open={allSupport || !SUPPORT.includes(g.category)}
+        className="group/cat"
+      >
+        <summary
+          className={cx(
+            "group/sum -mx-2 flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-node px-2 py-1.5 transition-colors active:bg-primary-100 [&::-webkit-details-marker]:hidden",
+            cards ? "hover:bg-surface" : "hover:bg-white",
+          )}
         >
-          <details
-            open={allSupport || !SUPPORT.includes(g.category)}
-            className="group/cat"
-          >
-            <summary className="group/sum -mx-2 flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-node px-2 py-1.5 transition-colors hover:bg-white active:bg-primary-100 [&::-webkit-details-marker]:hidden">
-              <h3 className="text-sm font-semibold text-ink-2 transition-colors group-hover/sum:text-ink group-active/sum:text-ink sm:text-ui">
-                {g.label ?? dict.skills.category[g.category]}
-              </h3>
-              <span className="text-sm text-muted tabular-nums transition-colors group-hover/sum:text-ink-2">
-                <span aria-hidden="true">{g.names.length}</span>
-                <span className="sr-only">
-                  {fill(dict.skills.countSr, { n: g.names.length })}
-                </span>
-              </span>
-              <Icon
-                name="chevron"
-                className="ml-auto text-muted transition-colors group-open/cat:rotate-180 group-hover/sum:text-ink-2"
+          <h3 className="text-sm font-semibold text-ink-2 transition-colors group-hover/sum:text-ink group-active/sum:text-ink sm:text-ui">
+            {g.label ?? dict.skills.category[g.category]}
+          </h3>
+          <span className="text-sm text-muted tabular-nums transition-colors group-hover/sum:text-ink-2">
+            <span aria-hidden="true">{g.names.length}</span>
+            <span className="sr-only">
+              {fill(dict.skills.countSr, { n: g.names.length })}
+            </span>
+          </span>
+          <Icon
+            name="chevron"
+            className="ml-auto text-muted transition-colors group-open/cat:rotate-180 group-hover/sum:text-ink-2"
+          />
+        </summary>
+        <ul className="flex flex-wrap gap-2 pt-1 pb-3">
+          {g.names.map((name) => {
+            if (!usage.has(name))
+              return (
+                <li key={name}>
+                  <span
+                    translate="no"
+                    className="inline-flex min-h-10 items-center rounded-node border border-dashed border-edge px-3 py-1 text-ui text-muted"
+                  >
+                    {name}
+                    <span className="sr-only">, {dict.skills.srNone}</span>
+                  </span>
+                </li>
+              );
+            const slug = techSlug(name);
+            return (
+              <TechNode
+                key={name}
+                name={name}
+                href={
+                  onHome ? `/${locale}/projects/?tech=${slug}` : `?tech=${slug}`
+                }
+                srText={dict.skills.linkSr}
+                filter
               />
-            </summary>
-            <ul className="flex flex-wrap gap-2 pt-1 pb-3">
-              {g.names.map((name) => {
-                if (!usage.has(name))
-                  return (
-                    <li key={name}>
-                      <span
-                        translate="no"
-                        className="inline-flex min-h-10 items-center rounded-node border border-dashed border-edge px-3 py-1 text-ui text-muted"
-                      >
-                        {name}
-                        <span className="sr-only">, {dict.skills.srNone}</span>
-                      </span>
-                    </li>
-                  );
-                const slug = techSlug(name);
-                return (
-                  <TechNode
-                    key={name}
-                    name={name}
-                    href={
-                      onHome
-                        ? `/${locale}/projects/?tech=${slug}`
-                        : `?tech=${slug}`
-                    }
-                    srText={dict.skills.linkSr}
-                    filter
-                  />
-                );
-              })}
-            </ul>
-          </details>
-        </li>
-      ))}
-    </ul>
+            );
+          })}
+        </ul>
+      </details>
+    </li>
+  );
+  if (!cards) return <ul>{rows.map(item)}</ul>;
+  // cards: the open build categories share a row height; the folded support ones get their own
+  // compact row so a short closed card never sits next to a tall open one
+  const build = rows.filter((g) => allSupport || !SUPPORT.includes(g.category));
+  const support = allSupport
+    ? []
+    : rows.filter((g) => SUPPORT.includes(g.category));
+  return (
+    <>
+      <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {build.map(item)}
+      </ul>
+      {support.length > 0 && (
+        <ul className="mt-4 grid items-start gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {support.map(item)}
+        </ul>
+      )}
+    </>
   );
 }
 
@@ -243,21 +272,25 @@ export function StackMap({
   const hasUnrecorded = groups.some((g) => g.names.some((n) => !usage.has(n)));
   return (
     <section id="skills" aria-labelledby="skills-title" className="min-w-0">
-      <h2 id="skills-title" className="text-h2 font-semibold text-ink">
+      <h2
+        id="skills-title"
+        className="text-h2 font-bold text-ink sm:text-section"
+      >
         {title}
       </h2>
       {groups.length ? (
         <>
-          <p className="mt-2 max-w-152 text-ui text-muted">
+          <p className="mt-3 max-w-152 text-base text-ink-2">
             {dict.skills.help}
           </p>
-          <div className="mt-4 rounded-panel bg-surface px-3 py-1 sm:px-5">
+          <div className="mt-8">
             <StackRows
               groups={groups}
               usage={usage}
               dict={dict}
               locale={locale}
               onHome
+              variant="cards"
             />
           </div>
           {hasUnrecorded && (
