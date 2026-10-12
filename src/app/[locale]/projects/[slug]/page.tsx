@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Capture } from "@/components/media";
+import { Capture, Gallery, MediaCaption } from "@/components/media";
 import { LiveBadge } from "@/components/project-entry";
 import { ExternalLink, RepoCard } from "@/components/repo";
+import { ScreensLink } from "@/components/screens-link";
 import { TechList } from "@/components/tech";
 import { cx, LINK } from "@/components/ui";
 import type { Project } from "@/content/schema";
@@ -12,6 +13,7 @@ import { getDictionary, type Dictionary } from "@/i18n/dictionaries";
 import { fill, formatPeriod, formatYm } from "@/lib/format";
 import { repoOf, snapshotDate } from "@/lib/github";
 import { itemHref } from "@/lib/href";
+import { galleryShots, heroShots } from "@/lib/media";
 import { techUsage } from "@/lib/tech";
 
 export const dynamicParams = false;
@@ -51,9 +53,6 @@ type Ctx = {
   usage: Map<string, Project[]>;
 };
 
-/** Captures after the lead one (the hero shows thumbnail ?? first screenshot). */
-const galleryShots = (p: Project) =>
-  p.thumbnail ? p.screenshots : p.screenshots.slice(1);
 const awardInOutcomes = (p: Project) =>
   p.outcomes.length
     ? getRelated(p.id).find((r) => r.kind === "award")
@@ -114,23 +113,7 @@ const BLOCKS: {
     id: "screens",
     has: ({ p }) => galleryShots(p).length > 0,
     render: ({ p, dict, locale }) => (
-      <div className="grid gap-6 sm:grid-cols-2">
-        {galleryShots(p).map((s) => (
-          <figure key={s.src} className="min-w-0">
-            <Capture
-              src={s.src}
-              alt={t(s.alt, locale)}
-              fullSize={{
-                label: dict.project.fullSize,
-                newTab: dict.common.newTab,
-              }}
-            />
-            <figcaption className="mt-2 text-sm text-muted">
-              {t(s.alt, locale)}
-            </figcaption>
-          </figure>
-        ))}
-      </div>
+      <Gallery shots={galleryShots(p)} dict={dict} locale={locale} />
     ),
   },
   {
@@ -375,11 +358,10 @@ export default async function ProjectPage({
   const buttons = p.links.filter((l) => l.type !== "github");
   if (live && p.deployment.url && !buttons.some((l) => l.type === "demo"))
     buttons.unshift({ type: "demo", url: p.deployment.url });
-  const lead = p.thumbnail ?? p.screenshots[0]?.src;
-  const leadAlt = p.screenshots[0]
-    ? t(p.screenshots[0].alt, locale)
-    : t(p.title, locale);
+  const { wide, phone } = heroShots(p);
+  const lead = Boolean(wide || phone);
   const shots = galleryShots(p);
+  const fullSize = { label: dict.project.fullSize, newTab: dict.common.newTab };
   const repo = repoOf(p);
 
   const blocks = BLOCKS.filter((b) => b.has(ctx));
@@ -478,27 +460,56 @@ export default async function ProjectPage({
           </div>
           {lead && (
             <div className="min-w-0 lg:col-span-5 lg:col-start-8 lg:row-span-2 lg:row-start-1">
-              <Capture
-                src={lead}
-                alt={leadAlt}
-                priority
-                fullSize={{
-                  label: dict.project.fullSize,
-                  newTab: dict.common.newTab,
-                }}
-              />
-              {shots.length > 0 && (
+              <div
+                className={cx(
+                  "grid gap-3",
+                  wide &&
+                    phone &&
+                    "sm:grid-cols-[minmax(0,208fr)_minmax(0,60fr)]",
+                )}
+              >
+                {wide && (
+                  <Capture
+                    src={wide.src}
+                    alt={t(wide.alt, locale)}
+                    kind={wide.kind}
+                    priority
+                    fullSize={fullSize}
+                  />
+                )}
+                {phone && (
+                  // beside a wide capture the phone drops out below 640px; alone it keeps a phone's width
+                  <div className={wide ? "hidden sm:block" : "w-40 sm:w-48"}>
+                    <Capture
+                      src={phone.src}
+                      alt={t(phone.alt, locale)}
+                      kind="mobile"
+                      priority={!wide}
+                      fullSize={fullSize}
+                    />
+                  </div>
+                )}
+              </div>
+              {shots.length > 0 ? (
                 <p className="mt-3">
-                  <a
-                    href="#screens"
+                  <ScreensLink
                     className={cx(
                       "inline-flex min-h-6 items-center text-ui font-semibold",
                       LINK,
                     )}
                   >
-                    {fill(dict.project.allScreens, { n: shots.length + 1 })}
-                  </a>
+                    {fill(dict.project.allScreens, { n: shots.length })}
+                  </ScreensLink>
                 </p>
+              ) : (
+                !p.thumbnail && (
+                  <MediaCaption
+                    shot={(wide ?? phone)!}
+                    dict={dict}
+                    locale={locale}
+                    className="mt-2 block"
+                  />
+                )
               )}
             </div>
           )}

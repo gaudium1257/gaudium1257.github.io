@@ -1,0 +1,304 @@
+{
+  "id": "dayce",
+  "title": {
+    "ko": "Dayce",
+    "en": "Dayce"
+  },
+  "tagline": {
+    "ko": "일정과 일기를 날짜별로 한곳에서 관리하는 Flutter 앱",
+    "en": "A Flutter app for managing schedules and diary entries by date in one place"
+  },
+  "summary": {
+    "ko": "일정과 일기를 날짜 기준으로 한 앱에서 관리하는 Flutter 모바일 앱입니다. 고려대학교 정보대학 소프트웨어 경진대회인 2026 NE:XT CONTEST에 1인으로 출품했으며, Claude Code를 활용한 바이브 코딩으로 개발했습니다. 일/주/월/년 캘린더, 반복 일정과 여러 날 일정, 기분 이모지를 고르는 일기를 제공하고 모든 데이터를 기기 안의 SQLite에 저장합니다.",
+    "en": "A Flutter mobile app for managing schedules and diary entries by date in one app. It was built solo through vibe coding with Claude Code and entered in 2026 NE:XT CONTEST, the software competition of Korea University's College of Informatics. It offers day, week, month, and year calendar views, recurring and multi-day events, and diary entries with a mood emoji, and stores all data in on-device SQLite."
+  },
+  "category": "personal",
+  "status": "completed",
+  "period": {
+    "start": "2026-03",
+    "end": "2026-05"
+  },
+  "team": {
+    "size": 1,
+    "role": {
+      "ko": "1인 개발 (기획·개발)",
+      "en": "Solo developer (planning and development)"
+    }
+  },
+  "contributions": [
+    {
+      "ko": "Claude Code를 활용한 바이브 코딩으로 앱 전체 구현",
+      "en": "Built the entire app through vibe coding with Claude Code"
+    },
+    {
+      "ko": "일정과 일기를 합친 서비스 기획과 기능 정의",
+      "en": "Planned a service combining schedules and diaries and defined its features"
+    },
+    {
+      "ko": "시스템 네비게이션 바를 침범하던 화면 레이아웃 수정",
+      "en": "Fixed screen layouts that overlapped the system navigation bar"
+    },
+    {
+      "ko": "시연 영상 제작과 대회 기획서·보고서 작성",
+      "en": "Produced the demo video and wrote the contest proposal and report"
+    }
+  ],
+  "features": [
+    {
+      "title": {
+        "ko": "일/주/월/년 캘린더",
+        "en": "Day, week, month, and year views"
+      },
+      "description": {
+        "ko": "네 가지 보기를 전환하고 좌우로 넘겨 날짜를 이동합니다.",
+        "en": "Switches between four views and moves through dates by swiping."
+      }
+    },
+    {
+      "title": {
+        "ko": "일정 관리",
+        "en": "Event management"
+      },
+      "description": {
+        "ko": "제목, 날짜·시간, 종일 여부, 메모, 색상을 정해 일정을 추가·수정·삭제합니다.",
+        "en": "Adds, edits, and deletes events with a title, date and time, all-day option, memo, and color."
+      }
+    },
+    {
+      "title": {
+        "ko": "반복 일정",
+        "en": "Recurring events"
+      },
+      "description": {
+        "ko": "매일·매주·매달·매년 반복과 반복 종료일을 지원합니다.",
+        "en": "Supports daily, weekly, monthly, and yearly repeats with a repeat end date."
+      }
+    },
+    {
+      "title": {
+        "ko": "여러 날 일정 막대",
+        "en": "Multi-day event bars"
+      },
+      "description": {
+        "ko": "기간이 겹치는 일정을 주 단위 그리드의 서로 다른 줄에 막대로 표시합니다.",
+        "en": "Shows overlapping multi-day events as bars on separate rows of the weekly grid."
+      }
+    },
+    {
+      "title": {
+        "ko": "끌어서 기간 선택",
+        "en": "Drag to select a range"
+      },
+      "description": {
+        "ko": "날짜를 길게 눌러 끌면 그 기간이 채워진 일정 입력 화면이 열립니다.",
+        "en": "Long-pressing and dragging across dates opens an event form filled with that range."
+      }
+    },
+    {
+      "title": {
+        "ko": "일 보기 시간표",
+        "en": "Day timeline"
+      },
+      "description": {
+        "ko": "종일 일정은 배너로, 시간 일정은 시간표에 표시하고 시간이 겹치면 나란히 놓습니다.",
+        "en": "Shows all-day events as banners and timed events on a timeline, placing overlapping ones side by side."
+      }
+    },
+    {
+      "title": {
+        "ko": "날짜별 일기",
+        "en": "Daily diary"
+      },
+      "description": {
+        "ko": "하루 한 편씩 기분 이모지와 함께 쓰고, 저장하지 않고 나가면 경고합니다.",
+        "en": "Writes one entry per day with a mood emoji and warns before leaving without saving."
+      }
+    },
+    {
+      "title": {
+        "ko": "일기 목록",
+        "en": "Diary list"
+      },
+      "description": {
+        "ko": "작성한 일기를 월별로 묶어 보여주고 월 필터로 좁혀 봅니다.",
+        "en": "Groups entries by month and narrows them with month filters."
+      }
+    },
+    {
+      "title": {
+        "ko": "설정",
+        "en": "Settings"
+      },
+      "description": {
+        "ko": "기본 보기, 주 시작 요일, 기본 일정 색상, 줄 노트 배경, 기본 기분을 저장합니다.",
+        "en": "Saves the default view, week start day, default event color, ruled-line background, and default mood."
+      }
+    }
+  ],
+  "techStack": [
+    {
+      "category": "language",
+      "items": ["Dart"]
+    },
+    {
+      "category": "mobile",
+      "items": ["Flutter"]
+    },
+    {
+      "category": "database",
+      "items": ["SQLite"]
+    },
+    {
+      "category": "tooling",
+      "items": ["Claude Code"]
+    }
+  ],
+  "deployment": {
+    "status": "not-deployed"
+  },
+  "architecture": {
+    "ko": "Flutter 화면이 DatabaseService(sqflite)와 SettingsService(shared_preferences)를 거쳐 기기 안의 SQLite와 설정 저장소를 직접 읽고 씁니다. 서버나 외부 API는 사용하지 않습니다.",
+    "en": "Flutter screens read and write on-device SQLite and the settings store directly through DatabaseService (sqflite) and SettingsService (shared_preferences). The app uses no server or external API."
+  },
+  "outcomes": [
+    {
+      "ko": "2026 NE:XT CONTEST 출품",
+      "en": "Entered in 2026 NE:XT CONTEST"
+    },
+    {
+      "ko": "시연 영상 제작 및 YouTube 공개",
+      "en": "Produced a demo video and published it on YouTube"
+    },
+    {
+      "ko": "GitHub Releases에 Android APK(Dayce 1.0.0) 공개",
+      "en": "Published an Android APK (Dayce 1.0.0) on GitHub Releases"
+    }
+  ],
+  "challenges": [
+    {
+      "problem": {
+        "ko": "앱 화면이 시스템 네비게이션 바 영역을 침범함",
+        "en": "App screens overlapped the system navigation bar"
+      },
+      "solution": {
+        "ko": "Android edge-to-edge를 끄고 입력·설정 화면에 SafeArea 적용",
+        "en": "Turned off Android edge-to-edge and applied SafeArea to the form and settings screens"
+      }
+    }
+  ],
+  "learnings": [
+    {
+      "ko": "첫 앱 개발로 Flutter와 Dart를 처음 접함",
+      "en": "My first app project and my first time using Flutter and Dart"
+    },
+    {
+      "ko": "사전 지식이 없어도 바이브 코딩으로 동작하는 앱을 만들 수 있음을 체감",
+      "en": "Experienced firsthand that vibe coding can produce a working app without prior knowledge"
+    }
+  ],
+  "highlights": [
+    {
+      "ko": "일정과 일기를 날짜 기준으로 한 앱에서 관리",
+      "en": "Schedules and diary entries managed by date in one app"
+    },
+    {
+      "ko": "여러 날 일정을 주 단위 그리드에 배치하는 레이아웃 로직",
+      "en": "Layout logic that places multi-day events on a weekly grid"
+    },
+    {
+      "ko": "길게 눌러 끌어서 기간을 선택하는 일정 생성",
+      "en": "Event creation by long-pressing and dragging across a date range"
+    }
+  ],
+  "links": [
+    {
+      "type": "github",
+      "url": "https://github.com/gaudium1257/2026320053_NEXTCON"
+    },
+    {
+      "type": "video",
+      "url": "https://youtu.be/_gSFi0oEptY",
+      "label": {
+        "ko": "시연 영상",
+        "en": "Demo video"
+      }
+    },
+    {
+      "type": "other",
+      "url": "https://github.com/gaudium1257/2026320053_NEXTCON/releases/tag/v1.0.0",
+      "label": {
+        "ko": "Android APK (Dayce 1.0.0)",
+        "en": "Android APK (Dayce 1.0.0)"
+      }
+    },
+    {
+      "type": "other",
+      "url": "https://husky-willow-b6d.notion.site/2026-NE-XT-CONTEST-30d4e67d9ce480a0a418f8ca0e489fca",
+      "label": {
+        "ko": "2026 NE:XT CONTEST 안내",
+        "en": "2026 NE:XT CONTEST page"
+      }
+    }
+  ],
+  "related": ["next-contest-2026"],
+  "tags": ["mobile", "calendar", "diary", "offline", "vibe-coding"],
+  "featured": true,
+  "screenshots": [
+    {
+      "src": "/images/projects/dayce/01-month-view.png",
+      "alt": {
+        "ko": "2026년 5월 월 보기: 여러 날 일정과 반복 일정",
+        "en": "Month view for May 2026 with multi-day and recurring events"
+      },
+      "kind": "mobile"
+    },
+    {
+      "src": "/images/projects/dayce/02-drag-select.png",
+      "alt": {
+        "ko": "길게 눌러 끌어서 5월 11일~14일을 선택하는 모습",
+        "en": "Long-pressing and dragging to select May 11–14"
+      },
+      "kind": "mobile"
+    },
+    {
+      "src": "/images/projects/dayce/03-event-form.png",
+      "alt": {
+        "ko": "선택한 기간이 채워진 일정 추가 화면",
+        "en": "Event form filled in with the selected range"
+      },
+      "kind": "mobile"
+    },
+    {
+      "src": "/images/projects/dayce/04-day-view.png",
+      "alt": {
+        "ko": "5월 31일 일 보기: 종일 일정 배너와 시간표",
+        "en": "Day view for May 31 with an all-day banner and timeline"
+      },
+      "kind": "mobile"
+    },
+    {
+      "src": "/images/projects/dayce/05-add-sheet.png",
+      "alt": {
+        "ko": "일정과 일기 중 무엇을 추가할지 고르는 시트",
+        "en": "Sheet for choosing whether to add an event or a diary entry"
+      },
+      "kind": "mobile"
+    },
+    {
+      "src": "/images/projects/dayce/06-diary-form.png",
+      "alt": {
+        "ko": "기분을 고르는 일기 작성 화면",
+        "en": "Diary form with a mood picker"
+      },
+      "kind": "mobile"
+    },
+    {
+      "src": "/images/projects/dayce/07-unsaved-dialog.png",
+      "alt": {
+        "ko": "저장하지 않고 나갈 때 뜨는 경고창",
+        "en": "Warning shown when leaving without saving"
+      },
+      "kind": "mobile"
+    }
+  ]
+}

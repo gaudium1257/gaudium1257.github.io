@@ -26,7 +26,7 @@ Schemas: `src/content/schema.ts` — read it before writing JSON. Ids are global
 2. Save the fact sheet verbatim to `content/sources/projects/<id>.md` (the audit trail; not rendered on the site).
 3. Save the JSON to `content/projects/<id>.json`. The post-edit hook validates it; fix any schema errors by asking or by correcting obvious format mistakes only (never by changing facts).
 4. Run the `content-fact-checker` subagent on the pair. Resolve every finding: remove unsupported claims or ask the user — do not reword them to sound safer.
-5. Images: if the fact sheet lists candidates and the user provides files, copy to `public/images/projects/<id>/` and set `thumbnail` / `screenshots` with real alt text.
+5. Images: if the fact sheet lists candidates and the user provides files, copy to `public/images/projects/<id>/` and set `thumbnail` / `screenshots` with real alt text. Give each screenshot its `kind` (`web` 16:10 · `mobile` 6:13 · `photo` 4:3). Boxes never crop and the validator rejects a ratio off by more than 1%, so pad (don't crop) files to the exact ratio first.
 6. Relations: map section 12 of the fact sheet ("관련 활동·수상·경력") to existing ids and fill `related` (one side is enough; the loader links both ways). If the target doesn't exist yet, offer to add it.
 7. Skills: for each `techStack` item not in `content/skills.json` (validator warns), ask whether to add it to 개발 역량 and under which group. Keep spelling identical.
 8. Ask whether it should be `featured`.

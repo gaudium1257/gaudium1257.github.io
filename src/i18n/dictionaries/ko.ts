@@ -131,6 +131,7 @@ const ko = {
     allScreens: "화면 {n}개 모두 보기",
     moreScreens: "화면 더 보기 ({n})",
     fullSize: "원본 크기로 보기",
+    mediaKind: { web: "웹 화면", mobile: "휴대폰 화면", photo: "사진" },
     repoTitle: "GitHub 저장소",
     stars: "별",
     license: "라이선스",

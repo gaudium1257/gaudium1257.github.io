@@ -146,7 +146,7 @@
 
 - `src/config/sections.ts`: `skills`를 두 번째로 옮기고 라벨을 "기술 스택" / "Stack"으로(id는 `skills` 그대로). **주인 확인 필요.**
 - `Project.layout?: "default"` — 위 "프로젝트 성격별 양식".
-- `Project.media?: { kind: "web" | "mobile" | "photo"; src; width; height; alt: Localized; caption?: Localized }[]` — 첫 `web` = 대표 캡처, 첫 `mobile` = 휴대폰 칸. 검증기가 비율(±1%)과 파일 존재를 확인.
+- ~~`Project.media?`~~ → **구현됨 (2026.10)**: 새 필드 대신 기존 `screenshots[]`에 `kind: "web" | "mobile" | "photo"`(기본 `web`)를 더했습니다. `thumbnail`(있으면) 또는 첫 `web`/`photo` = 대표 캡처, 첫 `mobile` = 휴대폰 칸. 캡션은 `alt`를 씁니다. 검증기가 비율(±1%, PNG·JPEG)과 파일 존재를 확인합니다. 갤러리는 위 "프로젝트 화면" 규칙 그대로입니다(`src/lib/media.ts`).
 - `src/data/github-snapshot.json` + `scripts/fetch-github.ts` + `deploy.yml` 단계 — 위 "GitHub 연동".
 - 정적 페이지 `/[locale]/projects/tech/[slug]/` — `generateStaticParams`(모든 `techStack` 이름) + `dynamicParams = false`, slug 함수는 `C++`, `C#`, `Node.js`, `/`를 처리. `?tech=`를 읽는 홈 필터는 Suspense 경계 안에서, JS 없이도 동작하는 목록 위에 덧붙입니다.
 - 팩트시트 프롬프트에 "화면 캡처"(어느 화면, 웹/휴대폰, 파일, 한 줄 설명) 항목.
