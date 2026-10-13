@@ -77,7 +77,6 @@ export default async function ProjectsPage({
                   locale={locale}
                   unrecorded={false}
                   onHome={false}
-                  variant="cards"
                 />
               </div>
             </section>

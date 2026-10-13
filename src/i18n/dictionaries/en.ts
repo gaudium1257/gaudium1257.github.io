@@ -53,7 +53,6 @@ const en: Dictionary = {
     srNone: "no recorded projects",
     label: "Tech Stack",
     linkSr: "see projects using this technology",
-    countSr: "technologies: {n}",
     category: {
       language: "Language",
       frontend: "Frontend",

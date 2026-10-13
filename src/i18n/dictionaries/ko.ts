@@ -50,7 +50,6 @@ const ko = {
     srNone: "기록된 프로젝트 없음",
     label: "기술 스택",
     linkSr: "이 기술을 쓴 프로젝트 보기",
-    countSr: "기술 {n}개",
     category: {
       language: "언어",
       frontend: "프론트엔드",

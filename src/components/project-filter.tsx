@@ -48,12 +48,6 @@ export function FilterBar({
       links.forEach((a) =>
         a.setAttribute("aria-current", String(a.dataset.tech === slug)),
       );
-      // a selected tech inside a folded group (e.g. from ?tech=) unfolds it
-      if (slug)
-        links
-          .find((a) => a.dataset.tech === slug)
-          ?.closest("details")
-          ?.setAttribute("open", "");
       let n = 0;
       for (const li of entries) {
         const hit = !slug || (li.dataset.techs ?? "").split(" ").includes(slug);
@@ -103,8 +97,6 @@ export function FilterBar({
     const onClear = () => {
       const was = links.find((a) => a.dataset.tech === current.current);
       apply(null, true);
-      // the node may sit in a fold the visitor has closed since: reopen it so focus has a target
-      was?.closest("details")?.setAttribute("open", "");
       was?.focus();
     };
     window.addEventListener("portfolio:clear-filter", onClear);

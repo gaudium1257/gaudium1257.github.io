@@ -1,14 +1,12 @@
 import type { Project, Skills } from "@/content/schema";
 import { t, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
-import { fill } from "@/lib/format";
 import { groupedStack, TIER, techSlug } from "@/lib/tech";
-import { Icon } from "./icons";
 import { TechIcon } from "./tech-icons";
 import { cx, LABEL_COLS } from "./ui";
 
 const NODE =
-  "inline-flex min-h-10 items-center gap-2 rounded-node border border-edge bg-white px-3 py-1 text-ui font-medium text-ink transition-colors hover:border-primary hover:text-primary active:bg-primary-50";
+  "inline-flex min-h-8 items-center gap-1.5 rounded-node border border-line bg-white px-2.5 py-1 text-sm font-medium text-ink-2 transition-colors hover:border-primary hover:text-primary active:bg-primary-50";
 
 /** Static tech label in project entries; highlighted when it matches the active filter. */
 export function TechChip({
@@ -61,7 +59,7 @@ export function TechNode({
             "aria-[current=true]:border-primary aria-[current=true]:bg-primary aria-[current=true]:text-white aria-[current=true]:hover:border-primary-700 aria-[current=true]:hover:bg-primary-700 aria-[current=true]:hover:text-white aria-[current=true]:active:bg-primary-700",
         )}
       >
-        <TechIcon name={name} />
+        <TechIcon name={name} className="size-3.5" />
         {name}
         <span className="sr-only">, {srText}</span>
       </a>
@@ -120,20 +118,10 @@ export function TechList({
 type TechCategory = Project["techStack"][number]["category"];
 
 /**
- * Every category folds on its own (owner request 2026.10). The tech you build with — language,
- * frontend, mobile, backend, AI — starts open; the tech that supports it — DB, data, infra,
- * tooling, other — starts folded. Native <details>: works without JS, and the filter reopens a
- * category when `?tech=` points inside it.
+ * The stack as a category table (owner's pick 2026.10, option B): one white panel, a row per
+ * category — label column + nodes — split into two columns from 1024px. Nothing folds: the rows
+ * are short enough to show at once, and every row lines up instead of cards of uneven height.
  */
-const SUPPORT: TechCategory[] = [
-  "database",
-  "data",
-  "infra",
-  "tooling",
-  "other",
-];
-
-/** Foldable category rows of filter nodes (stack map on home, filter on the project list). */
 export function StackRows({
   groups,
   usage,
@@ -141,7 +129,6 @@ export function StackRows({
   locale,
   unrecorded = true,
   onHome,
-  variant = "rows",
 }: {
   groups: {
     category: TechCategory;
@@ -153,10 +140,7 @@ export function StackRows({
   locale: Locale;
   unrecorded?: boolean;
   onHome: boolean;
-  /** "cards" (home): one card per category in a grid; "rows" (list filter): ruled rows in a panel */
-  variant?: "rows" | "cards";
 }) {
-  const cards = variant === "cards";
   const rows = [...groups]
     .sort((a, b) => TIER.indexOf(a.category) - TIER.indexOf(b.category))
     .map((g) => ({
@@ -164,100 +148,66 @@ export function StackRows({
       names: g.names.filter((n) => unrecorded || usage.has(n)),
     }))
     .filter((g) => g.names.length);
-  // when every row is a supporting one, nothing would be open: open them all
-  const allSupport = rows.every((g) => SUPPORT.includes(g.category));
-  const item = (g: (typeof rows)[number], tall?: boolean) => (
-    <li
-      key={g.category + (g.label ?? "")}
-      className={
-        cards
-          ? cx(
-              "rounded-card bg-white px-4 py-2 ring-1 ring-line",
-              tall && "sm:max-lg:row-span-2",
-            )
-          : "border-t border-line first:border-t-0"
-      }
-    >
-      <details
-        open={allSupport || !SUPPORT.includes(g.category)}
-        className="group/cat"
-      >
-        <summary
+  // reading order runs down the first column, then the second
+  const half = Math.ceil(rows.length / 2);
+  const cols = [rows.slice(0, half), rows.slice(half)].filter((c) => c.length);
+  return (
+    <div className="grid gap-x-10 rounded-card bg-white px-5 ring-1 ring-line sm:px-6 lg:grid-cols-2">
+      {cols.map((col, i) => (
+        <dl
+          key={i}
           className={cx(
-            "group/sum -mx-2 flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-node px-2 py-1.5 transition-colors active:bg-primary-100 [&::-webkit-details-marker]:hidden",
-            cards ? "hover:bg-surface" : "hover:bg-white",
+            "divide-y divide-line",
+            i === 1 && "border-t border-line lg:border-t-0",
           )}
         >
-          <h3 className="text-sm font-semibold text-ink-2 transition-colors group-hover/sum:text-ink group-active/sum:text-ink sm:text-ui">
-            {g.label ?? dict.skills.category[g.category]}
-          </h3>
-          <span className="text-sm text-muted tabular-nums transition-colors group-hover/sum:text-ink-2">
-            <span aria-hidden="true">{g.names.length}</span>
-            <span className="sr-only">
-              {fill(dict.skills.countSr, { n: g.names.length })}
-            </span>
-          </span>
-          <Icon
-            name="chevron"
-            className="ml-auto text-muted transition-colors group-open/cat:rotate-180 group-hover/sum:text-ink-2"
-          />
-        </summary>
-        <ul className="flex flex-wrap gap-2 pt-1 pb-3">
-          {g.names.map((name) => {
-            if (!usage.has(name))
-              return (
-                <li key={name}>
-                  <span
-                    translate="no"
-                    className="inline-flex min-h-10 items-center rounded-node border border-dashed border-edge px-3 py-1 text-ui text-muted"
-                  >
-                    {name}
-                    <span className="sr-only">, {dict.skills.srNone}</span>
-                  </span>
-                </li>
-              );
-            const slug = techSlug(name);
-            return (
-              <TechNode
-                key={name}
-                name={name}
-                href={
-                  onHome ? `/${locale}/projects/?tech=${slug}` : `?tech=${slug}`
-                }
-                srText={dict.skills.linkSr}
-                filter
-              />
-            );
-          })}
-        </ul>
-      </details>
-    </li>
-  );
-  if (!cards) return <ul>{rows.map((g) => item(g))}</ul>;
-  // cards: the open build categories share a row height; the folded support ones get their own
-  // compact row so a short closed card never sits next to a tall open one
-  const build = rows.filter((g) => allSupport || !SUPPORT.includes(g.category));
-  const support = allSupport
-    ? []
-    : rows.filter((g) => SUPPORT.includes(g.category));
-  // two columns (tablet) with an odd count: the fullest card spans two rows so the short ones stack
-  // beside it instead of leaving a hole under a two-chip card
-  const fullest =
-    build.length % 2 === 1 && build.length > 1
-      ? build.reduce((a, b) => (b.names.length > a.names.length ? b : a))
-      : undefined;
-  return (
-    <>
-      {/* items-start: a short category (언어) keeps its own height instead of a hollow card */}
-      <ul className="grid items-start gap-4 sm:grid-flow-row-dense sm:grid-cols-2 lg:grid-cols-3">
-        {build.map((g) => item(g, g === fullest))}
-      </ul>
-      {support.length > 0 && (
-        <ul className="mt-4 grid items-start gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {support.map((g) => item(g))}
-        </ul>
-      )}
-    </>
+          {col.map((g) => (
+            <div
+              key={g.category + (g.label ?? "")}
+              className="grid gap-2 py-3.5 sm:grid-cols-[6.5rem_minmax(0,1fr)] sm:items-start sm:gap-4"
+            >
+              <dt className="text-sm font-semibold text-ink sm:pt-1.5">
+                {g.label ?? dict.skills.category[g.category]}
+              </dt>
+              <dd>
+                <ul className="flex flex-wrap gap-1.5">
+                  {g.names.map((name) => {
+                    if (!usage.has(name))
+                      return (
+                        <li key={name}>
+                          <span
+                            translate="no"
+                            className="inline-flex min-h-8 items-center rounded-node border border-dashed border-edge px-2.5 text-sm text-muted"
+                          >
+                            {name}
+                            <span className="sr-only">
+                              , {dict.skills.srNone}
+                            </span>
+                          </span>
+                        </li>
+                      );
+                    const slug = techSlug(name);
+                    return (
+                      <TechNode
+                        key={name}
+                        name={name}
+                        href={
+                          onHome
+                            ? `/${locale}/projects/?tech=${slug}`
+                            : `?tech=${slug}`
+                        }
+                        srText={dict.skills.linkSr}
+                        filter
+                      />
+                    );
+                  })}
+                </ul>
+              </dd>
+            </div>
+          ))}
+        </dl>
+      ))}
+    </div>
   );
 }
 
@@ -300,7 +250,6 @@ export function StackMap({
               dict={dict}
               locale={locale}
               onHome
-              variant="cards"
             />
           </div>
           {hasUnrecorded && (
