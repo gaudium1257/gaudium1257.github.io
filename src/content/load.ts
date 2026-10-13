@@ -34,6 +34,15 @@ export function getRelated(id: string) {
     .filter((r) => r.kind !== "activity");
 }
 
+/** Supporting techs (skills.json `home: false`): only on project pages, under 라이브러리. */
+export function getSupportingTechs() {
+  return new Set(
+    getContent().skills.groups.flatMap((g) =>
+      g.items.filter((i) => !i.home).map((i) => i.name),
+    ),
+  );
+}
+
 /** Activities (contests, programs) a project was made for — shown as a badge on its page. */
 export function getActivitiesOf(id: string) {
   const { relations, activities } = getContent();

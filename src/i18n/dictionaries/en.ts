@@ -141,6 +141,8 @@ const en: Dictionary = {
     allScreens: "See All Screens ({n})",
     fullSize: "View full size",
     aiTools: "AI Tools",
+    libraries: "Libraries",
+    librariesTitle: "Libraries and Tools Also Used",
     mediaKind: { web: "Web screen", mobile: "Phone screen", photo: "Photo" },
     repoTitle: "GitHub Repository",
     madeFor: "Built for {title}",

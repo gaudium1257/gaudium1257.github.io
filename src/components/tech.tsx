@@ -67,21 +67,29 @@ export function TechNode({
   );
 }
 
-/** Category-grouped tech in the fixed TIER order. `link` → detail-page nodes to the home filter. */
+/**
+ * Category-grouped tech in the fixed TIER order. `link` → detail-page nodes to the home filter.
+ * `skip`: names left out (supporting libraries, listed on their own line by the caller).
+ */
 export function TechList({
   project,
   dict,
   locale,
   link = false,
+  skip,
 }: {
   project: Project;
   dict: Dictionary;
   locale: Locale;
   link?: boolean;
+  skip?: Set<string>;
 }) {
+  const groups = groupedStack(project)
+    .map((g) => ({ ...g, items: g.items.filter((n) => !skip?.has(n)) }))
+    .filter((g) => g.items.length);
   return (
     <dl aria-label={dict.skills.label} className="grid gap-y-2.5">
-      {groupedStack(project).map((g) => (
+      {groups.map((g) => (
         // a spec sheet: one row per category, labels in a fixed column
         <div key={g.category} className={cx(LABEL_COLS, "items-start")}>
           <dt
@@ -224,10 +232,11 @@ export function StackMap({
   locale: Locale;
   title: string;
 }) {
+  // core tech only: supporting libraries live on the project pages
   const groups = skills.groups.map((g) => ({
     category: g.category,
     label: t(g.label, locale),
-    names: g.items.map((i) => i.name),
+    names: g.items.filter((i) => i.home).map((i) => i.name),
   }));
   const hasUnrecorded = groups.some((g) => g.names.some((n) => !usage.has(n)));
   return (

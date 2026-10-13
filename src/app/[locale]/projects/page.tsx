@@ -6,7 +6,7 @@ import { Empty } from "@/components/home-sections";
 import { FilterBar } from "@/components/project-filter";
 import { ProjectEntry } from "@/components/project-entry";
 import { StackRows } from "@/components/tech";
-import { getContent } from "@/content/load";
+import { getContent, getSupportingTechs } from "@/content/load";
 import { hasLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { fill, formatYmd } from "@/lib/format";
@@ -29,11 +29,12 @@ export default async function ProjectsPage({
   const dict = getDictionary(locale);
   const { projects } = getContent();
   const usage = techUsage(projects);
+  const supporting = getSupportingTechs(); // the filter offers core tech only, like the home stack
   const byCat = new Map<string, Set<string>>();
   for (const p of projects)
     for (const g of p.techStack) {
       const set = byCat.get(g.category) ?? new Set<string>();
-      g.items.forEach((n) => set.add(n));
+      g.items.filter((n) => !supporting.has(n)).forEach((n) => set.add(n));
       byCat.set(g.category, set);
     }
   const groups = [...byCat].map(([category, names]) => ({

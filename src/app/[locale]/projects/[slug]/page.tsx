@@ -15,7 +15,12 @@ import { ScreensLink } from "@/components/screens-link";
 import { TechList } from "@/components/tech";
 import { BUTTON, cx, LABEL_COLS, LINK } from "@/components/ui";
 import type { Project } from "@/content/schema";
-import { getActivitiesOf, getContent, getRelated } from "@/content/load";
+import {
+  getActivitiesOf,
+  getContent,
+  getRelated,
+  getSupportingTechs,
+} from "@/content/load";
 import { hasLocale, locales, t, type Locale } from "@/i18n/config";
 import { getDictionary, type Dictionary } from "@/i18n/dictionaries";
 import {
@@ -163,37 +168,55 @@ const BLOCKS: {
       const LANG = ["bg-lang-1", "bg-lang-2", "bg-lang-3", "bg-lang-4"];
       const notes = c.p.techNotes;
       const hasNotes = Object.keys(notes).length > 0;
+      const supporting = getSupportingTechs();
+      const part = (lib: boolean) =>
+        groupedStack(c.p)
+          .map((g) => ({
+            ...g,
+            items: g.items.filter((n) => supporting.has(n) === lib),
+          }))
+          .filter((g) => g.items.length);
+      // where each tech was used: category | tech | use (stacks below 640px)
+      const table = (groups: ReturnType<typeof part>) => (
+        <div className="divide-y divide-line border-t border-line">
+          {groups.map((g) => (
+            <div
+              key={g.category}
+              className="grid gap-x-6 gap-y-1 py-3 sm:grid-cols-[5.5rem_minmax(0,1fr)]"
+            >
+              <p className="pt-0.5 text-sm text-muted">
+                {c.dict.skills.category[g.category]}
+              </p>
+              <dl className="grid gap-y-2">
+                {g.items.map((name) => (
+                  <div
+                    key={name}
+                    className="grid gap-x-6 gap-y-0.5 sm:grid-cols-[11rem_minmax(0,1fr)]"
+                  >
+                    <dt translate="no" className="font-semibold text-ink">
+                      {name}
+                    </dt>
+                    <dd className="text-ui leading-copy text-ink-2">
+                      {notes[name] ? t(notes[name], c.locale) : null}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          ))}
+        </div>
+      );
+      const libGroups = part(true);
       return (
         <>
-          {hasNotes && (
-            // where each tech was used: category | tech | use (stacks below 640px)
-            <div className="divide-y divide-line border-t border-line">
-              {groupedStack(c.p).map((g) => (
-                <div
-                  key={g.category}
-                  className="grid gap-x-6 gap-y-1 py-3 sm:grid-cols-[5.5rem_minmax(0,1fr)]"
-                >
-                  <p className="pt-0.5 text-sm text-muted">
-                    {c.dict.skills.category[g.category]}
-                  </p>
-                  <dl className="grid gap-y-2">
-                    {g.items.map((name) => (
-                      <div
-                        key={name}
-                        className="grid gap-x-6 gap-y-0.5 sm:grid-cols-[11rem_minmax(0,1fr)]"
-                      >
-                        <dt translate="no" className="font-semibold text-ink">
-                          {name}
-                        </dt>
-                        <dd className="text-ui leading-copy text-ink-2">
-                          {notes[name] ? t(notes[name], c.locale) : null}
-                        </dd>
-                      </div>
-                    ))}
-                  </dl>
-                </div>
-              ))}
-            </div>
+          {hasNotes && table(part(false))}
+          {hasNotes && libGroups.length > 0 && (
+            <>
+              <h3 className="mt-8 mb-3 text-ui font-semibold text-ink-2">
+                {c.dict.project.librariesTitle}
+              </h3>
+              {table(libGroups)}
+            </>
           )}
           {shared.length > 0 && (
             <p
@@ -390,6 +413,10 @@ export default async function ProjectPage({
   const ctx: Ctx = { p, dict, locale, usage: techUsage(projects) };
   const F = dict.project.facts;
 
+  const supporting = getSupportingTechs();
+  const libs = groupedStack(p)
+    .flatMap((g) => g.items)
+    .filter((n) => supporting.has(n));
   const live = p.deployment.status === "live";
   const facts: [string, React.ReactNode][] = [
     [
@@ -548,7 +575,22 @@ export default async function ProjectPage({
                   </div>
                 ))}
               </dl>
-              <TechList project={p} dict={dict} locale={locale} link />
+              <TechList
+                project={p}
+                dict={dict}
+                locale={locale}
+                link
+                skip={supporting}
+              />
+              {libs.length > 0 && (
+                // supporting libraries: named here, their use is in the 기술 스택 section below
+                <p className={cx(LABEL_COLS, "mt-2.5 items-baseline text-sm")}>
+                  <span className="text-muted">{dict.project.libraries}</span>
+                  <span translate="no" className="text-ink-2">
+                    {libs.join(", ")}
+                  </span>
+                </p>
+              )}
               {p.aiTools.length > 0 && (
                 // plain text, not chips/nodes: AI assistants are not part of the tech stack
                 <p className={cx(LABEL_COLS, "mt-2.5 items-baseline text-sm")}>

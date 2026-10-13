@@ -274,6 +274,11 @@ export const Skills = z.object({
               name: z.string().trim().min(1),
               /** Optional context, e.g. what you've done with it. No self-rated levels. */
               note: Localized.optional(),
+              /**
+               * `false`: a supporting library / SDK / tool (e.g. React Router, Axios). Left out of the
+               * home stack, the list filter and the cards; shown on project pages under 라이브러리.
+               */
+              home: z.boolean().default(true),
             }),
           )
           .min(1),
