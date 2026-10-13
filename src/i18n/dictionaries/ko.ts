@@ -50,7 +50,6 @@ const ko = {
     srNone: "기록된 프로젝트 없음",
     label: "기술 스택",
     linkSr: "이 기술을 쓴 프로젝트 보기",
-    countSr: "기술 {n}개",
     category: {
       language: "언어",
       frontend: "프론트엔드",
@@ -139,6 +138,8 @@ const ko = {
     allScreens: "화면 {n}개 모두 보기",
     fullSize: "원본 크기로 보기",
     aiTools: "AI 도구",
+    libraries: "라이브러리",
+    librariesTitle: "함께 쓴 라이브러리·도구",
     mediaKind: { web: "웹 화면", mobile: "휴대폰 화면", photo: "사진" },
     repoTitle: "GitHub 저장소",
     madeFor: "{title}에서 만든 프로젝트",

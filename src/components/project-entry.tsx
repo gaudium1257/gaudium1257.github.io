@@ -1,5 +1,5 @@
 import type { Project } from "@/content/schema";
-import { getRelated } from "@/content/load";
+import { getRelated, getSupportingTechs } from "@/content/load";
 import { t, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { fill, formatPeriod } from "@/lib/format";
@@ -118,7 +118,11 @@ export function ProjectEntry({
   eager?: "eager" | "high";
 }) {
   const { wide, phone } = heroShots(project);
-  const names = groupedStack(project).flatMap((g) => g.items);
+  // core tech only, like the home stack; supporting libraries are on the detail page
+  const supporting = getSupportingTechs();
+  const names = groupedStack(project)
+    .flatMap((g) => g.items)
+    .filter((n) => !supporting.has(n));
   const more = Math.max(0, names.length - CARD_CHIPS);
   return (
     <li

@@ -30,7 +30,7 @@ Schemas: `src/content/schema.ts` — read it before writing JSON. Ids are global
 6. Relations: map section 12 of the fact sheet ("관련 활동·수상·경력") to existing ids and fill `related` (one side is enough; the loader links both ways). If the target doesn't exist yet, offer to add it.
 7. `techNotes` (where each tech was used, keyed by the exact `techStack` name): keep only notes the fact sheet supports; the validator rejects keys that are not in `techStack`. Ask for missing ones rather than inventing.
 8. AI coding assistants (Claude Code, Copilot, Cursor…) go in `aiTools`, never in `techStack` or `skills.json` (owner decision 2026.10: they are shown on a separate line so the stack doesn’t read as AI-dependent).
-9. Skills: for each `techStack` item not in `content/skills.json` (validator warns), ask whether to add it to 개발 역량 and under which group. Keep spelling identical.
+9. Skills: for each `techStack` item not in `content/skills.json` (validator warns), ask whether to add it to 개발 역량 and under which group. Keep spelling identical. Also ask whether it is **core** or **supporting**: supporting libraries / SDKs / small tools (e.g. React Router, React Hook Form, Axios, shadcn/ui, social-login SDKs, esbuild — owner decision 2026.10) get `"home": false` — hidden from the home stack, the list filter and the cards, and listed on the project page under 라이브러리 with their `techNotes`. Every supporting tech needs a `techNotes` entry, since the detail page is the only place it is explained.
 10. Ask where it goes in `content/project-order.json` (the owner's order for home and the list; unlisted projects follow, newest first).
 
 ## Other kinds (from the owner's answers)
