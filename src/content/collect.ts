@@ -239,9 +239,12 @@ export function collectContent(): CollectResult {
   }
 
   for (const p of content.projects) {
-    if (p.deployment.status === "live" && !p.deployment.url)
+    if (
+      (p.deployment.status === "live" || p.deployment.status === "released") &&
+      !p.deployment.url
+    )
       errors.push(
-        `project "${p.id}": deployment.status is "live" but no url is given`,
+        `project "${p.id}": deployment.status is "${p.deployment.status}" but no url is given`,
       );
     if (p.period.end && p.period.end < p.period.start)
       errors.push(`project "${p.id}": period.end is before period.start`);

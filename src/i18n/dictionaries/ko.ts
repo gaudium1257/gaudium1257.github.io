@@ -174,6 +174,7 @@ const ko = {
   },
   deploymentStatus: {
     live: "배포 중",
+    released: "설치 파일 공개",
     "not-deployed": "미배포",
     discontinued: "서비스 종료",
     unknown: "확인 필요",

@@ -197,7 +197,10 @@
   },
   "aiTools": ["Claude Code", "Kiro"],
   "deployment": {
-    "status": "not-deployed"
+    "status": "released",
+    "platform": "GitHub (VSIX)",
+    "url": "https://github.com/Hello-KU-tty/core/blob/main/docs/DOWNLOAD_GUIDE.md",
+    "checkedAt": "2026-10-12"
   },
   "architecture": {
     "ko": "Kiro 확장이 로컬 Core를 자동으로 띄우고, 127.0.0.1의 토큰 인증 HTTP·SSE로 통신합니다. Core는 상태를 SQLite에 저장하고, Kiro 내장 Agent 또는 kiro-cli로 네 Agent를 실행하며, Agent 역할마다 MCP 서버로 쓸 수 있는 도구를 나눕니다.",
