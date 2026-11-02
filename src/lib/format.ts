@@ -24,10 +24,16 @@ export const formatPercent = (pct: number, locale: string) =>
 export const formatPeriod = (
   period: { start: string; end: string | null },
   openLabel: string,
-) =>
-  period.end && formatYm(period.end) === formatYm(period.start)
-    ? formatYm(period.start)
-    : `${formatYm(period.start)}${NBSP}–${NBSP}${period.end ? formatYm(period.end) : openLabel}`;
+) => {
+  // a period given to the day (a two-day hackathon) keeps its days; otherwise months are enough
+  const fmt =
+    period.start.length > 7 && (!period.end || period.end.length > 7)
+      ? formatYmd
+      : formatYm;
+  return period.end && fmt(period.end) === fmt(period.start)
+    ? fmt(period.start)
+    : `${fmt(period.start)}${NBSP}–${NBSP}${period.end ? fmt(period.end) : openLabel}`;
+};
 
 /** Fill "{n}" style placeholders in a dictionary string. */
 export const fill = (
