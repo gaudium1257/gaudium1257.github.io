@@ -177,6 +177,7 @@ const en: Dictionary = {
   },
   deploymentStatus: {
     live: "Live",
+    released: "Download Available",
     "not-deployed": "Not deployed",
     discontinued: "Discontinued",
     unknown: "Unknown",

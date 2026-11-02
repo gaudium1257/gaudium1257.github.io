@@ -440,9 +440,13 @@ export default async function ProjectPage({
   );
   facts.push([
     F.deploy,
-    live ? (
+    live || p.deployment.status === "released" ? (
       <span key="d">
-        <LiveBadge label={dict.deploymentStatus.live} />
+        {live ? (
+          <LiveBadge label={dict.deploymentStatus.live} />
+        ) : (
+          dict.deploymentStatus.released
+        )}
         {p.deployment.platform && (
           <span
             translate="no"

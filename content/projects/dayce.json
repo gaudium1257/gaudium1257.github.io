@@ -165,7 +165,10 @@
   },
   "aiTools": ["Claude Code"],
   "deployment": {
-    "status": "not-deployed"
+    "status": "released",
+    "platform": "GitHub Releases",
+    "url": "https://github.com/gaudium1257/2026320053_NEXTCON/releases/tag/v1.0.0",
+    "checkedAt": "2026-10-12"
   },
   "architecture": {
     "ko": "Flutter 화면이 DatabaseService(sqflite)와 SettingsService(shared_preferences)를 거쳐 기기 안의 SQLite와 설정 저장소를 직접 읽고 씁니다. 서버나 외부 API는 사용하지 않습니다.",

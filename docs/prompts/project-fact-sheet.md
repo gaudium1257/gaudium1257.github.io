@@ -176,7 +176,7 @@
 - 열거형 값은 다음 중에서만 고른다.
   - `category`: personal, team, hackathon, club, course, research, work, open-source
   - `status`: in-progress, completed, maintained, archived
-  - `deployment.status`: live(URL 접속 확인됨), not-deployed, discontinued, unknown
+  - `deployment.status`: live(스토어 출시나 웹 서비스, URL 접속 확인됨), released(GitHub Releases 등에 누구나 받을 수 있는 설치 파일만 공개, URL 확인됨), not-deployed, discontinued, unknown
   - `techStack[].category`: language, frontend, backend, mobile, ai-ml, data, database, infra, tooling, other
   - `links[].type`: github, demo, docs, video, slides, article, store, certificate, other
 - 저장소가 여러 개면 `github` 링크를 저장소마다 하나씩 넣고 `label`(`{ "ko": "관리자 웹", "en": "Admin web" }`처럼)을 붙인다. **첫 번째 `github` 링크가 대표 저장소**로 카드와 상세 머리에 나오니, 내 기여가 가장 큰 저장소를 맨 앞에 둔다.

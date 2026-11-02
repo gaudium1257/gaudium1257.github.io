@@ -191,7 +191,7 @@
   },
   "aiTools": ["Claude Code"],
   "deployment": {
-    "status": "live",
+    "status": "released",
     "platform": "GitHub Releases",
     "url": "https://github.com/Gaslighteam/GUDORY/releases/tag/v0.1.0",
     "checkedAt": "2026-11-02"

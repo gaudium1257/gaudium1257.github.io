@@ -84,6 +84,10 @@ export function ProjectMeta({
       {project.deployment.status === "live" && (
         <LiveBadge label={dict.deploymentStatus.live} />
       )}
+      {/* an installer on GitHub Releases: said plainly, without the green "live" dot */}
+      {project.deployment.status === "released" && (
+        <span>{dict.deploymentStatus.released}</span>
+      )}
     </p>
   );
 }

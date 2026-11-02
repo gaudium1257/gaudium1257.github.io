@@ -116,8 +116,13 @@ export const ProjectStatus = z.enum([
   "archived",
 ]);
 
+/**
+ * `live`: a running service or a store release. `released`: an installer anyone can download
+ * (APK / VSIX on GitHub Releases) but no store or web service (owner decision 2026.11).
+ */
 export const DeploymentStatus = z.enum([
   "live",
+  "released",
   "not-deployed",
   "discontinued",
   "unknown",

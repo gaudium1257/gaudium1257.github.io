@@ -26,13 +26,14 @@ export const formatPeriod = (
   openLabel: string,
 ) => {
   // a period given to the day (a two-day hackathon) keeps its days; otherwise months are enough
-  const fmt =
-    period.start.length > 7 && (!period.end || period.end.length > 7)
-      ? formatYmd
-      : formatYm;
+  const days =
+    period.start.length > 7 && (!period.end || period.end.length > 7);
+  const fmt = days ? formatYmd : formatYm;
+  // the longer day form may wrap in a narrow cell: allow it after the dash, never before
+  const after = days ? " " : NBSP;
   return period.end && fmt(period.end) === fmt(period.start)
     ? fmt(period.start)
-    : `${fmt(period.start)}${NBSP}–${NBSP}${period.end ? fmt(period.end) : openLabel}`;
+    : `${fmt(period.start)}${NBSP}–${after}${period.end ? fmt(period.end) : openLabel}`;
 };
 
 /** Fill "{n}" style placeholders in a dictionary string. */
