@@ -1,0 +1,387 @@
+{
+  "id": "gudory",
+  "title": {
+    "ko": "구도리 (GUDORY)",
+    "en": "GUDORY"
+  },
+  "tagline": {
+    "ko": "폰을 받은 사람에게 한 문장씩 구도를 알려 주는 카메라 앱",
+    "en": "A camera app that coaches whoever holds your phone, one sentence at a time"
+  },
+  "summary": {
+    "ko": "다른 사람에게 폰을 맡겨 사진을 찍을 때, 찍는 사람에게 구도 교정을 한 번에 하나씩 \"두 걸음 뒤로 가 주세요\" 같은 문장으로 알려 주는 Android 카메라 앱입니다. 목표 구도는 배경을 보고 추천하거나(추천 모드) 사용자가 고른 레퍼런스 사진에서 가져옵니다(맞춤 모드). 포즈 인식과 배경 분석은 모두 기기 안에서 실행됩니다. 2026 InThon 해커톤에서 4인 팀으로 만들었습니다.",
+    "en": "An Android camera app for when you hand your phone to someone else: it tells the photographer one composition fix at a time, in a sentence like \"take two steps back\". The target composition is either recommended from the background (recommend mode) or taken from a reference photo the user picks (custom mode). Pose detection and background analysis both run on the device. Built by a four-person team at the InThon 2026 hackathon."
+  },
+  "category": "hackathon",
+  "status": "completed",
+  "period": {
+    "start": "2026-10-31",
+    "end": "2026-11-01"
+  },
+  "team": {
+    "size": 4,
+    "role": {
+      "ko": "팀장 · 카메라 앱·통합·릴리스",
+      "en": "Team lead · camera app, integration, release"
+    }
+  },
+  "contributions": [
+    {
+      "ko": "모듈 간 인터페이스(계약)와 공통 데이터 모델 설계",
+      "en": "Designed the module interfaces (contracts) and the shared data models"
+    },
+    {
+      "ko": "카메라 화면 UI 구현(모드 전환, 5단계 인물↔배경 바, 레퍼런스 시트, 줌 룰러)",
+      "en": "Built the camera screen UI: mode switch, 5-step person-to-background bar, reference sheet and zoom ruler"
+    },
+    {
+      "ko": "원본 해상도 촬영, 미리보기 영역 그대로 저장, 가로 사진 회전 처리 구현",
+      "en": "Implemented full-resolution capture, saving exactly the previewed area, and rotation of landscape shots"
+    },
+    {
+      "ko": "거리 비프·완료음·진동 피드백과 한국어·영어·일본어 안내 문구 구현",
+      "en": "Implemented proximity beeps, the aligned sound and vibration, and instruction text in Korean, English and Japanese"
+    },
+    {
+      "ko": "설정 화면과 앱 안 사용법 투어 구현",
+      "en": "Built the settings screen and the in-app how-to tour"
+    },
+    {
+      "ko": "팀원이 만든 포즈 인식·코칭 엔진·장면 추천 모듈을 앱에 통합",
+      "en": "Integrated teammates' pose, coaching engine and scene recommender modules into the app"
+    },
+    {
+      "ko": "CADB로 학습한 추천기 v2(학습 스크립트와 앱 내 추론) 구현",
+      "en": "Built recommender v2, trained on CADB, including the training script and on-device inference"
+    },
+    {
+      "ko": "릴리스 빌드 실행 오류 수정과 Android APK v0.1.0 배포",
+      "en": "Fixed a release-build crash at launch and published the Android APK v0.1.0"
+    }
+  ],
+  "features": [
+    {
+      "title": {
+        "ko": "추천 모드",
+        "en": "Recommend mode"
+      },
+      "description": {
+        "ko": "사람을 가린 배경을 기기 안의 CLIP으로 분석해 목표 구도를 정하고, 5단계 바로 인물 중심과 배경 중심 사이를 고릅니다.",
+        "en": "On-device CLIP reads the background with the person masked out to set the target composition, and a 5-step bar picks between person-centred and background-centred."
+      }
+    },
+    {
+      "title": {
+        "ko": "맞춤 모드",
+        "en": "Custom mode"
+      },
+      "description": {
+        "ko": "레퍼런스 사진을 여러 장 넣고, 선택한 사진의 구도를 목표로 따라가게 합니다.",
+        "en": "The user adds several reference photos, and the selected one becomes the target composition."
+      }
+    },
+    {
+      "title": {
+        "ko": "한 문장 코칭",
+        "en": "One-sentence coaching"
+      },
+      "description": {
+        "ko": "수평(±3°)→거리→좌우→높이 순서로 처음 벗어난 항목 하나를, 화각으로 환산한 걸음(0.6 m)·주먹(10 cm) 단위의 문장과 방향 화살표로 보여 줍니다.",
+        "en": "Checks level (±3°), distance, horizontal position and height in that order, and shows the first one out of range as a sentence in steps (0.6 m) or fists (10 cm), converted using the camera's field of view, with a direction arrow."
+      }
+    },
+    {
+      "title": {
+        "ko": "사진가 규칙",
+        "en": "Photographer rules"
+      },
+      "description": {
+        "ko": "추천 모드의 1–3단계에서는 머리 위 여백, 관절에서 잘리지 않는 프레임, 인물이 바라보는 방향의 여백을 반영해 목표 구도를 조정합니다.",
+        "en": "At levels 1–3 of recommend mode, the target is adjusted for head room, frame edges that avoid cutting at joints, and lead room in the direction the person faces."
+      }
+    },
+    {
+      "title": {
+        "ko": "소리·진동 피드백",
+        "en": "Sound and vibration feedback"
+      },
+      "description": {
+        "ko": "목표에 가까워질수록 비프가 빨라지고, 구도가 맞으면 완료음·진동과 노란 셔터 링으로 촬영 시점을 알립니다.",
+        "en": "Beeps speed up near the target, and a ding, a vibration and a yellow shutter ring signal when to press the shutter."
+      }
+    },
+    {
+      "title": {
+        "ko": "안내 언어 3개",
+        "en": "Three instruction languages"
+      },
+      "description": {
+        "ko": "안내 문구를 한국어·영어·일본어로 바꿀 수 있습니다.",
+        "en": "Instructions can be switched between Korean, English and Japanese."
+      }
+    },
+    {
+      "title": {
+        "ko": "원본 화질 저장",
+        "en": "Full-quality saving"
+      },
+      "description": {
+        "ko": "세로·가로를 자동으로 판별하고, 미리보기에 보인 그대로 원본 해상도로 GUDORY 앨범에 저장합니다.",
+        "en": "Portrait or landscape is detected automatically, and the photo is saved at full resolution, exactly as previewed, to a GUDORY album."
+      }
+    }
+  ],
+  "techStack": [
+    {
+      "category": "language",
+      "items": ["Dart", "Python"]
+    },
+    {
+      "category": "mobile",
+      "items": ["Flutter", "Riverpod"]
+    },
+    {
+      "category": "ai-ml",
+      "items": [
+        "Google ML Kit",
+        "ONNX Runtime",
+        "CLIP",
+        "scikit-learn",
+        "MediaPipe"
+      ]
+    }
+  ],
+  "techNotes": {
+    "Dart": {
+      "ko": "카메라, 코칭, 추천, 설정 등 앱 전체",
+      "en": "The whole app: camera, coaching, recommendation and settings"
+    },
+    "Python": {
+      "ko": "학습 사진 필터링, 추천 데이터 생성, 추천기 v2 학습 파이프라인",
+      "en": "Training-photo filtering, recommendation asset generation and the recommender v2 training pipeline"
+    },
+    "Flutter": {
+      "ko": "Android 카메라 앱의 화면과 촬영·저장",
+      "en": "Screens, capture and saving of the Android camera app"
+    },
+    "Riverpod": {
+      "ko": "카메라·코칭·추천 모듈을 provider로 연결",
+      "en": "Wiring the camera, coaching and recommendation modules through providers"
+    },
+    "Google ML Kit": {
+      "ko": "실시간·레퍼런스 사진 포즈 인식(Pose Detection)과 인물 영역 분리(Selfie Segmentation)",
+      "en": "Pose detection on live frames and reference photos, and person masking with Selfie Segmentation"
+    },
+    "ONNX Runtime": {
+      "ko": "기기 안에서 CLIP 모델로 배경 임베딩 계산",
+      "en": "Running the CLIP model on the device to embed the background"
+    },
+    "CLIP": {
+      "ko": "인물을 가린 배경을 벡터로 바꿔 구도 추천의 입력으로 사용",
+      "en": "Turning the person-masked background into a vector used as input for composition recommendations"
+    },
+    "scikit-learn": {
+      "ko": "추천기 v2의 PCA·로지스틱·릿지 회귀 학습",
+      "en": "PCA, logistic and ridge regression for recommender v2"
+    },
+    "MediaPipe": {
+      "ko": "학습 사진의 포즈·인물 검출 필터",
+      "en": "Pose and person detection filters for training photos"
+    }
+  },
+  "aiTools": ["Claude Code"],
+  "deployment": {
+    "status": "live",
+    "platform": "GitHub Releases",
+    "url": "https://github.com/Gaslighteam/GUDORY/releases/tag/v0.1.0",
+    "checkedAt": "2026-11-02"
+  },
+  "architecture": {
+    "ko": "Flutter 앱 하나에 카메라·피드백·코칭·장면 추천 모듈이 공통 인터페이스로 연결되고 Riverpod provider로 조립됩니다. 카메라 프레임은 ML Kit 포즈 인식을 거쳐 코칭 엔진에서 목표 구도와 비교되며, 목표 구도는 CLIP 배경 분석(추천 모드)이나 레퍼런스 사진 분석(맞춤 모드)에서 나옵니다. 서버 없이 모든 추론이 기기 안에서 실행되고, 추천 데이터는 오프라인 Python 파이프라인이 미리 만듭니다.",
+    "en": "One Flutter app joins the camera, feedback, coaching and scene recommendation modules through shared interfaces, assembled with Riverpod providers. Camera frames go through ML Kit pose detection and are compared with the target composition in the coaching engine; the target comes from CLIP background analysis (recommend mode) or reference photo analysis (custom mode). There is no server: all inference runs on the device, and an offline Python pipeline builds the recommendation data in advance."
+  },
+  "outcomes": [
+    {
+      "ko": "2026 InThon 해커톤(고려대학교 정보대학 주최)에서 발표 및 시연",
+      "en": "Presented and demoed at the InThon 2026 hackathon, hosted by the Korea University College of Informatics"
+    },
+    {
+      "ko": "Android APK v0.1.0을 GitHub Releases로 배포",
+      "en": "Released Android APK v0.1.0 on GitHub Releases"
+    },
+    {
+      "ko": "앱 테스트 235개 통과 (2026-11-02 실행)",
+      "en": "235 app tests passing (run on 2026-11-02)"
+    }
+  ],
+  "challenges": [
+    {
+      "problem": {
+        "ko": "디버그 빌드와 달리 릴리스 APK가 실행 직후 종료됨",
+        "en": "The release APK crashed at launch while debug builds worked"
+      },
+      "solution": {
+        "ko": "R8이 WorkManager의 Room DB 생성자를 제거한 것을 찾아 ProGuard keep 규칙 추가",
+        "en": "Traced it to R8 stripping WorkManager's Room database constructor and added ProGuard keep rules"
+      }
+    },
+    {
+      "problem": {
+        "ko": "가로 촬영을 위해 촬영 방향을 고정하면 미리보기가 흔들림",
+        "en": "Locking capture orientation to landscape made the preview wobble"
+      },
+      "solution": {
+        "ko": "촬영은 항상 세로로 고정하고, 가로 사진은 저장할 때 회전하도록 변경",
+        "en": "Always captured in portrait and rotated landscape photos when saving"
+      }
+    },
+    {
+      "problem": {
+        "ko": "분석할 곳이 없어도 카메라 프레임을 계속 복사해 가비지 컬렉션이 자주 발생",
+        "en": "Camera frames were copied even with no consumer, causing frequent garbage collection"
+      },
+      "solution": {
+        "ko": "구독자가 있을 때만 분석 프레임 스트림을 실행하도록 변경",
+        "en": "Ran the analysis frame stream only while something listens"
+      }
+    },
+    {
+      "problem": {
+        "ko": "기존 추천기(v1)가 인물을 대부분 가운데에 배치함(사진 500장 기준 83.8%)",
+        "en": "The first recommender (v1) put the person in the centre most of the time (83.8% on a 500-photo set)"
+      },
+      "solution": {
+        "ko": "추천기 v2에서 좌우는 인물이 선 쪽을 따르고 중심에서의 거리만 학습해, v2 학습에 쓰지 않은 같은 500장에서 가운데 배치를 6.6%로 낮춤",
+        "en": "Recommender v2 keeps the side the person stands on and learns only the distance from centre, cutting centred picks to 6.6% on the same 500 photos, which v2 never trained on"
+      }
+    }
+  ],
+  "learnings": [
+    {
+      "ko": "카메라로 인물을 인식하는 프로젝트는 처음이었는데, 미리보기에 보이는 영역·분석 프레임·저장 사진의 좌표를 하나로 맞춰야 안내와 결과 사진이 일치한다는 것을 배웠습니다.",
+      "en": "This was my first project that recognises people through the camera, and I learned that the visible preview, the analysis frames and the saved photo must share one coordinate space for the guidance to match the result."
+    },
+    {
+      "ko": "디버그 빌드에서 동작해도 릴리스 빌드 최적화로 앱이 실패할 수 있어, 실기기에서 릴리스 빌드를 확인해야 한다는 것을 배웠습니다.",
+      "en": "I learned that an app that works in debug can still fail after release-build optimisation, so release builds need checking on a real device."
+    },
+    {
+      "ko": "인터페이스를 먼저 정하고 각 모듈을 임시 구현으로 시작해 나중에 교체하는 방식으로 4명이 동시에 개발할 수 있었습니다.",
+      "en": "Defining the interfaces first and starting each module from a stand-in implementation let four people develop at the same time."
+    }
+  ],
+  "highlights": [
+    {
+      "ko": "서버 없이 기기 안에서 추론하는 한 문장 구도 코칭 카메라 앱",
+      "en": "A camera app that coaches composition one sentence at a time, with all inference on the device"
+    },
+    {
+      "ko": "팀장으로 카메라 앱, 모듈 통합, APK 릴리스 담당",
+      "en": "Team lead, responsible for the camera app, module integration and the APK release"
+    },
+    {
+      "ko": "추천기 v2로 인물 가운데 쏠림 83.8% → 6.6% (v2 미학습 사진 500장)",
+      "en": "Recommender v2 cut centred picks from 83.8% to 6.6% (500 photos v2 never trained on)"
+    }
+  ],
+  "links": [
+    {
+      "type": "github",
+      "url": "https://github.com/Gaslighteam/GUDORY"
+    },
+    {
+      "type": "other",
+      "url": "https://github.com/Gaslighteam/GUDORY/releases/tag/v0.1.0",
+      "label": {
+        "ko": "APK 다운로드 (v0.1.0)",
+        "en": "APK download (v0.1.0)"
+      }
+    },
+    {
+      "type": "video",
+      "url": "https://youtu.be/D7Pjiu4HtOw",
+      "label": {
+        "ko": "시연 영상",
+        "en": "Demo video"
+      }
+    }
+  ],
+  "related": [],
+  "tags": ["android", "mobile", "computer-vision", "on-device-ml", "hackathon"],
+  "logo": "/images/projects/gudory/logo.png",
+  "thumbnail": "/images/projects/gudory/thumbnail.png",
+  "screenshots": [
+    {
+      "src": "/images/projects/gudory/01-recommend-mode.png",
+      "kind": "mobile",
+      "alt": {
+        "ko": "추천 모드 카메라 화면: 안내 말풍선, 3×3 격자, 가운데 표시, 인물↔배경 단계 버튼과 셔터",
+        "en": "Recommend mode camera screen: instruction bubble, 3×3 grid, centre mark, the person-to-background level button and the shutter"
+      }
+    },
+    {
+      "src": "/images/projects/gudory/02-composition-level.png",
+      "kind": "mobile",
+      "alt": {
+        "ko": "인물↔배경 5단계 선택 패널(안내 문구는 영어)",
+        "en": "The five-step person-to-background panel, with the instruction in English"
+      }
+    },
+    {
+      "src": "/images/projects/gudory/03-language-picker.png",
+      "kind": "mobile",
+      "alt": {
+        "ko": "안내 언어 선택: 한국어 · English · 日本語",
+        "en": "Choosing the instruction language: Korean, English or Japanese"
+      }
+    },
+    {
+      "src": "/images/projects/gudory/04-custom-mode.png",
+      "kind": "mobile",
+      "alt": {
+        "ko": "맞춤 모드: 레퍼런스 사진을 추가하라는 안내와 추가 버튼",
+        "en": "Custom mode: a prompt to add reference photos and the add button"
+      }
+    },
+    {
+      "src": "/images/projects/gudory/05-tour.png",
+      "kind": "mobile",
+      "alt": {
+        "ko": "첫 실행 때 나오는 앱 안 사용법 투어(1/10)",
+        "en": "The in-app how-to tour shown on first launch (1/10)"
+      }
+    },
+    {
+      "src": "/images/projects/gudory/06-settings.png",
+      "kind": "mobile",
+      "alt": {
+        "ko": "설정: 안내 언어, 거리 알림음, 완료 소리, 진동, 격자선",
+        "en": "Settings: instruction language, distance beeps, aligned sound, vibration and grid lines"
+      }
+    },
+    {
+      "src": "/images/projects/gudory/07-slide-training-data.png",
+      "kind": "web",
+      "alt": {
+        "ko": "발표 자료: 구도 점수가 매겨진 CADB 사진 9,497장에서 694장을 골라 학습해 가운데 추천을 84%에서 6.6%로 줄임",
+        "en": "Presentation slide: 694 of 9,497 composition-scored CADB photos used for training, cutting centred picks from 84% to 6.6%"
+      }
+    },
+    {
+      "src": "/images/projects/gudory/08-slide-composition-model.png",
+      "kind": "web",
+      "alt": {
+        "ko": "발표 자료: 추천기 v2 구도 모델 구성(로지스틱·릿지 회귀, 가중 중앙값, CADB 점수 가중치, 입력 42개, 162 KB)",
+        "en": "Presentation slide: the recommender v2 composition model (logistic and ridge regression, weighted medians, CADB score weights, 42 inputs, 162 KB)"
+      }
+    },
+    {
+      "src": "/images/projects/gudory/10-slide-architecture.png",
+      "kind": "web",
+      "alt": {
+        "ko": "발표 자료: 처리 흐름(포즈·배경·가속도 센서 → 추천과 사진가 규칙 → 판단 → 안내)과 실제 기기의 지시 화면",
+        "en": "Presentation slide: the processing flow (pose, background and accelerometer → recommendation and photographer rules → decision → instruction) with an instruction on a real device"
+      }
+    }
+  ]
+}

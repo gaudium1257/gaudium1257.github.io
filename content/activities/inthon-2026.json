@@ -1,0 +1,26 @@
+{
+  "id": "inthon-2026",
+  "title": {
+    "ko": "2026 InThon 해커톤",
+    "en": "InThon 2026 Hackathon"
+  },
+  "organization": {
+    "ko": "고려대학교 정보대학",
+    "en": "Korea University College of Informatics"
+  },
+  "type": "competition",
+  "period": {
+    "start": "2026-10-31",
+    "end": "2026-11-01"
+  },
+  "role": {
+    "ko": "팀장 (4인 팀 Gaslighteam)",
+    "en": "Team lead (four-person team Gaslighteam)"
+  },
+  "description": {
+    "ko": "주제 \"감각\"으로 열린 24시간 무박 2일 해커톤에서 카메라 앱 구도리(GUDORY)를 4인 팀으로 만들어 발표·시연했습니다.",
+    "en": "At a 24-hour overnight hackathon on the theme \"sense\", built the camera app GUDORY as a four-person team and presented and demoed it."
+  },
+  "links": [],
+  "related": ["gudory"]
+}
