@@ -12,6 +12,9 @@
         },
         {
           "name": "TypeScript"
+        },
+        {
+          "name": "Python"
         }
       ]
     },
@@ -84,6 +87,9 @@
         },
         {
           "name": "Expo"
+        },
+        {
+          "name": "Riverpod"
         }
       ]
     },
@@ -111,6 +117,22 @@
         },
         {
           "name": "Model Context Protocol"
+        },
+        {
+          "name": "Google ML Kit"
+        },
+        {
+          "name": "ONNX Runtime"
+        },
+        {
+          "name": "CLIP"
+        },
+        {
+          "name": "scikit-learn"
+        },
+        {
+          "name": "MediaPipe",
+          "home": false
         }
       ]
     },
