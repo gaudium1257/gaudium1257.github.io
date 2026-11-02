@@ -257,6 +257,8 @@ export const Award = z.object({
   organizer: Localized,
   date: DateString,
   description: Localized.optional(),
+  /** Square event / contest logo (PNG, WebP or SVG). Without it the row shows a medal icon. */
+  logo: PublicImage.optional(),
   links: z.array(Link).default([]),
   related: Related,
 });

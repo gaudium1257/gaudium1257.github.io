@@ -4,7 +4,10 @@
     "ko": "LOOKIE 2026 START-UP DEMODAY",
     "en": "LOOKIE 2026 START-UP DEMODAY"
   },
-  "prize": { "ko": "우수상", "en": "Excellence Award" },
+  "prize": {
+    "ko": "우수상",
+    "en": "Excellence Award"
+  },
   "organizer": {
     "ko": "고려대·서강대·연세대학교 AI중심대학",
     "en": "AI-Centered University Programs of Korea, Sogang and Yonsei Universities"
@@ -14,6 +17,7 @@
     "ko": "SHOWROOMZ 3인 팀으로 받은 상입니다.",
     "en": "Received as the three-person SHOWROOMZ team."
   },
+  "logo": "/images/awards/lookie-2026-startup-demoday.png",
   "links": [],
   "related": ["showroomz"]
 }

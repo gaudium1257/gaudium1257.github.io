@@ -7,7 +7,7 @@ import {
   Capture,
   Gallery,
   MediaCaption,
-  ProjectLogo,
+  ProjectMark,
 } from "@/components/media";
 import { LiveBadge } from "@/components/project-entry";
 import { ExternalLink, RepoCard } from "@/components/repo";
@@ -530,12 +530,12 @@ export default async function ProjectPage({
           <div className="mt-5 grid gap-x-12 gap-y-8 lg:grid-cols-12 lg:grid-rows-[auto_auto_1fr]">
             <div className="min-w-0 lg:col-span-7">
               <div className="flex items-center gap-4">
-                {p.logo && (
-                  <ProjectLogo
-                    src={p.logo}
-                    className="size-12 rounded-panel sm:size-16"
-                  />
-                )}
+                <ProjectMark
+                  logo={p.logo}
+                  name={p.title.en}
+                  className="size-12 rounded-panel sm:size-16"
+                  letterClass="text-h3 sm:text-h2"
+                />
                 <h1 className="min-w-0 text-title-sm font-extrabold text-ink sm:text-display-sm">
                   {t(p.title, locale)}
                 </h1>
