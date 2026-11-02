@@ -313,6 +313,7 @@
     }
   ],
   "related": [],
+  "logo": "/images/projects/hello-vibe/logo.png",
   "thumbnail": "/images/projects/hello-vibe/thumbnail.png",
   "tags": ["ide-extension", "ai-agent", "mcp", "local-first", "competition"]
 }

@@ -233,7 +233,12 @@
     "ko": "웹 콘솔 3종(React + Vite)과 소비자 앱(React Native + Expo)이 하나의 백엔드 REST API를 역할별 경로(/user, /seller, /creator, /admin)로 호출합니다. 서버 상태는 TanStack Query로 관리하고 Axios 인터셉터가 토큰 갱신을 처리하며, 첨부 파일은 S3 presigned URL로 직접 업로드합니다.",
     "en": "Three web consoles (React + Vite) and a consumer app (React Native + Expo) call one backend REST API through role-specific paths (/user, /seller, /creator, /admin). TanStack Query manages server state, Axios interceptors handle token refresh, and attachments are uploaded directly with S3 presigned URLs."
   },
-  "outcomes": [],
+  "outcomes": [
+    {
+      "ko": "LOOKIE 2026 START-UP DEMODAY 우수상 (고려대·서강대·연세대학교 AI중심대학 주최)",
+      "en": "Excellence Award at LOOKIE 2026 START-UP DEMODAY, hosted by the AI-Centered University Programs of Korea, Sogang and Yonsei Universities"
+    }
+  ],
   "challenges": [
     {
       "problem": {
