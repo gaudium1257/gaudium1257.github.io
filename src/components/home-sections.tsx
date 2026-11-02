@@ -7,6 +7,7 @@ import { snapshotDate } from "@/lib/github";
 import { BrandText } from "./brand-text";
 import { CopyButton } from "./copy-button";
 import { FilterBar } from "./project-filter";
+import { ProjectLogo } from "./media";
 import { ProjectEntry, RelatedLinks } from "./project-entry";
 import { Icon, type IconName } from "./icons";
 import { ExternalLink, GitHubMark } from "./repo";
@@ -284,6 +285,7 @@ function PlainRow({
   prize,
   sub,
   date,
+  logo,
   dict,
   locale,
 }: {
@@ -292,32 +294,43 @@ function PlainRow({
   prize?: string;
   sub: string[];
   date: string;
+  /** the event's square logo; without one a medal icon holds the same spot */
+  logo?: string;
   dict: Dictionary;
   locale: Locale;
 }) {
   return (
-    // below 640px the date goes under the title; above it sits on the title baseline
-    <li
-      id={id}
-      className="grid gap-x-4 py-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-baseline"
-    >
-      <h3 className="min-w-0 text-base font-semibold text-ink sm:col-start-1">
-        {title}
-        {prize && <span className="font-semibold text-award"> {prize}</span>}
-      </h3>
-      <p className={ROW_DATE}>{date}</p>
-      <p className="mt-1 flex min-w-0 flex-wrap gap-x-3 text-sm text-muted sm:col-start-1">
-        {sub.map((x) => (
-          <span key={x}>{x}</span>
-        ))}
-      </p>
-      <RelatedLinks
-        id={id}
-        dict={dict}
-        locale={locale}
-        onHome
-        className="mt-1.5 sm:col-start-1"
-      />
+    <li id={id} className="flex gap-4 py-4">
+      {logo ? (
+        <ProjectLogo src={logo} className="size-14 rounded-panel" />
+      ) : (
+        <span
+          aria-hidden="true"
+          className="flex size-14 shrink-0 items-center justify-center rounded-panel bg-primary-50 text-primary ring-1 ring-primary-100"
+        >
+          <Icon name="award" className="size-6" />
+        </span>
+      )}
+      {/* below 640px the date goes under the title; above it sits on the title baseline */}
+      <div className="grid min-w-0 flex-1 gap-x-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-baseline">
+        <h3 className="min-w-0 text-base font-semibold text-ink sm:col-start-1">
+          {title}
+          {prize && <span className="font-semibold text-award"> {prize}</span>}
+        </h3>
+        <p className={ROW_DATE}>{date}</p>
+        <p className="mt-1 flex min-w-0 flex-wrap gap-x-3 text-sm text-muted sm:col-start-1">
+          {sub.map((x) => (
+            <span key={x}>{x}</span>
+          ))}
+        </p>
+        <RelatedLinks
+          id={id}
+          dict={dict}
+          locale={locale}
+          onHome
+          className="mt-1.5 sm:col-start-1"
+        />
+      </div>
     </li>
   );
 }
@@ -344,6 +357,7 @@ export function AwardsSection({ content, dict, locale }: Props) {
               prize={t(a.prize, locale)}
               sub={[t(a.organizer, locale)]}
               date={formatYm(a.date)}
+              logo={a.logo}
               dict={dict}
               locale={locale}
             />

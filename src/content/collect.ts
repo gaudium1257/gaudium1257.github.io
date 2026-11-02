@@ -261,16 +261,7 @@ export function collectContent(): CollectResult {
       ...(p.thumbnail ? [{ src: p.thumbnail, kind: "web" as const }] : []),
       ...p.screenshots,
     ];
-    if (p.logo) {
-      const file = path.join(PUBLIC_DIR, p.logo);
-      const size = fs.existsSync(file) ? imageSize(file) : null;
-      if (!fs.existsSync(file))
-        errors.push(`project "${p.id}": image ${p.logo} not found in public/`);
-      else if (size && size.width !== size.height)
-        errors.push(
-          `project "${p.id}": logo ${p.logo} is ${size.width}×${size.height}; it must be square`,
-        );
-    }
+    if (p.logo) checkLogo(`project "${p.id}"`, p.logo, errors);
     for (const { src, kind } of shots) {
       const file = path.join(PUBLIC_DIR, src);
       if (!fs.existsSync(file)) {
@@ -287,7 +278,24 @@ export function collectContent(): CollectResult {
     }
   }
 
+  for (const a of content.awards)
+    if (a.logo) checkLogo(`award "${a.id}"`, a.logo, errors);
+
   return { content, errors, warnings };
+}
+
+/** A logo must exist and be square (PNG/JPEG sizes are read; SVG/WebP are trusted). */
+function checkLogo(label: string, src: string, errors: string[]) {
+  const file = path.join(PUBLIC_DIR, src);
+  if (!fs.existsSync(file)) {
+    errors.push(`${label}: image ${src} not found in public/`);
+    return;
+  }
+  const size = imageSize(file);
+  if (size && size.width !== size.height)
+    errors.push(
+      `${label}: logo ${src} is ${size.width}×${size.height}; it must be square`,
+    );
 }
 
 const PUBLIC_DIR = path.join(process.cwd(), "public");
