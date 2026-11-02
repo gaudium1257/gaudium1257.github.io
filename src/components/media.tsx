@@ -30,6 +30,37 @@ export function ProjectLogo({
   );
 }
 
+/**
+ * The project's mark beside its title: its logo, or — when it has none — the first letter of its
+ * English title on a lilac tile, so every card and header keeps the same shape. Decorative.
+ */
+export function ProjectMark({
+  logo,
+  name,
+  className,
+  letterClass,
+}: {
+  logo?: string;
+  name: string;
+  className: string;
+  /** text size of the fallback letter, matched to the tile size by the caller */
+  letterClass: string;
+}) {
+  if (logo) return <ProjectLogo src={logo} className={className} />;
+  return (
+    <span
+      aria-hidden="true"
+      className={cx(
+        "flex shrink-0 items-center justify-center bg-primary-50 font-bold text-primary ring-1 ring-primary-100",
+        letterClass,
+        className,
+      )}
+    >
+      {name.trim().charAt(0).toUpperCase()}
+    </span>
+  );
+}
+
 const BOX: Record<MediaKind, string> = {
   web: "aspect-16/10",
   mobile: "aspect-6/13",

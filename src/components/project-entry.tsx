@@ -6,7 +6,7 @@ import { fill, formatPeriod } from "@/lib/format";
 import { itemHref } from "@/lib/href";
 import { heroShots } from "@/lib/media";
 import { groupedStack, projectTechSlugs } from "@/lib/tech";
-import { Capture, ProjectLogo } from "./media";
+import { Capture, ProjectMark } from "./media";
 import { RepoLine } from "./repo";
 import { TechChip } from "./tech";
 import { cx, ENTRY_FOCUS, LINK, STRETCH } from "./ui";
@@ -172,9 +172,12 @@ export function ProjectEntry({
         )}
         <div>
           <div className="flex items-center gap-3">
-            {project.logo && (
-              <ProjectLogo src={project.logo} className="size-9 rounded-node" />
-            )}
+            <ProjectMark
+              logo={project.logo}
+              name={project.title.en}
+              className="size-9 rounded-node"
+              letterClass="text-lead"
+            />
             <Heading className="min-w-0 text-h3 font-bold text-balance text-ink">
               <a
                 href={`/${locale}/projects/${project.id}/`}
