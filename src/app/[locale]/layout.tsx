@@ -7,6 +7,7 @@ import { cx, LINK } from "@/components/ui";
 import { sections } from "@/config/sections";
 import { getContent } from "@/content/load";
 import { hasLocale, locales, t } from "@/i18n/config";
+import { verificationMeta } from "@/config/verification";
 import { getDictionary } from "@/i18n/dictionaries";
 import "../globals.css";
 
@@ -33,6 +34,7 @@ export async function generateMetadata({
     },
     description: profile ? t(profile.intro, locale) : dict.meta.description,
     alternates: { languages: { ko: "/ko/", en: "/en/" } },
+    other: verificationMeta,
   };
 }
 
