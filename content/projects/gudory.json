@@ -296,14 +296,6 @@
         "ko": "APK 다운로드 (v0.1.0)",
         "en": "APK download (v0.1.0)"
       }
-    },
-    {
-      "type": "video",
-      "url": "https://youtu.be/D7Pjiu4HtOw",
-      "label": {
-        "ko": "시연 영상",
-        "en": "Demo video"
-      }
     }
   ],
   "related": [],
