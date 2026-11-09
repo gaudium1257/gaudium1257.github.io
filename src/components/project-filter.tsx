@@ -1,6 +1,9 @@
 "use client";
 
+import { animate } from "motion";
 import { useEffect, useRef, useState } from "react";
+import { flushSync } from "react-dom";
+import { reducedMotion } from "@/lib/reduced-motion";
 
 type Status = { slug: string; label: string; n: number } | null;
 
@@ -42,6 +45,61 @@ export function FilterBar({
       region.textContent = "";
       requestAnimationFrame(() => (region.textContent = msg));
     };
+    const shown = (li: HTMLElement) => li.dataset.show !== "false";
+    const hits = (li: HTMLElement, slug: string | null) =>
+      !slug || (li.dataset.techs ?? "").split(" ").includes(slug);
+    let running: { stop: () => void }[] = [];
+    /**
+     * Cards that stay glide from their old spot to the new one (FLIP), leaving cards fade out
+     * first, arriving ones rise in. Without motion (or on load) the list just switches.
+     */
+    const change = async (slug: string | null, announce: boolean) => {
+      running.forEach((a) => a.stop());
+      running = [];
+      if (reducedMotion()) return apply(slug, announce);
+      const leaving = entries.filter((li) => shown(li) && !hits(li, slug));
+      const arriving = entries.filter((li) => !shown(li) && hits(li, slug));
+      const fades = leaving.map((li) =>
+        animate(li, { opacity: 0, scale: 0.97 }, { duration: 0.16 }),
+      );
+      running.push(...fades);
+      await Promise.all(fades);
+      leaving.forEach((li) =>
+        Object.assign(li.style, { opacity: "", transform: "" }),
+      );
+      const before = new Map(
+        entries.filter(shown).map((li) => [li, li.getBoundingClientRect()]),
+      );
+      flushSync(() => apply(slug, announce));
+      for (const li of entries.filter(shown)) {
+        const was = before.get(li);
+        if (!was) continue;
+        const now = li.getBoundingClientRect();
+        const x = was.left - now.left;
+        const y = was.top - now.top;
+        if (x || y)
+          running.push(
+            animate(
+              li,
+              { x: [x, 0], y: [y, 0] },
+              {
+                type: "spring",
+                stiffness: 380,
+                damping: 34,
+              },
+            ),
+          );
+      }
+      arriving.forEach((li, i) =>
+        running.push(
+          animate(
+            li,
+            { opacity: [0, 1], y: [16, 0] },
+            { duration: 0.3, delay: 0.04 * i, ease: [0.22, 1, 0.36, 1] },
+          ),
+        ),
+      );
+    };
     const apply = (slug: string | null, announce: boolean) => {
       const was = current.current;
       current.current = slug;
@@ -50,7 +108,7 @@ export function FilterBar({
       );
       let n = 0;
       for (const li of entries) {
-        const hit = !slug || (li.dataset.techs ?? "").split(" ").includes(slug);
+        const hit = hits(li, slug);
         li.setAttribute("data-show", String(hit));
         if (hit) n++;
         li.querySelectorAll<HTMLElement>("[data-node]").forEach((c) =>
@@ -80,7 +138,7 @@ export function FilterBar({
       const a = ev.currentTarget as HTMLAnchorElement;
       const kbd = ev.detail === 0;
       const next = current.current === a.dataset.tech ? null : a.dataset.tech!;
-      apply(next, !(kbd && next));
+      void change(next, !(kbd && next));
       // measure and move only after React has rendered the bar (it is hidden while empty)
       requestAnimationFrame(() => {
         const list = document.querySelector("[data-project-list]");
@@ -96,7 +154,7 @@ export function FilterBar({
     if (q && links.some((a) => a.dataset.tech === q)) apply(q, false);
     const onClear = () => {
       const was = links.find((a) => a.dataset.tech === current.current);
-      apply(null, true);
+      void change(null, true);
       was?.focus();
     };
     window.addEventListener("portfolio:clear-filter", onClear);
