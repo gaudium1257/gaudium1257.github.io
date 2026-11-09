@@ -96,13 +96,37 @@ function pressFeedback() {
 }
 
 /**
- * Site-wide Motion touches (owner picked 2026.11): the sliding nav underline and the press spring.
- * The project filter animates its own cards (project-filter.tsx).
+ * The header's name/mark (`a[data-home]`): on the home page itself it scrolls back to the top
+ * (smoothly unless motion is reduced) instead of reloading; elsewhere it stays a plain link home.
+ */
+function scrollHome() {
+  const onClick = (e: MouseEvent) => {
+    const a = (e.target as Element).closest<HTMLAnchorElement>("a[data-home]");
+    if (!a || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button)
+      return;
+    if (new URL(a.href).pathname !== location.pathname) return;
+    e.preventDefault();
+    scrollTo({ top: 0, behavior: reducedMotion() ? "instant" : "smooth" });
+    // drop a stale #section from the address; keep ?tech=
+    history.replaceState(
+      history.state,
+      "",
+      location.pathname + location.search,
+    );
+  };
+  addEventListener("click", onClick);
+  return () => removeEventListener("click", onClick);
+}
+
+/**
+ * Site-wide touches (owner picked 2026.11): the home link scrolls to the top, plus — unless motion
+ * is reduced — the sliding nav underline and the press spring. The project filter animates its own
+ * cards (project-filter.tsx).
  */
 export function MotionEffects() {
   useEffect(() => {
-    if (reducedMotion()) return;
-    const offs = [slideNav(), pressFeedback()];
+    const offs = [scrollHome()];
+    if (!reducedMotion()) offs.push(slideNav(), pressFeedback());
     return () => offs.forEach((off) => off());
   }, []);
   return null;

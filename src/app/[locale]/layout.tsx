@@ -80,6 +80,7 @@ export default async function LocaleLayout({
           <div className="shell flex h-11 items-center gap-4 lg:h-16">
             <a
               href={`/${locale}/`}
+              data-home
               translate="no"
               className="group/home flex items-center gap-2.5 text-lead font-bold tracking-tight text-ink active:text-primary-700"
             >
