@@ -123,6 +123,18 @@
     }
   }
   /* the only motion is colour fades; drop them for reduced-motion users */
+  /* in-page links (nav, "프로젝트 보기", back to top) glide to their target instead of jumping */
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  /* Motion: the sliding bar replaces each nav link's own underline */
+  [data-slide] a[data-nav]::after {
+    opacity: 0 !important;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     *,
     ::before,

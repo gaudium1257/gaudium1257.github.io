@@ -12,11 +12,11 @@ export const LABEL_COLS =
 
 /** The one bordered button (detail links, "more screens"). */
 export const BUTTON =
-  "inline-flex min-h-11 items-center gap-2 rounded-node border border-edge bg-white px-4 py-2 text-ui font-semibold text-ink transition-colors hover:border-primary hover:bg-primary-50 active:bg-primary-100";
+  "press inline-flex min-h-11 items-center gap-2 rounded-node border border-edge bg-white px-4 py-2 text-ui font-semibold text-ink transition-colors hover:border-primary hover:bg-primary-50 active:bg-primary-100";
 
 /** The one filled (primary) button: the main action of a section. */
 export const BUTTON_PRIMARY =
-  "inline-flex min-h-12 items-center gap-2 rounded-node bg-primary px-5 text-ui font-semibold text-white transition-colors hover:bg-primary-700 active:bg-primary-700 active:ring-2 active:ring-primary-100";
+  "press inline-flex min-h-12 items-center gap-2 rounded-node bg-primary px-5 text-ui font-semibold text-white transition-colors hover:bg-primary-700 active:bg-primary-700 active:ring-2 active:ring-primary-100";
 
 export const cx = (...parts: (string | false | null | undefined)[]) =>
   parts.filter(Boolean).join(" ");

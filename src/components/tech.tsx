@@ -6,7 +6,7 @@ import { TechIcon } from "./tech-icons";
 import { cx, LABEL_COLS } from "./ui";
 
 const NODE =
-  "inline-flex min-h-8 items-center gap-1.5 rounded-node border border-line bg-white px-2.5 py-1 text-sm font-medium text-ink-2 transition-colors hover:border-primary hover:text-primary active:bg-primary-50";
+  "press inline-flex min-h-8 items-center gap-1.5 rounded-node border border-line bg-white px-2.5 py-1 text-sm font-medium text-ink-2 transition-colors hover:border-primary hover:text-primary active:bg-primary-50";
 
 /** Static tech label in project entries; highlighted when it matches the active filter. */
 export function TechChip({

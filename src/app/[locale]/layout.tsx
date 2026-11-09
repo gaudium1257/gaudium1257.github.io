@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
 import { LanguageToggle } from "@/components/language-toggle";
+import { MotionEffects } from "@/components/motion-effects";
 import { ScrollSpy } from "@/components/scroll-spy";
 import { cx, LINK } from "@/components/ui";
 import { sections } from "@/config/sections";
@@ -80,9 +81,20 @@ export default async function LocaleLayout({
             <a
               href={`/${locale}/`}
               translate="no"
-              className="text-lead font-bold tracking-tight text-ink decoration-2 underline-offset-[6px] hover:underline active:text-primary-700"
+              className="group/home flex items-center gap-2.5 text-lead font-bold tracking-tight text-ink active:text-primary-700"
             >
-              {name}
+              {/* the site's TH mark (same art as the tab icon); decorative, the name says it */}
+              {/* eslint-disable-next-line @next/next/no-img-element -- static SVG, no optimizer in static export */}
+              <img
+                src="/brand/th-mark.svg"
+                alt=""
+                width={32}
+                height={32}
+                className="size-7 shrink-0 lg:size-8"
+              />
+              <span className="decoration-2 underline-offset-[6px] group-hover/home:underline">
+                {name}
+              </span>
             </a>
             <nav
               aria-label={dict.common.navLabel}
@@ -125,6 +137,7 @@ export default async function LocaleLayout({
         </footer>
         <p role="status" aria-live="polite" className="sr-only" data-status />
         <ScrollSpy />
+        <MotionEffects />
       </body>
     </html>
   );
