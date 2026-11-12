@@ -1,6 +1,6 @@
 ---
 name: add-content
-description: Add or update portfolio content (projects, activities, awards, skills, education & career, profile) from a project fact sheet or from the owner's answers, without inventing anything. Use whenever the user pastes a fact sheet / JSON from docs/prompts/project-fact-sheet.md, or says "프로젝트 추가", "수상 추가", "활동 추가", "경력 추가", "내용 수정".
+description: Add or update portfolio content (projects, activities, awards, skills, education & career, profile) from a project fact sheet or from the owner's answers, without inventing anything. Use whenever the user pastes a fact sheet / JSON from docs/prompts/project-fact-sheet.md or an update from docs/prompts/project-update.md, or says "프로젝트 추가", "프로젝트 업데이트", "수상 추가", "활동 추가", "경력 추가", "내용 수정".
 ---
 
 # add-content
@@ -32,6 +32,16 @@ Schemas: `src/content/schema.ts` — read it before writing JSON. Ids are global
 8. AI coding assistants (Claude Code, Copilot, Cursor…) go in `aiTools`, never in `techStack` or `skills.json` (owner decision 2026.10: they are shown on a separate line so the stack doesn’t read as AI-dependent).
 9. Skills: for each `techStack` item not in `content/skills.json` (validator warns), ask whether to add it to 개발 역량 and under which group. Keep spelling identical. Also ask whether it is **core** or **supporting**: supporting libraries / SDKs / small tools (e.g. React Router, React Hook Form, Axios, shadcn/ui, social-login SDKs, esbuild — owner decision 2026.10) get `"home": false` — hidden from the home stack, the list filter and the cards, and listed on the project page under 라이브러리 with their `techNotes`. Every supporting tech needs a `techNotes` entry, since the detail page is the only place it is explained.
 10. Ask where it goes in `content/project-order.json` (the owner's order for home and the list; unlisted projects follow, newest first).
+
+## Project update (from the update prompt)
+
+For a project already on the site, the owner runs `docs/prompts/project-update.md` in that project and brings back `portfolio-export/<id>.factsheet.md`, `<id>.json`, `<id>.changes.md` (+ `images/`).
+
+1. The update JSON was built from the site's current JSON, so compare it with `content/projects/<id>.json` field by field (`changes.md` lists the intended edits). Anything changed that `changes.md` doesn't explain — especially a sentence that undoes an earlier fact-check fix — is a mistake: keep the current text.
+2. Keep the portfolio-owned fields as they are: `related`, `logo`, `thumbnail`, `screenshots` (and the project's place in `project-order.json`). New images from `images/` are prepared and added here, as in step 5 above.
+3. Replace `content/sources/projects/<id>.md` with the updated fact sheet (it keeps the earlier dates and marks new lines `(갱신 …)`).
+4. Run the `content-fact-checker` on the changed fields. Resolve every finding as in step 4 above.
+5. From `changes.md`: add any new award (and its logo) under `content/awards/` with the award also in the project's `outcomes` first line; add or update the related activity; ask core-vs-supporting for new techs (step 9); fix stale "결과 대기 중" text in activities too.
 
 ## Other kinds (from the owner's answers)
 
