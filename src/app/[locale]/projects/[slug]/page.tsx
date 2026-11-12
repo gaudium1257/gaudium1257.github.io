@@ -562,6 +562,28 @@ export default async function ProjectPage({
                         {formatPeriod(a.period, dict.common.present)}
                       </span>
                     </span>
+                    {/* the activity's own links (e.g. the club's Instagram), unless the project already lists them */}
+                    {a.links
+                      .filter((l) => !p.links.some((pl) => pl.url === l.url))
+                      .map((l) => (
+                        <ExternalLink
+                          key={l.url}
+                          href={l.url}
+                          newTab={dict.common.newTab}
+                          className={cx(
+                            "mt-1.5 inline-flex items-center gap-1.5 font-medium",
+                            LINK,
+                          )}
+                        >
+                          <Icon
+                            name={linkIcon(l.url, l.type)}
+                            className="size-4"
+                          />
+                          {l.label
+                            ? t(l.label, locale)
+                            : dict.project.links[l.type]}
+                        </ExternalLink>
+                      ))}
                   </span>
                 </p>
               ))}

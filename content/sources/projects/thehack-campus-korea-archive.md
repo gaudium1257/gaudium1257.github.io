@@ -146,3 +146,8 @@
   - CSS 반응형: `globals.css`의 960px·640px `@media`
 - 이미지: 학회원 실명이 보이는 03·06·09는 주인 결정으로 넣지 않음. 01은 대표 이미지와 같은 화면이라 화면 목록에서 뺌.
 - 활동 표지: `content/activities/thehack-campus-korea-university.json` (운영진, 개발 교육, 2026-09~)
+
+## 갱신 (2026-11-13, 사용자 답변)
+
+- 학회원에게 사이트를 공개함 → 7번 "학회원에게는 아직 공개하지 않았습니다"를 대신함. JSON `outcomes`에 "2026-11 학회원에게 사이트 공개" 추가
+- THE해커톤 : CAMPUS 공식 인스타그램: https://www.instagram.com/thehack_campus/ (활동 표지 링크)

@@ -178,7 +178,12 @@
     "ko": "콘텐츠는 TypeScript 데이터 파일에 두고 Next.js가 정적 페이지로 만듭니다. 결과물 페이지는 서버에서 각 서비스의 응답 코드와 X-Frame-Options·CSP를 확인한 뒤, 허용되면 클라이언트에서 iframe으로 띄웁니다.",
     "en": "Content lives in TypeScript data files, and Next.js renders it as static pages. Project pages check each service's response status, X-Frame-Options, and CSP on the server, then load the service in an iframe on the client when it is allowed."
   },
-  "outcomes": [],
+  "outcomes": [
+    {
+      "ko": "2026-11 학회원에게 사이트 공개",
+      "en": "Opened the site to the chapter's members in 2026-11"
+    }
+  ],
   "challenges": [
     {
       "problem": {

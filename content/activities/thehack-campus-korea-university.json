@@ -4,9 +4,15 @@
     "ko": "THE해커톤 : CAMPUS 고려대학교 지부",
     "en": "THE해커톤 : CAMPUS, Korea University chapter"
   },
-  "organization": { "ko": "THE해커톤 : CAMPUS", "en": "THE해커톤 : CAMPUS" },
+  "organization": {
+    "ko": "THE해커톤 : CAMPUS",
+    "en": "THE해커톤 : CAMPUS"
+  },
   "type": "community",
-  "period": { "start": "2026-09", "end": null },
+  "period": {
+    "start": "2026-09",
+    "end": null
+  },
   "role": {
     "ko": "운영진 (개발 교육)",
     "en": "Organizing team (development education)"
@@ -15,6 +21,15 @@
     "ko": "고려대학교 지부 운영진으로 개발 교육을 맡고, 지부의 세션 기록과 학회원 결과물을 모은 아카이브 사이트를 만들었습니다.",
     "en": "As part of the Korea University chapter's organizing team, I handle development education and built an archive site for the chapter's session records and members' projects."
   },
-  "links": [],
+  "links": [
+    {
+      "type": "other",
+      "url": "https://www.instagram.com/thehack_campus/",
+      "label": {
+        "ko": "공식 인스타그램 @thehack_campus",
+        "en": "Official Instagram @thehack_campus"
+      }
+    }
+  ],
   "related": ["thehack-campus-korea-archive"]
 }
