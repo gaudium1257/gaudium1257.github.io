@@ -41,7 +41,7 @@ For a project already on the site, the owner runs `docs/prompts/project-update.m
 2. Keep the portfolio-owned fields as they are: `related`, `logo`, `thumbnail`, `screenshots` (and the project's place in `project-order.json`). New images from `images/` are prepared and added here, as in step 5 above.
 3. Replace `content/sources/projects/<id>.md` with the updated fact sheet (it keeps the earlier dates and marks new lines `(갱신 …)`).
 4. Run the `content-fact-checker` on the changed fields. Resolve every finding as in step 4 above.
-5. From `changes.md`: add any new award (and its logo) under `content/awards/` with the award also in the project's `outcomes` first line; add or update the related activity; ask core-vs-supporting for new techs (step 9); fix stale "결과 대기 중" text in activities too.
+5. From `changes.md`: add any new award (and its logo) under `content/awards/` with the award also in the project's `outcomes` first line; add or update the related activity; ask core-vs-supporting for new techs (step 9); fix stale "결과 대기 중" text in activities too. A club/program project: relate it to the activity, give a club activity a short `shortTitle` (filter chip name, e.g. "KWEB"), and set `activity` on the matching `education.json` career item so the 경력 row links its projects (one → the project, two or more → the list filtered by `?activity=<id>`).
 
 ## Other kinds (from the owner's answers)
 

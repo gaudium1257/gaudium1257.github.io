@@ -1,5 +1,9 @@
 import type { Project } from "@/content/schema";
-import { getRelated, getSupportingTechs } from "@/content/load";
+import {
+  getActivitiesOf,
+  getRelated,
+  getSupportingTechs,
+} from "@/content/load";
 import { t, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { fill, formatPeriod } from "@/lib/format";
@@ -132,6 +136,9 @@ export function ProjectEntry({
     <li
       data-project={project.id}
       data-techs={projectTechSlugs(project).join(" ")}
+      data-activities={getActivitiesOf(project.id)
+        .map((a) => a.id)
+        .join(" ")}
       data-show="true"
       className="min-w-0 data-[show=false]:hidden"
     >

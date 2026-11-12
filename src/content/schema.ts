@@ -234,6 +234,8 @@ export const ActivityType = z.enum([
 export const Activity = z.object({
   id: Id,
   title: Localized,
+  /** Short name for the project-list filter chip, e.g. "KWEB". Defaults to the title. */
+  shortTitle: Localized.optional(),
   organization: Localized,
   type: ActivityType,
   period: Period,
@@ -340,6 +342,8 @@ export const Education = z.object({
         organization: Localized,
         role: Localized,
         period: Period.optional(),
+        /** The activity (club, program) behind this position: its projects link from the row. */
+        activity: Id.optional(),
         details: z.array(Localized).default([]),
       }),
     )

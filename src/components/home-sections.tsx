@@ -4,6 +4,8 @@ import { t, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { fill, formatPeriod, formatYm, formatYmd } from "@/lib/format";
 import { snapshotDate } from "@/lib/github";
+import { getActivityProjects } from "@/content/load";
+import { itemHref } from "@/lib/href";
 import { BrandText } from "./brand-text";
 import { CopyButton } from "./copy-button";
 import { FilterBar } from "./project-filter";
@@ -375,11 +377,14 @@ function TimelineRow({
   title,
   sub,
   date,
+  extra,
 }: {
   id: string;
   title: string;
   sub?: string;
   date?: string;
+  /** a line under the row (the position's projects) */
+  extra?: React.ReactNode;
 }) {
   return (
     <li
@@ -391,6 +396,7 @@ function TimelineRow({
       </h4>
       {date && <p className={ROW_DATE}>{date}</p>}
       {sub && <p className="mt-1 text-sm text-muted sm:col-start-1">{sub}</p>}
+      {extra}
     </li>
   );
 }
@@ -409,6 +415,43 @@ function TimelineGroup({
         {children}
       </ul>
     </div>
+  );
+}
+
+/**
+ * The projects made in a position's activity (club, program): one is linked by name, like an award's
+ * related project; two or more open together in the project list's activity filter.
+ */
+function CareerProjects({
+  activity,
+  dict,
+  locale,
+}: {
+  activity: string;
+  dict: Dictionary;
+  locale: Locale;
+}) {
+  const list = getActivityProjects(activity);
+  if (!list.length) return null;
+  return (
+    <p className="mt-1.5 flex flex-wrap items-baseline gap-x-4 gap-y-1 text-sm leading-copy sm:col-start-1">
+      <span className="text-muted">{dict.common.related}</span>
+      {list.length === 1 ? (
+        <a
+          href={itemHref(locale, list[0].id, "project")}
+          className={cx("font-medium", LINK)}
+        >
+          {t(list[0].title, locale)}
+        </a>
+      ) : (
+        <a
+          href={`/${locale}/projects/?activity=${activity}`}
+          className={cx("font-medium", LINK)}
+        >
+          {fill(dict.education.careerProjects, { n: list.length })}
+        </a>
+      )}
+    </p>
   );
 }
 
@@ -455,6 +498,15 @@ export function EducationSection({ content, dict, locale }: Props) {
                   title={t(c.organization, locale)}
                   sub={t(c.role, locale)}
                   date={c.period && formatPeriod(c.period, dict.common.present)}
+                  extra={
+                    c.activity && (
+                      <CareerProjects
+                        activity={c.activity}
+                        dict={dict}
+                        locale={locale}
+                      />
+                    )
+                  }
                 />
               ))}
             </TimelineGroup>

@@ -43,6 +43,13 @@ export function getSupportingTechs() {
   );
 }
 
+/** Projects made in an activity (club, contest), in the owner's project order. */
+export function getActivityProjects(id: string) {
+  const { relations, projects } = getContent();
+  const rel = relations.get(id);
+  return projects.filter((p) => rel?.has(p.id));
+}
+
 /** Activities (contests, programs) a project was made for — shown as a badge on its page. */
 export function getActivitiesOf(id: string) {
   const { relations, activities } = getContent();

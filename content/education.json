@@ -31,7 +31,8 @@
       "period": {
         "start": "2026-09",
         "end": null
-      }
+      },
+      "activity": "thehack-campus-korea-university"
     },
     {
       "id": "kweb-korea-university",
@@ -46,7 +47,8 @@
       "period": {
         "start": "2026-09",
         "end": null
-      }
+      },
+      "activity": "kweb"
     }
   ]
 }

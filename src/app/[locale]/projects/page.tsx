@@ -3,11 +3,17 @@ import { notFound } from "next/navigation";
 import { BrandText } from "@/components/brand-text";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Empty } from "@/components/home-sections";
+import { Icon } from "@/components/icons";
 import { FilterBar } from "@/components/project-filter";
 import { ProjectEntry } from "@/components/project-entry";
-import { StackRows } from "@/components/tech";
-import { getContent, getSupportingTechs } from "@/content/load";
-import { hasLocale } from "@/i18n/config";
+import { NODE, StackRows } from "@/components/tech";
+import { cx } from "@/components/ui";
+import {
+  getActivityProjects,
+  getContent,
+  getSupportingTechs,
+} from "@/content/load";
+import { hasLocale, t } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { fill, formatYmd } from "@/lib/format";
 import { snapshotDate } from "@/lib/github";
@@ -27,7 +33,11 @@ export default async function ProjectsPage({
   const { locale } = await params;
   if (!hasLocale(locale)) notFound();
   const dict = getDictionary(locale);
-  const { projects } = getContent();
+  const { projects, activities } = getContent();
+  // clubs, contests… that hold two or more projects get a filter chip (one project: its badge is enough)
+  const groupsByActivity = activities
+    .map((a) => ({ a, n: getActivityProjects(a.id).length }))
+    .filter((x) => x.n >= 2);
   const usage = techUsage(projects);
   const supporting = getSupportingTechs(); // the filter offers core tech only, like the home stack
   const byCat = new Map<string, Set<string>>();
@@ -80,6 +90,43 @@ export default async function ProjectsPage({
                   onHome={false}
                 />
               </div>
+              {groupsByActivity.length > 0 && (
+                <>
+                  <h2 className="mt-6 text-ui font-semibold text-ink-2">
+                    {dict.projects.activityFilterLabel}
+                  </h2>
+                  <ul className="mt-3 flex flex-wrap gap-2">
+                    {groupsByActivity.map(({ a, n }) => {
+                      const name = t(a.shortTitle ?? a.title, locale);
+                      return (
+                        <li key={a.id}>
+                          <a
+                            href={`?activity=${a.id}`}
+                            data-activity={a.id}
+                            data-label={name}
+                            className={cx(
+                              NODE,
+                              "aria-[current=true]:border-primary aria-[current=true]:bg-primary aria-[current=true]:text-white aria-[current=true]:hover:border-primary-700 aria-[current=true]:hover:bg-primary-700 aria-[current=true]:hover:text-white aria-[current=true]:active:bg-primary-700",
+                            )}
+                          >
+                            <Icon name="flag" className="size-3.5" />
+                            {name}
+                            <span
+                              aria-hidden="true"
+                              className="tabular-nums opacity-70"
+                            >
+                              {n}
+                            </span>
+                            <span className="sr-only">
+                              , {fill(dict.projects.activityCountSr, { n })}
+                            </span>
+                          </a>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </>
+              )}
             </section>
           )}
         </div>
@@ -89,6 +136,7 @@ export default async function ProjectsPage({
           <>
             <FilterBar
               template={dict.projects.filterStatus}
+              activityTemplate={dict.projects.activityFilterStatus}
               clearLabel={dict.projects.filterClear}
               clearedMessage={dict.projects.filterCleared}
               noneMessage={dict.projects.filterNone}
