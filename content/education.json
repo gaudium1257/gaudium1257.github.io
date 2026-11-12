@@ -2,13 +2,19 @@
   "items": [
     {
       "id": "korea-university",
-      "school": { "ko": "고려대학교", "en": "Korea University" },
+      "school": {
+        "ko": "고려대학교",
+        "en": "Korea University"
+      },
       "major": {
         "ko": "컴퓨터학과",
         "en": "Computer Science and Engineering"
       },
       "status": "enrolled",
-      "period": { "start": "2026-03", "end": null }
+      "period": {
+        "start": "2026-03",
+        "end": null
+      }
     }
   ],
   "career": [
@@ -18,8 +24,29 @@
         "ko": "THE해커톤CAMPUS 고려대학교 지부",
         "en": "THE해커톤CAMPUS, Korea University chapter"
       },
-      "role": { "ko": "운영진", "en": "Organizing team" },
-      "period": { "start": "2026-09", "end": null }
+      "role": {
+        "ko": "운영진",
+        "en": "Organizing team"
+      },
+      "period": {
+        "start": "2026-09",
+        "end": null
+      }
+    },
+    {
+      "id": "kweb-korea-university",
+      "organization": {
+        "ko": "KWEB (고려대학교 웹 개발 학회)",
+        "en": "KWEB, Korea University web development society"
+      },
+      "role": {
+        "ko": "학회원",
+        "en": "Member"
+      },
+      "period": {
+        "start": "2026-09",
+        "end": null
+      }
     }
   ]
 }
