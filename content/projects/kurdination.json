@@ -1,0 +1,338 @@
+{
+  "id": "kurdination",
+  "title": {
+    "ko": "KUrdination",
+    "en": "KUrdination"
+  },
+  "tagline": {
+    "ko": "조직 멤버의 일정을 주간 캘린더로 조율하는 웹앱",
+    "en": "A web app for coordinating an organization's schedules on a weekly calendar"
+  },
+  "summary": {
+    "ko": "웹 개발 학회 KWEB 활동으로 개발 중인, When2meet을 보완하는 일정 조율 웹앱입니다. 조직을 만들고 이메일 주소로 멤버를 초대한 뒤, 주간 캘린더에서 일정을 미확정·확정 상태로 만들고 관리합니다. 5인 팀에서 프론트엔드를 맡아 인증·조직·초대·일정 화면과 반응형 디자인 시스템을 구현했습니다.",
+    "en": "A scheduling web app, in development as a KWEB web development society activity, meant to complement When2meet. Users create an organization, invite members by email address, and manage tentative and confirmed events on a weekly calendar. On a five-person team, I handled the frontend and built the auth, organization, invite, and event screens along with a responsive design system."
+  },
+  "category": "club",
+  "status": "in-progress",
+  "period": {
+    "start": "2026-10",
+    "end": null
+  },
+  "team": {
+    "size": 5,
+    "role": {
+      "ko": "프론트엔드 개발",
+      "en": "Frontend developer"
+    }
+  },
+  "contributions": [
+    {
+      "ko": "공유 API 계약에서 타입을 추론하는 oRPC 클라이언트와 전역 401 처리 구현",
+      "en": "Built an oRPC client with types inferred from the shared API contract, plus global 401 handling"
+    },
+    {
+      "ko": "회원가입·로그인·세션 복원과 로그인 여부에 따른 라우트 보호 구현",
+      "en": "Implemented sign-up, login, session restore, and route guards based on login state"
+    },
+    {
+      "ko": "조직 생성, 멤버 목록·내보내기, 탈퇴, 조직 삭제 화면 구현",
+      "en": "Built screens for creating organizations, listing and removing members, leaving, and deleting organizations"
+    },
+    {
+      "ko": "초대 보내기·취소와 받은 초대 수락·거절 화면 구현",
+      "en": "Built screens for sending and canceling invites and for accepting or declining received invites"
+    },
+    {
+      "ko": "겹치는 일정을 나란히 배치하는 주간 캘린더와 일정 생성·상태 변경 구현",
+      "en": "Built a weekly calendar that lays out overlapping events side by side, with event creation and status changes"
+    },
+    {
+      "ko": "shadcn/ui와 Tailwind CSS 기반 디자인 시스템과 문서 페이지 구축",
+      "en": "Built a design system on shadcn/ui and Tailwind CSS, with a documentation page"
+    },
+    {
+      "ko": "휴대폰·태블릿·데스크톱 반응형 레이아웃과 라이트/다크 테마 구현",
+      "en": "Implemented responsive layouts for phone, tablet, and desktop, and light and dark themes"
+    },
+    {
+      "ko": "헤드리스 Chromium E2E로 가입·조직·초대·일정 흐름 검증(회귀 19개 항목 통과)",
+      "en": "Verified sign-up, organization, invite, and event flows with headless Chromium E2E runs (19 regression checks passed)"
+    }
+  ],
+  "features": [
+    {
+      "title": {
+        "ko": "계정과 세션",
+        "en": "Accounts and sessions"
+      },
+      "description": {
+        "ko": "가입하고 로그인하면 새로고침해도 로그인 상태가 유지되고, 세션이 만료되면 로그인 화면으로 이동합니다.",
+        "en": "After signing up and logging in, users stay logged in across reloads and are sent to the login screen when the session expires."
+      }
+    },
+    {
+      "title": {
+        "ko": "조직과 멤버",
+        "en": "Organizations and members"
+      },
+      "description": {
+        "ko": "조직을 만든 사람은 관리자가 되고, 관리자는 멤버를 내보내거나 조직을 삭제할 수 있습니다.",
+        "en": "The creator of an organization becomes its admin, and admins can remove members or delete the organization."
+      }
+    },
+    {
+      "title": {
+        "ko": "이메일 초대",
+        "en": "Email invites"
+      },
+      "description": {
+        "ko": "관리자가 이메일 주소로 초대를 보내면 받은 사람은 7일 안에 수락하거나 거절합니다.",
+        "en": "Admins invite people by email address, and recipients accept or decline within seven days."
+      }
+    },
+    {
+      "title": {
+        "ko": "주간 일정 캘린더",
+        "en": "Weekly event calendar"
+      },
+      "description": {
+        "ko": "빈 칸을 눌러 일정을 만들고, 겹치는 일정은 나란히 보이며, 상태와 '내 참여만'으로 걸러 봅니다.",
+        "en": "Users click an empty slot to create an event, see overlapping events side by side, and filter by status or by their own participation."
+      }
+    },
+    {
+      "title": {
+        "ko": "미확정·확정 상태",
+        "en": "Tentative and confirmed status"
+      },
+      "description": {
+        "ko": "일정을 만든 사람이나 관리자가 미확정 일정을 확정으로 바꾸고, '내 가능 시간' 프리셋은 나만 참여하는 미확정 일정을 만듭니다.",
+        "en": "The event creator or an admin switches tentative events to confirmed, and a 'my availability' preset creates a tentative event with only the user as participant."
+      }
+    },
+    {
+      "title": {
+        "ko": "반응형과 다크 모드",
+        "en": "Responsive layout and dark mode"
+      },
+      "description": {
+        "ko": "휴대폰·태블릿·데스크톱 3단계로 반응하고 휴대폰에서는 하루 보기로 바뀌며, 라이트/다크 테마를 고를 수 있습니다.",
+        "en": "The layout adapts in three tiers for phone, tablet and desktop, switching to a single-day view on phones, with a choice of light or dark theme."
+      }
+    }
+  ],
+  "techStack": [
+    {
+      "category": "language",
+      "items": ["TypeScript"]
+    },
+    {
+      "category": "frontend",
+      "items": [
+        "React",
+        "Vite",
+        "Tailwind CSS",
+        "shadcn/ui",
+        "React Router",
+        "Radix UI"
+      ]
+    },
+    {
+      "category": "backend",
+      "items": ["Node.js", "Express", "oRPC"]
+    },
+    {
+      "category": "database",
+      "items": ["SQLite"]
+    },
+    {
+      "category": "tooling",
+      "items": ["npm workspaces"]
+    },
+    {
+      "category": "other",
+      "items": ["Zod"]
+    }
+  ],
+  "techNotes": {
+    "TypeScript": {
+      "ko": "shared·backend·frontend 세 패키지 전체",
+      "en": "All three packages: shared, backend, and frontend"
+    },
+    "React": {
+      "ko": "로그인·조직·초대·일정 화면",
+      "en": "Login, organization, invite, and event screens"
+    },
+    "Vite": {
+      "ko": "개발 서버의 /api 프록시와 앱·디자인 문서 두 entry 빌드",
+      "en": "Dev server /api proxy and a two-entry build for the app and design docs"
+    },
+    "Tailwind CSS": {
+      "ko": "디자인 토큰과 화면 스타일",
+      "en": "Design tokens and screen styles"
+    },
+    "shadcn/ui": {
+      "ko": "디자인 시스템의 UI 컴포넌트",
+      "en": "UI components of the design system"
+    },
+    "React Router": {
+      "ko": "로그인 여부에 따른 라우트 보호",
+      "en": "Route guards based on login state"
+    },
+    "Radix UI": {
+      "ko": "UI 컴포넌트의 기반",
+      "en": "Foundation for the UI components"
+    },
+    "Node.js": {
+      "ko": "백엔드 서버 실행과 node:test 기반 테스트",
+      "en": "Backend server runtime and node:test-based tests"
+    },
+    "Express": {
+      "ko": "oRPC 핸들러를 /api 경로에 연결하는 HTTP 서버",
+      "en": "HTTP server that mounts the oRPC handler at /api"
+    },
+    "oRPC": {
+      "ko": "공유 API 계약, 백엔드 핸들러, 프론트엔드 클라이언트",
+      "en": "Shared API contract, backend handlers, and frontend client"
+    },
+    "SQLite": {
+      "ko": "better-sqlite3로 데이터 저장",
+      "en": "Data storage via better-sqlite3"
+    },
+    "npm workspaces": {
+      "ko": "shared·backend·frontend 모노레포 구성",
+      "en": "Monorepo setup for shared, backend, and frontend"
+    },
+    "Zod": {
+      "ko": "API 요청·응답 스키마와 프론트엔드 폼 사전 검증",
+      "en": "API request and response schemas and client-side form validation"
+    }
+  },
+  "aiTools": ["Claude Code"],
+  "deployment": {
+    "status": "not-deployed"
+  },
+  "architecture": {
+    "ko": "npm workspaces 모노레포에서 shared 패키지의 oRPC 계약을 백엔드와 프론트엔드가 함께 사용합니다. React 클라이언트가 /api를 호출하면 Express 위의 oRPC 핸들러가 도메인 정책을 거쳐 SQLite에 저장합니다.",
+    "en": "In an npm workspaces monorepo, the backend and frontend share the oRPC contract from the shared package. When the React client calls /api, oRPC handlers on Express apply domain rules and store data in SQLite."
+  },
+  "outcomes": [],
+  "challenges": [
+    {
+      "problem": {
+        "ko": "조직 탭 옆에 불필요한 세로 스크롤바가 생김",
+        "en": "A stray vertical scrollbar appeared beside the organization tabs"
+      },
+      "solution": {
+        "ko": "음수 margin 대신 inset 그림자로 구분선을 그리고 세로 넘침을 숨김",
+        "en": "Drew the divider with an inset shadow instead of a negative margin and hid vertical overflow"
+      }
+    },
+    {
+      "problem": {
+        "ko": "조직 ID의 콜론이 URL에서 인코딩되면 현재 탭 표시가 사라짐",
+        "en": "The active tab indicator disappeared when the colon in organization IDs was URL-encoded"
+      },
+      "solution": {
+        "ko": "경로를 디코딩한 뒤 현재 탭을 판정하도록 변경",
+        "en": "Decoded the path before determining the active tab"
+      }
+    },
+    {
+      "problem": {
+        "ko": "서버의 400 응답이 어느 필드가 틀렸는지 알려주지 않음",
+        "en": "The server's 400 responses did not say which field was invalid"
+      },
+      "solution": {
+        "ko": "보내기 전에 공유 Zod 스키마로 검증해 필드별 오류를 표시",
+        "en": "Validated input with the shared Zod schemas before sending and showed per-field errors"
+      }
+    },
+    {
+      "problem": {
+        "ko": "새로고침할 때 다크 테마가 잠깐 라이트로 깜빡임",
+        "en": "The dark theme briefly flashed light on reload"
+      },
+      "solution": {
+        "ko": "React가 뜨기 전에 인라인 스크립트로 저장된 테마를 적용",
+        "en": "Applied the saved theme with an inline script before React loads"
+      }
+    }
+  ],
+  "learnings": [],
+  "highlights": [
+    {
+      "ko": "공유 API 계약에서 타입을 추론하는 oRPC 클라이언트",
+      "en": "oRPC client with types inferred from the shared API contract"
+    },
+    {
+      "ko": "겹치는 일정을 나란히 배치하는 주간 캘린더",
+      "en": "Weekly calendar that lays out overlapping events side by side"
+    },
+    {
+      "ko": "휴대폰·태블릿·데스크톱 반응형과 다크 모드 디자인 시스템",
+      "en": "Design system with phone, tablet, and desktop layouts and dark mode"
+    }
+  ],
+  "links": [],
+  "screenshots": [
+    {
+      "src": "/images/projects/kurdination/01-events-week.png",
+      "kind": "web",
+      "alt": {
+        "ko": "주간 캘린더(확정·미확정 일정, 겹친 일정)와 일정 상세 패널",
+        "en": "Weekly calendar with confirmed, tentative and overlapping events, and the event detail panel"
+      }
+    },
+    {
+      "src": "/images/projects/kurdination/03-members.png",
+      "kind": "web",
+      "alt": {
+        "ko": "멤버 목록과 역할, 내보내기, 조직 나가기·삭제",
+        "en": "Member list with roles, remove buttons, and leave or delete organization"
+      }
+    },
+    {
+      "src": "/images/projects/kurdination/04-org-invites.png",
+      "kind": "web",
+      "alt": {
+        "ko": "멤버 초대 폼과 대기 중인 초대(만료일) 목록",
+        "en": "Member invite form and pending invites with expiry dates"
+      }
+    },
+    {
+      "src": "/images/projects/kurdination/05-events-dark.png",
+      "kind": "web",
+      "alt": {
+        "ko": "다크 모드의 주간 캘린더와 일정 상세",
+        "en": "Weekly calendar and event detail in dark mode"
+      }
+    },
+    {
+      "src": "/images/projects/kurdination/06-events-mobile.png",
+      "kind": "mobile",
+      "alt": {
+        "ko": "휴대폰의 날짜 선택 줄과 하루 보기, 겹친 미확정 일정",
+        "en": "Phone view with the date strip, a single-day view and overlapping tentative events"
+      }
+    },
+    {
+      "src": "/images/projects/kurdination/07-login.png",
+      "kind": "web",
+      "alt": {
+        "ko": "로그인 화면과 '모두가 되는 시간을, 한 번에.' 소개 문구",
+        "en": "Login screen with the tagline 'A time that works for everyone, at once.'"
+      }
+    },
+    {
+      "src": "/images/projects/kurdination/08-design-system.png",
+      "kind": "web",
+      "alt": {
+        "ko": "디자인 시스템 문서 페이지(원칙, 토큰)",
+        "en": "Design system documentation page with principles and tokens"
+      }
+    }
+  ],
+  "related": [],
+  "tags": ["web", "scheduling", "monorepo"]
+}

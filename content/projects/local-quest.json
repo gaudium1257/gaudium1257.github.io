@@ -179,6 +179,7 @@
       "en": "Fetches nearby places from location-based tourism data (locationBasedList2) to create quests"
     }
   },
+  "aiTools": ["Claude Code"],
   "deployment": {
     "status": "live",
     "platform": "ONE store",
