@@ -9,8 +9,8 @@
     "en": "A camera app that coaches whoever holds your phone, one sentence at a time"
   },
   "summary": {
-    "ko": "다른 사람에게 폰을 맡겨 사진을 찍을 때, 찍는 사람에게 구도 교정을 한 번에 하나씩 \"두 걸음 뒤로 가 주세요\" 같은 문장으로 알려 주는 Android 카메라 앱입니다. 목표 구도는 배경을 보고 추천하거나(추천 모드) 사용자가 고른 레퍼런스 사진에서 가져옵니다(맞춤 모드). 포즈 인식과 배경 분석은 모두 기기 안에서 실행됩니다. 2026 InThon 해커톤에서 4인 팀으로 만들었습니다.",
-    "en": "An Android camera app for when you hand your phone to someone else: it tells the photographer one composition fix at a time, in a sentence like \"take two steps back\". The target composition is either recommended from the background (recommend mode) or taken from a reference photo the user picks (custom mode). Pose detection and background analysis both run on the device. Built by a four-person team at the InThon 2026 hackathon."
+    "ko": "다른 사람에게 폰을 맡겨 사진을 찍을 때, 찍는 사람에게 구도 교정을 한 번에 하나씩 \"두 걸음 뒤로 가 주세요\" 같은 문장으로 알려 주는 Android 카메라 앱입니다. 목표 구도는 배경을 보고 추천하거나(추천 모드) 사용자가 고른 레퍼런스 사진에서 가져옵니다(맞춤 모드). 포즈 인식과 배경 분석은 모두 기기 안에서 실행됩니다. 2026 InThon 해커톤에서 4인 팀으로 만들어 대상을 받았습니다.",
+    "en": "An Android camera app for when you hand your phone to someone else: it tells the photographer one composition fix at a time, in a sentence like \"take two steps back\". The target composition is either recommended from the background (recommend mode) or taken from a reference photo the user picks (custom mode). Pose detection and background analysis both run on the device. Built by a four-person team at the InThon 2026 hackathon, where it won the Grand Prize."
   },
   "category": "hackathon",
   "status": "completed",
@@ -202,8 +202,8 @@
   },
   "outcomes": [
     {
-      "ko": "2026 InThon 해커톤(고려대학교 정보대학 주최)에서 발표 및 시연",
-      "en": "Presented and demoed at the InThon 2026 hackathon, hosted by the Korea University College of Informatics"
+      "ko": "2026 InThon 해커톤(고려대학교 정보대학 주최) 대상 수상, 발표 및 시연",
+      "en": "Won the Grand Prize at the InThon 2026 hackathon, hosted by the Korea University College of Informatics, after presenting and demoing it"
     },
     {
       "ko": "Android APK v0.1.0을 GitHub Releases로 배포",
@@ -272,8 +272,8 @@
   ],
   "highlights": [
     {
-      "ko": "서버 없이 기기 안에서 추론하는 한 문장 구도 코칭 카메라 앱",
-      "en": "A camera app that coaches composition one sentence at a time, with all inference on the device"
+      "ko": "2026 InThon 해커톤 대상",
+      "en": "Grand Prize, InThon 2026 Hackathon"
     },
     {
       "ko": "팀장으로 카메라 앱, 모듈 통합, APK 릴리스 담당",
