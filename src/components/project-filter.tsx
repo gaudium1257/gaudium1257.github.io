@@ -5,16 +5,28 @@ import { useEffect, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { reducedMotion } from "@/lib/reduced-motion";
 
-type Status = { slug: string; label: string; n: number } | null;
+type Kind = "tech" | "activity";
+type Status = { kind: Kind; slug: string; label: string; n: number } | null;
+
+/** A filter link's key: "tech:react" (`a[data-tech]`) or "activity:kweb" (`a[data-activity]`). */
+const keyOf = (a: HTMLElement) =>
+  a.dataset.tech ? `tech:${a.dataset.tech}` : `activity:${a.dataset.activity}`;
+const parse = (key: string) => {
+  const i = key.indexOf(":");
+  return [key.slice(0, i) as Kind, key.slice(i + 1)] as const;
+};
+const PLACEHOLDER = /\{(?:tech|activity)\}/;
 
 /**
- * Tech filter for a project list. Tech nodes are real links (`a[data-tech]`, no-JS fallback: the
- * project list page); with JS this filters entries (`[data-project][data-techs]`) in place, marks
- * matching chips (`[data-node]`), keeps `?tech=` in the URL and announces the result.
+ * Project filter for a list, by tech or by activity (one at a time). Filter nodes are real links
+ * (`a[data-tech]`, `a[data-activity]`; no-JS fallback: the project list page); with JS this filters
+ * entries (`[data-project]` by `data-techs` / `data-activities`) in place, marks matching tech chips
+ * (`[data-node]`), keeps `?tech=` or `?activity=` in the URL and announces the result.
  * `listHref` (home only): where to send the visitor when none of the shown entries match.
  */
 export function FilterBar({
   template,
+  activityTemplate = template,
   clearLabel,
   clearedMessage,
   noneMessage,
@@ -22,6 +34,8 @@ export function FilterBar({
   listHref,
 }: {
   template: string;
+  /** status line for an activity filter ("{activity}에서 만든 프로젝트") */
+  activityTemplate?: string;
   clearLabel: string;
   clearedMessage: string;
   noneMessage: string;
@@ -32,9 +46,14 @@ export function FilterBar({
   const current = useRef<string | null>(null);
   const textRef = useRef<HTMLParagraphElement>(null);
 
+  const tpl = (kind: Kind) =>
+    kind === "activity" ? activityTemplate : template;
+
   useEffect(() => {
     const links = [
-      ...document.querySelectorAll<HTMLAnchorElement>("a[data-tech]"),
+      ...document.querySelectorAll<HTMLAnchorElement>(
+        "a[data-tech], a[data-activity]",
+      ),
     ];
     const entries = [
       ...document.querySelectorAll<HTMLElement>("[data-project]"),
@@ -46,19 +65,23 @@ export function FilterBar({
       requestAnimationFrame(() => (region.textContent = msg));
     };
     const shown = (li: HTMLElement) => li.dataset.show !== "false";
-    const hits = (li: HTMLElement, slug: string | null) =>
-      !slug || (li.dataset.techs ?? "").split(" ").includes(slug);
+    const hits = (li: HTMLElement, key: string | null) => {
+      if (!key) return true;
+      const [kind, slug] = parse(key);
+      const of = kind === "tech" ? li.dataset.techs : li.dataset.activities;
+      return (of ?? "").split(" ").includes(slug);
+    };
     let running: { stop: () => void }[] = [];
     /**
      * Cards that stay glide from their old spot to the new one (FLIP), leaving cards fade out
      * first, arriving ones rise in. Without motion (or on load) the list just switches.
      */
-    const change = async (slug: string | null, announce: boolean) => {
+    const change = async (key: string | null, announce: boolean) => {
       running.forEach((a) => a.stop());
       running = [];
-      if (reducedMotion()) return apply(slug, announce);
-      const leaving = entries.filter((li) => shown(li) && !hits(li, slug));
-      const arriving = entries.filter((li) => !shown(li) && hits(li, slug));
+      if (reducedMotion()) return apply(key, announce);
+      const leaving = entries.filter((li) => shown(li) && !hits(li, key));
+      const arriving = entries.filter((li) => !shown(li) && hits(li, key));
       const fades = leaving.map((li) =>
         animate(li, { opacity: 0, scale: 0.97 }, { duration: 0.16 }),
       );
@@ -70,7 +93,7 @@ export function FilterBar({
       const before = new Map(
         entries.filter(shown).map((li) => [li, li.getBoundingClientRect()]),
       );
-      flushSync(() => apply(slug, announce));
+      flushSync(() => apply(key, announce));
       for (const li of entries.filter(shown)) {
         const was = before.get(li);
         if (!was) continue;
@@ -100,34 +123,35 @@ export function FilterBar({
         ),
       );
     };
-    const apply = (slug: string | null, announce: boolean) => {
+    const apply = (key: string | null, announce: boolean) => {
       const was = current.current;
-      current.current = slug;
+      current.current = key;
+      const [kind, slug] = key ? parse(key) : (["tech", null] as const);
       links.forEach((a) =>
-        a.setAttribute("aria-current", String(a.dataset.tech === slug)),
+        a.setAttribute("aria-current", String(keyOf(a) === key)),
       );
       let n = 0;
       for (const li of entries) {
-        const hit = hits(li, slug);
+        const hit = hits(li, key);
         li.setAttribute("data-show", String(hit));
         if (hit) n++;
         li.querySelectorAll<HTMLElement>("[data-node]").forEach((c) =>
           c.setAttribute(
             "data-match",
-            String(!!slug && c.dataset.node === slug),
+            String(kind === "tech" && !!slug && c.dataset.node === slug),
           ),
         );
       }
       const url = new URL(location.href);
-      if (slug) url.searchParams.set("tech", slug);
-      else url.searchParams.delete("tech");
+      url.searchParams.delete("tech");
+      url.searchParams.delete("activity");
+      if (slug) url.searchParams.set(kind, slug);
       history.replaceState(history.state, "", url);
-      const label =
-        links.find((a) => a.dataset.tech === slug)?.dataset.label ?? "";
-      setStatus(slug ? { slug, label, n } : null);
+      const label = links.find((a) => keyOf(a) === key)?.dataset.label ?? "";
+      setStatus(slug ? { kind, slug, label, n } : null);
       if (slug && announce)
         say(
-          template.replace("{tech}", label) +
+          tpl(kind).replace(PLACEHOLDER, label) +
             (n === 0 && listHref ? ` ${noneMessage}` : ""),
         );
       if (!slug && was && announce) say(clearedMessage);
@@ -137,7 +161,7 @@ export function FilterBar({
       ev.preventDefault();
       const a = ev.currentTarget as HTMLAnchorElement;
       const kbd = ev.detail === 0;
-      const next = current.current === a.dataset.tech ? null : a.dataset.tech!;
+      const next = current.current === keyOf(a) ? null : keyOf(a);
       void change(next, !(kbd && next));
       // measure and move only after React has rendered the bar (it is hidden while empty)
       requestAnimationFrame(() => {
@@ -150,10 +174,16 @@ export function FilterBar({
       });
     };
     links.forEach((a) => a.addEventListener("click", onClick));
-    const q = new URLSearchParams(location.search).get("tech");
-    if (q && links.some((a) => a.dataset.tech === q)) apply(q, false);
+    const params = new URLSearchParams(location.search);
+    for (const kind of ["tech", "activity"] as const) {
+      const q = params.get(kind);
+      if (q && links.some((a) => keyOf(a) === `${kind}:${q}`)) {
+        apply(`${kind}:${q}`, false);
+        break;
+      }
+    }
     const onClear = () => {
-      const was = links.find((a) => a.dataset.tech === current.current);
+      const was = links.find((a) => keyOf(a) === current.current);
       void change(null, true);
       was?.focus();
     };
@@ -162,10 +192,14 @@ export function FilterBar({
       links.forEach((a) => a.removeEventListener("click", onClick));
       window.removeEventListener("portfolio:clear-filter", onClear);
     };
-  }, [template, clearedMessage, noneMessage, listHref]);
+    // tpl only reads the two template props, both listed here
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [template, activityTemplate, clearedMessage, noneMessage, listHref]);
 
-  // the tech name stays out of auto-translate: split the sentence around it
-  const [before, after] = template.split("{tech}");
+  // the tech / activity name stays out of auto-translate: split the sentence around it
+  const [before, after] = (status ? tpl(status.kind) : template).split(
+    PLACEHOLDER,
+  );
   return (
     <div
       data-filter-bar
@@ -187,7 +221,7 @@ export function FilterBar({
                 {" "}
                 <span className="font-normal">{noneMessage}</span>{" "}
                 <a
-                  href={`${listHref}?tech=${status.slug}`}
+                  href={`${listHref}?${status.kind}=${status.slug}`}
                   className="font-semibold underline underline-offset-4 hover:decoration-2 active:text-ink"
                 >
                   {noneLink}

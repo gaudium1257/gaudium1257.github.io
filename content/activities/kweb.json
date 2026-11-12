@@ -4,6 +4,7 @@
     "ko": "KWEB (고려대학교 웹 개발 학회)",
     "en": "KWEB, Korea University web development society"
   },
+  "shortTitle": { "ko": "KWEB", "en": "KWEB" },
   "organization": { "ko": "고려대학교 KWEB", "en": "KWEB, Korea University" },
   "type": "community",
   "period": { "start": "2026-09", "end": null },

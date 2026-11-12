@@ -17,6 +17,7 @@ import { BUTTON, cx, LABEL_COLS, LINK } from "@/components/ui";
 import type { Project } from "@/content/schema";
 import {
   getActivitiesOf,
+  getActivityProjects,
   getContent,
   getRelated,
   getSupportingTechs,
@@ -584,6 +585,22 @@ export default async function ProjectPage({
                             : dict.project.links[l.type]}
                         </ExternalLink>
                       ))}
+                    {/* two or more projects from this activity: open them together in the list */}
+                    {(() => {
+                      const n = getActivityProjects(a.id).length;
+                      return n >= 2 ? (
+                        <a
+                          href={`/${locale}/projects/?activity=${a.id}`}
+                          className={cx(
+                            "mt-1.5 flex w-fit items-center gap-1.5 font-medium",
+                            LINK,
+                          )}
+                        >
+                          <Icon name="folder" className="size-4" />
+                          {fill(dict.project.activityAll, { n })}
+                        </a>
+                      ) : null;
+                    })()}
                   </span>
                 </p>
               ))}

@@ -202,6 +202,12 @@ export function collectContent(): CollectResult {
     }
   }
 
+  for (const c of content.education.career)
+    if (c.activity && content.index.get(c.activity)?.kind !== "activity")
+      errors.push(
+        `career "${c.id}".activity → unknown activity "${c.activity}"`,
+      );
+
   // --- soft checks (errors under --strict) ----------------------------------
   // activities have no section: one linked to no project would not show anywhere
   for (const a of content.activities)
