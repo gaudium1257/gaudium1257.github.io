@@ -1,0 +1,16 @@
+{
+  "id": "inthon-2026-grand-prize",
+  "title": { "ko": "2026 InThon 해커톤", "en": "InThon 2026 Hackathon" },
+  "prize": { "ko": "대상", "en": "Grand Prize" },
+  "organizer": {
+    "ko": "고려대학교 정보대학",
+    "en": "Korea University College of Informatics"
+  },
+  "date": "2026-11",
+  "description": {
+    "ko": "카메라 앱 구도리(GUDORY)로 4인 팀 Gaslighteam이 받은 상입니다. 팀장으로 참여했습니다.",
+    "en": "Received by the four-person team Gaslighteam for the camera app GUDORY, which I led."
+  },
+  "links": [],
+  "related": ["gudory"]
+}
