@@ -1,0 +1,17 @@
+{
+  "id": "kweb",
+  "title": {
+    "ko": "KWEB (고려대학교 웹 개발 학회)",
+    "en": "KWEB, Korea University web development society"
+  },
+  "organization": { "ko": "고려대학교 KWEB", "en": "KWEB, Korea University" },
+  "type": "community",
+  "period": { "start": "2026-09", "end": null },
+  "role": { "ko": "학회원", "en": "Member" },
+  "description": {
+    "ko": "웹 개발 학회 KWEB 학회원으로 5인 팀 프로젝트 KUrdination의 프론트엔드를 맡았습니다.",
+    "en": "As a member of the web development society KWEB, I handled the frontend of the five-person team project KUrdination."
+  },
+  "links": [],
+  "related": ["kurdination"]
+}

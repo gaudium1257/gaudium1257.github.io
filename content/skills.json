@@ -64,6 +64,10 @@
         },
         {
           "name": "VS Code Extension API"
+        },
+        {
+          "name": "Radix UI",
+          "home": false
         }
       ]
     },
@@ -108,6 +112,12 @@
       "items": [
         {
           "name": "Node.js"
+        },
+        {
+          "name": "Express"
+        },
+        {
+          "name": "oRPC"
         }
       ]
     },
@@ -198,6 +208,10 @@
         {
           "name": "esbuild",
           "home": false
+        },
+        {
+          "name": "npm workspaces",
+          "home": false
         }
       ]
     },
@@ -213,6 +227,10 @@
         },
         {
           "name": "Firebase Cloud Messaging"
+        },
+        {
+          "name": "Zod",
+          "home": false
         }
       ]
     }
