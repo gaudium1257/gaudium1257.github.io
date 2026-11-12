@@ -134,7 +134,7 @@
 
 ## 레이아웃과 반응형
 
-- 앵커 오프셋은 루트 하나에서: `<html class="scroll-pt-32 md:scroll-pt-24 lg:scroll-pt-20 tiny:scroll-pt-0">` . 페이지 안 링크는 부드럽게 스크롤합니다(주인 결정 2026.11, `prefers-reduced-motion: no-preference`일 때만 `scroll-behavior: smooth`). 언어 전환의 위치 복원은 `behavior: "instant"`로 즉시 갑니다. 섹션에는 `scroll-mt`를 두지 않습니다.
+- 앵커 오프셋은 루트 하나에서: `<html class="scroll-pt-32 md:scroll-pt-24 lg:scroll-pt-20 tiny:scroll-pt-0">` . 페이지 안 링크는 부드럽게 스크롤합니다(주인 결정 2026.11, `prefers-reduced-motion: no-preference`일 때만, 그리고 페이지가 다 열린 뒤에만 — `html[data-smooth]`. `/#awards`로 열거나 새로고침하면 그 자리로 바로 갑니다). 주소에 섹션이 있으면(새로고침·뒤로 가기·다른 페이지의 `/#수상항목` 링크) 방문자가 직접 스크롤할 때까지 그 섹션이 메뉴의 현재 항목입니다(페이지 끝에서 밀려 내려가는 판정선보다 우선). 언어 전환의 위치 복원은 `behavior: "instant"`로 즉시 갑니다. 섹션에는 `scroll-mt`를 두지 않습니다.
 - **헤더**(sticky): 768 미만 = 44px 줄 + 4×2 격자(36px) = 118px · 768–1023 = 44px + 한 줄 8칸(44px) = 89px · 1024 이상 = 64px 한 줄. 이름(글자) + 내비 + KO/EN. 현재 섹션은 **정확히 하나**: 아래 2px `primary` 막대.
 - 섹션 래퍼: `border-t border-line` + `shell py-8 lg:py-12`(첫 줄도 같은 값). 제목 → 내용 간격은 어디서나 16px(`mt-4`). 짝지은 띠(대외활동·수상, 학력·연락처)는 첫 줄과 같은 **7 / 5** 축.
 
