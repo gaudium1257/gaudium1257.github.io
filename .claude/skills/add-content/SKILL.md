@@ -37,7 +37,7 @@ Schemas: `src/content/schema.ts` — read it before writing JSON. Ids are global
 
 Interview with short, concrete questions — only the fields the schema needs, both languages. Offer an English translation for the owner to approve rather than asking them to write it. Examples:
 
-- 수상: 대회/상 이름, 상 등급, 주최, 날짜(YYYY-MM), 관련 프로젝트, 증빙 링크, 대회 로고(있으면 정사각형으로 맞춰 `public/images/awards/<id>.png`, `logo`에 경로 — 없으면 메달 아이콘이 대신 보임). 상장 사진은 팀원 실명·직인이 있으면 올리지 않습니다
+- 수상: 대회/상 이름, 상 등급, 주최, 날짜(YYYY-MM), 관련 프로젝트, 증빙 링크, 대회 로고(있으면 정사각형으로 맞춰 `public/images/awards/<id>.png`, `logo`에 경로 — 없으면 메달 아이콘이 대신 보임). 상장 사진은 팀원 실명·직인이 있으면 올리지 않습니다. **관련 프로젝트가 있으면 그 프로젝트의 `outcomes` 첫 줄에도 같은 수상을 적습니다**(예: "2026 InThon 해커톤(고려대학교 정보대학 주최) 대상 수상, 발표 및 시연", 주인 규칙 2026.11) — 상세 "결과" 아래에 수상 링크가 자동으로 붙고, 카드에 보이게 하려면 `highlights` 첫 줄에도 넣습니다. 결과 대기 중이라고 적어 둔 `outcomes`·활동 설명도 함께 고칩니다
 - 활동: 활동명, 기관, 유형, 기간, 역할, 한 일, 관련 프로젝트 (필수 — 활동은 홈 섹션이 없고(주인 결정 2026.10) 관련 프로젝트 상세 머리에 "…에서 만든 프로젝트" 표지로만 보입니다. 관련 프로젝트가 없으면 어디에도 안 보이고 검사기가 경고합니다)
 - 학력: 학교, 전공, 학위, 재학 상태, 기간 (모르는 항목은 비워 둠)
 - 경력: 기관·단체, 역할, 기간 (모르는 항목은 비워 둠)
