@@ -8,6 +8,9 @@ import { useEffect } from "react";
  * Sections side by side share a top: the first wins unless the other was clicked. A clicked link stays
  * current until its jump has arrived, then while its section still holds the upper half of the screen
  * (near the page end the line slides past short sections, so the click must win there).
+ * A section named in the address (reload, back/forward, a link from another page to `/#awards` or to
+ * an item inside a section) stays current until the visitor scrolls on their own: on reload near the
+ * page end the sliding line would otherwise mark the section after it.
  */
 function spy(links: HTMLAnchorElement[], key: "nav" | "toc") {
   const root = document.documentElement;
@@ -17,6 +20,7 @@ function spy(links: HTMLAnchorElement[], key: "nav" | "toc") {
     .filter((s): s is HTMLElement => !!s);
   if (!secs.length) return () => {};
   let clicked: string | null = null;
+  let pinned: string | null = null;
   let lock = 0;
   let last = "";
   let fallback: ReturnType<typeof setTimeout> | undefined;
@@ -32,6 +36,7 @@ function spy(links: HTMLAnchorElement[], key: "nav" | "toc") {
   };
   const update = () => {
     if (Date.now() < lock) return;
+    if (pinned) return set(pinned);
     const base =
       (document.querySelector("header")?.getBoundingClientRect().bottom ?? 0) +
       24;
@@ -98,13 +103,35 @@ function spy(links: HTMLAnchorElement[], key: "nav" | "toc") {
     if (lock === Infinity && !arrived()) return;
     release();
   };
+  // the section the address points at: the hash target itself or the section that contains it
+  const fromHash = () => {
+    const id = decodeURIComponent(location.hash.slice(1));
+    const el = id ? document.getElementById(id) : null;
+    pinned = (el && secs.find((s) => s === el || s.contains(el))?.id) || null;
+  };
+  const onHash = () => {
+    fromHash();
+    update();
+  };
+  // the visitor taking over the scroll (wheel, touch, keys, scrollbar) ends the address's hold
+  const unpin = () => {
+    if (!pinned) return;
+    pinned = null;
+    tick();
+  };
+  const takeover = ["wheel", "touchstart", "keydown", "pointerdown"] as const;
   links.forEach((a) => a.addEventListener("click", onClick));
   addEventListener("scrollend", onEnd);
   addEventListener("scroll", tick, { passive: true });
   addEventListener("resize", tick);
+  addEventListener("hashchange", onHash);
+  takeover.forEach((t) => addEventListener(t, unpin, { passive: true }));
+  fromHash();
   update();
   return () => {
     links.forEach((a) => a.removeEventListener("click", onClick));
+    removeEventListener("hashchange", onHash);
+    takeover.forEach((t) => removeEventListener(t, unpin));
     removeEventListener("scrollend", onEnd);
     removeEventListener("scroll", tick);
     removeEventListener("resize", tick);

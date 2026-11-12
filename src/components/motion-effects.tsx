@@ -125,6 +125,13 @@ function scrollHome() {
  */
 export function MotionEffects() {
   useEffect(() => {
+    // smooth scrolling starts after load: the browser's own jump to /#section (and its scroll
+    // restore on reload) must not turn into a visible glide down the page
+    const root = document.documentElement;
+    const smooth = () =>
+      requestAnimationFrame(() => (root.dataset.smooth = ""));
+    if (document.readyState === "complete") smooth();
+    else addEventListener("load", smooth, { once: true });
     const offs = [scrollHome()];
     if (!reducedMotion()) offs.push(slideNav(), pressFeedback());
     return () => offs.forEach((off) => off());

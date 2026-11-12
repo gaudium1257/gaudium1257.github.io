@@ -123,9 +123,10 @@
     }
   }
   /* the only motion is colour fades; drop them for reduced-motion users */
-  /* in-page links (nav, "프로젝트 보기", back to top) glide to their target instead of jumping */
+  /* in-page links (nav, "프로젝트 보기", back to top) glide to their target instead of jumping —
+     only once the page has loaded (data-smooth), so opening or reloading /#section lands at once */
   @media (prefers-reduced-motion: no-preference) {
-    html {
+    html[data-smooth] {
       scroll-behavior: smooth;
     }
   }
