@@ -188,6 +188,18 @@
       "items": [
         {
           "name": "Vercel"
+        },
+        {
+          "name": "AWS S3",
+          "home": false
+        },
+        {
+          "name": "CloudFront",
+          "home": false
+        },
+        {
+          "name": "GitHub Actions",
+          "home": false
         }
       ]
     },
