@@ -22,6 +22,8 @@ function spy(links: HTMLAnchorElement[], key: "nav" | "toc") {
     .filter((s): s is HTMLElement => !!s);
   if (!secs.length) return () => {};
   let clicked: string | null = null;
+  // where the jump lands: the clicked section, or the item inside it that a #link names
+  let target: string | null = null;
   let pinned: string | null = null;
   let lock = 0;
   let last = "";
@@ -82,7 +84,8 @@ function spy(links: HTMLAnchorElement[], key: "nav" | "toc") {
   };
   // the hold ends when the jump has arrived (a scrollend left over from an earlier scroll doesn't count)
   const arrived = () => {
-    const el = clicked && document.getElementById(clicked);
+    const id = target ?? clicked;
+    const el = id && document.getElementById(id);
     if (!el) return true;
     const pt = parseFloat(getComputedStyle(root).scrollPaddingTop) || 0;
     const max = root.scrollHeight - innerHeight;
@@ -97,13 +100,17 @@ function spy(links: HTMLAnchorElement[], key: "nav" | "toc") {
     clearTimeout(fallback);
     update();
   };
-  const onClick = (e: Event) => {
-    clicked = (e.currentTarget as HTMLElement).dataset[key]!;
+  // hold the underline on a section while the page travels to it
+  const hold = (id: string, to: string | null = null) => {
+    clicked = id;
+    target = to;
     lock = Infinity;
     clearTimeout(fallback);
     fallback = setTimeout(release, 2500);
-    set(clicked);
+    set(id);
   };
+  const onClick = (e: Event) =>
+    hold((e.currentTarget as HTMLElement).dataset[key]!);
   let ticking = false;
   const tick = () => {
     if (ticking) return;
@@ -123,9 +130,12 @@ function spy(links: HTMLAnchorElement[], key: "nav" | "toc") {
     const el = id ? document.getElementById(id) : null;
     pinned = (el && secs.find((s) => s === el || s.contains(el))?.id) || null;
   };
+  // any in-page #link (a hero chip, an item link) travels like a nav click: without the hold the
+  // smooth scroll's first frames would drop the pin, and the page end would mark the last section
   const onHash = () => {
     fromHash();
-    update();
+    if (pinned) hold(pinned, decodeURIComponent(location.hash.slice(1)));
+    else update();
   };
   let settled = false;
   const settle = () =>
