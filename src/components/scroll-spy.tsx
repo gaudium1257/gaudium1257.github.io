@@ -9,8 +9,10 @@ import { useEffect } from "react";
  * current until its jump has arrived, then while its section still holds the upper half of the screen
  * (near the page end the line slides past short sections, so the click must win there).
  * A section named in the address (reload, back/forward, a link from another page to `/#awards` or to
- * an item inside a section) stays current until the visitor scrolls on their own: on reload near the
- * page end the sliding line would otherwise mark the section after it.
+ * an item inside a section) stays current while it holds the upper half of the screen: on reload near
+ * the page end the sliding line would otherwise mark the section after it. Once the visitor scrolls
+ * away from it the address drops the stale `#section`, so a reload then follows where they really are
+ * (the browser restores that scroll position) instead of snapping the underline back.
  */
 function spy(links: HTMLAnchorElement[], key: "nav" | "toc") {
   const root = document.documentElement;
@@ -36,10 +38,22 @@ function spy(links: HTMLAnchorElement[], key: "nav" | "toc") {
   };
   const update = () => {
     if (Date.now() < lock) return;
-    if (pinned) return set(pinned);
     const base =
       (document.querySelector("header")?.getBoundingClientRect().bottom ?? 0) +
       24;
+    if (pinned) {
+      const r = document.getElementById(pinned)!.getBoundingClientRect();
+      // until the page has settled, the browser may still be restoring the scroll: keep the pin
+      if (!settled || (r.top <= innerHeight / 2 && r.bottom > base))
+        return set(pinned);
+      pinned = null;
+      if (location.hash)
+        history.replaceState(
+          history.state,
+          "",
+          location.pathname + location.search,
+        );
+    }
     // in the last screenful the line slides down to the viewport bottom, so short closing
     // sections (education, contact) each get their turn instead of the page jumping to the last one
     const max = root.scrollHeight - innerHeight;
@@ -113,25 +127,25 @@ function spy(links: HTMLAnchorElement[], key: "nav" | "toc") {
     fromHash();
     update();
   };
-  // the visitor taking over the scroll (wheel, touch, keys, scrollbar) ends the address's hold
-  const unpin = () => {
-    if (!pinned) return;
-    pinned = null;
-    tick();
-  };
-  const takeover = ["wheel", "touchstart", "keydown", "pointerdown"] as const;
+  let settled = false;
+  const settle = () =>
+    requestAnimationFrame(() => {
+      settled = true;
+      update();
+    });
+  if (document.readyState === "complete") settle();
+  else addEventListener("load", settle, { once: true });
   links.forEach((a) => a.addEventListener("click", onClick));
   addEventListener("scrollend", onEnd);
   addEventListener("scroll", tick, { passive: true });
   addEventListener("resize", tick);
   addEventListener("hashchange", onHash);
-  takeover.forEach((t) => addEventListener(t, unpin, { passive: true }));
   fromHash();
   update();
   return () => {
     links.forEach((a) => a.removeEventListener("click", onClick));
     removeEventListener("hashchange", onHash);
-    takeover.forEach((t) => removeEventListener(t, unpin));
+    removeEventListener("load", settle);
     removeEventListener("scrollend", onEnd);
     removeEventListener("scroll", tick);
     removeEventListener("resize", tick);
