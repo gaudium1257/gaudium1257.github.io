@@ -1,0 +1,306 @@
+{
+  "id": "thehack-campus-korea-archive",
+  "title": {
+    "ko": "THE해커톤 : CAMPUS 고려대 아카이브",
+    "en": "THE해커톤 : CAMPUS Korea University Archive"
+  },
+  "tagline": {
+    "ko": "학회 세션 기록과 학회원 결과물을 모은 아카이브 사이트",
+    "en": "An archive site for club session records and members' deployed projects"
+  },
+  "summary": {
+    "ko": "THE해커톤 : CAMPUS 고려대학교 지부의 정규 세션 기록과 학회원이 세션에서 만들고 배포한 결과물을 모은 웹사이트입니다. 세션마다 다룬 내용, 실습, 슬라이드를 정리하고, 결과물 상세 페이지에서는 학회원이 배포한 서비스를 페이지 안에서 바로 실행해 볼 수 있습니다. 운영진으로서 기획, 디자인, 개발, Vercel 배포를 혼자 맡았습니다.",
+    "en": "A website that collects the regular session records of the Korea University chapter of THE해커톤 : CAMPUS and the projects members built and deployed in those sessions. Each session page covers the topics, practice, and slides, and each project page runs the member's deployed service inline. As a staff member, I handled planning, design, development, and deployment to Vercel on my own."
+  },
+  "category": "club",
+  "status": "in-progress",
+  "period": {
+    "start": "2026-11-10",
+    "end": null
+  },
+  "team": {
+    "size": 1,
+    "role": {
+      "ko": "1인 개발 (기획·디자인·개발)",
+      "en": "Solo developer (planning, design, development)"
+    }
+  },
+  "contributions": [
+    {
+      "ko": "사이트 기획·디자인·개발과 Vercel 배포 1인 진행",
+      "en": "Planned, designed, built, and deployed the site to Vercel on my own"
+    },
+    {
+      "ko": "세션 슬라이드 디자인을 참고한 디자인 토큰 기반 CSS와 다크·라이트 테마 작성",
+      "en": "Wrote token-based CSS with dark and light themes, using the session slide design as a reference"
+    },
+    {
+      "ko": "Next.js App Router 기반 홈·세션·결과물·학회원·소개 페이지 구현",
+      "en": "Built the home, session, project, member, and about pages with the Next.js App Router"
+    },
+    {
+      "ko": "서비스의 응답 코드와 X-Frame-Options·CSP를 확인하는 임베드 판단 로직 구현",
+      "en": "Implemented embed checks based on each service's response status, X-Frame-Options, and CSP"
+    },
+    {
+      "ko": "결과물 실행 창과 실제 화면 썸네일 컴포넌트 구현",
+      "en": "Built the inline project runner and live thumbnail components"
+    },
+    {
+      "ko": "콘텐츠 데이터 모델과 카탈로그 번호 자동 부여 설계",
+      "en": "Designed the content data model and automatic catalog numbering"
+    },
+    {
+      "ko": "슬라이드를 바탕으로 AI 코딩 도구가 작성한 세션 기록 검토",
+      "en": "Reviewed session records that an AI coding tool drafted from the slides"
+    },
+    {
+      "ko": "세션 3회, 결과물 14개, 학회원 17명의 데이터 정리",
+      "en": "Organized data for 3 sessions, 14 projects, and 17 members"
+    }
+  ],
+  "features": [
+    {
+      "title": {
+        "ko": "세션 기록",
+        "en": "Session records"
+      },
+      "description": {
+        "ko": "회차별 일시, 진행 형식, 다룬 내용, 실습, 확인 기준을 섹션 메뉴와 함께 보여줍니다.",
+        "en": "Shows each session's date, format, topics, practice, and review criteria with a section menu."
+      }
+    },
+    {
+      "title": {
+        "ko": "슬라이드 보기",
+        "en": "Slide viewer"
+      },
+      "description": {
+        "ko": "세션 슬라이드를 가로 목록으로 보여주고, 누르면 크게 열어 키보드로 넘길 수 있습니다.",
+        "en": "Lists session slides horizontally and opens them large, with keyboard navigation."
+      }
+    },
+    {
+      "title": {
+        "ko": "결과물 실행 창",
+        "en": "Inline project runner"
+      },
+      "description": {
+        "ko": "학회원이 배포한 서비스를 페이지 안에 띄우고 데스크톱·모바일 보기를 전환합니다.",
+        "en": "Runs members' deployed services inside the page and switches between desktop and mobile views."
+      }
+    },
+    {
+      "title": {
+        "ko": "사이트 상태 자동 판단",
+        "en": "Automatic site status check"
+      },
+      "description": {
+        "ko": "서비스가 오류를 내거나 임베드를 막으면 표지로 대신하고, 한 시간마다 다시 확인합니다.",
+        "en": "Replaces a service with a cover when it returns errors or blocks embedding, and rechecks every hour."
+      }
+    },
+    {
+      "title": {
+        "ko": "실제 화면 썸네일",
+        "en": "Live thumbnails"
+      },
+      "description": {
+        "ko": "결과물 카드에 사이트 첫 화면을 줄여 보여주고, 카드가 화면에 가까워질 때만 불러옵니다.",
+        "en": "Shows a scaled-down first screen of each site on its card, loading only when the card nears the viewport."
+      }
+    },
+    {
+      "title": {
+        "ko": "학회원 목록",
+        "en": "Member directory"
+      },
+      "description": {
+        "ko": "학회원별로 만든 결과물을 모아 보여주고, 본인이 공개한 포트폴리오 링크를 연결합니다.",
+        "en": "Groups projects by member and links to portfolios the members chose to share."
+      }
+    },
+    {
+      "title": {
+        "ko": "다크·라이트 테마",
+        "en": "Dark and light themes"
+      },
+      "description": {
+        "ko": "선택한 테마를 저장하고 첫 화면이 그려지기 전에 적용합니다.",
+        "en": "Saves the chosen theme and applies it before the first paint."
+      }
+    }
+  ],
+  "techStack": [
+    {
+      "category": "language",
+      "items": ["TypeScript", "CSS"]
+    },
+    {
+      "category": "frontend",
+      "items": ["Next.js", "React"]
+    },
+    {
+      "category": "infra",
+      "items": ["Vercel"]
+    }
+  ],
+  "techNotes": {
+    "TypeScript": {
+      "ko": "콘텐츠 데이터 모델과 전체 페이지·컴포넌트",
+      "en": "The content data model and all pages and components"
+    },
+    "CSS": {
+      "ko": "디자인 토큰 기반 다크·라이트 테마와 반응형 레이아웃",
+      "en": "Token-based dark and light themes and the responsive layout"
+    },
+    "Next.js": {
+      "ko": "App Router 정적 생성, 한 시간 단위 재검증, 서버에서 임베드 가능 여부 확인",
+      "en": "App Router static generation, hourly revalidation, and server-side embed checks"
+    },
+    "React": {
+      "ko": "실행 창, 썸네일, 슬라이드 뷰어, 테마 전환 같은 클라이언트 컴포넌트",
+      "en": "Client components such as the project runner, thumbnails, slide viewer, and theme toggle"
+    },
+    "Vercel": {
+      "ko": "사이트 배포",
+      "en": "Hosting the site"
+    }
+  },
+  "aiTools": ["Claude Code"],
+  "deployment": {
+    "status": "live",
+    "platform": "Vercel",
+    "url": "https://the-hack-campus-korea-archive.vercel.app",
+    "checkedAt": "2026-11-13"
+  },
+  "architecture": {
+    "ko": "콘텐츠는 TypeScript 데이터 파일에 두고 Next.js가 정적 페이지로 만듭니다. 결과물 페이지는 서버에서 각 서비스의 응답 코드와 X-Frame-Options·CSP를 확인한 뒤, 허용되면 클라이언트에서 iframe으로 띄웁니다.",
+    "en": "Content lives in TypeScript data files, and Next.js renders it as static pages. Project pages check each service's response status, X-Frame-Options, and CSP on the server, then load the service in an iframe on the client when it is allowed."
+  },
+  "outcomes": [],
+  "challenges": [
+    {
+      "problem": {
+        "ko": "임베드를 막았거나 오류를 내는 결과물 사이트가 빈 화면으로 보임",
+        "en": "Project sites that blocked embedding or returned errors showed up as blank frames"
+      },
+      "solution": {
+        "ko": "서버에서 응답 코드와 X-Frame-Options·CSP를 확인해 표지로 대신하고, 한 시간마다 다시 확인하도록 변경",
+        "en": "Checked the response status, X-Frame-Options, and CSP on the server, showed a cover instead, and rechecked every hour"
+      }
+    },
+    {
+      "problem": {
+        "ko": "아이폰 Safari가 iframe을 안쪽 사이트 폭만큼 늘려 가로 스크롤이 생김",
+        "en": "iPhone Safari stretched iframes to the inner site's width, causing horizontal scrolling"
+      },
+      "solution": {
+        "ko": "iframe에 width 1px과 min-width 100%를 주고, 감싸는 요소를 overflow와 clip-path로 제한",
+        "en": "Set the iframe to width 1px with min-width 100%, and clipped its wrapper with overflow and clip-path"
+      }
+    },
+    {
+      "problem": {
+        "ko": "하이드레이션 전에 iframe이 먼저 로드되면 로드 완료 이벤트를 놓침",
+        "en": "The load event was missed when an iframe finished loading before hydration"
+      },
+      "solution": {
+        "ko": "마운트한 뒤에 iframe을 붙이고, 8초가 지나면 그대로 보여주도록 변경",
+        "en": "Attached the iframe after mount and showed it anyway after 8 seconds"
+      }
+    }
+  ],
+  "learnings": [
+    {
+      "ko": "다른 사람이 만든 사이트를 페이지 안에 띄워 본 것은 처음이었고, 사이트마다 X-Frame-Options·CSP로 임베드를 막을 수 있어 먼저 확인하고 대체 화면을 준비해야 한다는 것을 배웠습니다.",
+      "en": "This was my first time embedding sites built by other people, and I learned that each site can block embedding through X-Frame-Options or CSP, so it has to be checked first with a fallback ready."
+    },
+    {
+      "ko": "아이폰 Safari는 iframe을 안쪽 사이트 폭만큼 늘리기 때문에, 모바일 레이아웃은 실제 기기 동작을 기준으로 확인해야 한다는 것을 배웠습니다.",
+      "en": "I learned that iPhone Safari stretches iframes to the inner site's width, so mobile layouts have to be checked against real device behavior."
+    },
+    {
+      "ko": "AI 코딩 도구와 작업할 때 디자인 규칙과 사실관계를 CLAUDE.md에 적어 두면 작업마다 같은 기준을 지킬 수 있다는 것을 배웠습니다.",
+      "en": "I learned that writing design rules and facts in CLAUDE.md keeps an AI coding tool on the same standards across tasks."
+    }
+  ],
+  "highlights": [
+    {
+      "ko": "학회원이 배포한 서비스를 페이지 안에서 바로 실행",
+      "en": "Runs members' deployed services inline on each project page"
+    },
+    {
+      "ko": "임베드 가능 여부와 오류를 서버에서 확인해 자동 대체",
+      "en": "Server-side checks for embed permission and errors, with an automatic fallback"
+    },
+    {
+      "ko": "기획·디자인·개발·배포 1인 진행",
+      "en": "Planned, designed, built, and deployed solo"
+    }
+  ],
+  "links": [
+    {
+      "type": "github",
+      "url": "https://github.com/gaudium1257/TheHack_Campus_Korea_Archive"
+    },
+    {
+      "type": "demo",
+      "url": "https://the-hack-campus-korea-archive.vercel.app"
+    }
+  ],
+  "logo": "/images/projects/thehack-campus-korea-archive/logo.svg",
+  "thumbnail": "/images/projects/thehack-campus-korea-archive/thumbnail.png",
+  "screenshots": [
+    {
+      "src": "/images/projects/thehack-campus-korea-archive/02-home-hero-light.png",
+      "kind": "web",
+      "alt": {
+        "ko": "홈 첫 화면, 밝은 테마",
+        "en": "Home hero in the light theme"
+      }
+    },
+    {
+      "src": "/images/projects/thehack-campus-korea-archive/04-session-detail.png",
+      "kind": "web",
+      "alt": {
+        "ko": "3회차 세션 상세: 표지, 섹션 메뉴, 일시·진행·결과물 수",
+        "en": "Session 3 detail: cover, section menu, date, format and project count"
+      }
+    },
+    {
+      "src": "/images/projects/thehack-campus-korea-archive/05-session-slides.png",
+      "kind": "web",
+      "alt": {
+        "ko": "세션 슬라이드 목록과 회차 안내 문구",
+        "en": "The session's slide strip with a note about session numbering"
+      }
+    },
+    {
+      "src": "/images/projects/thehack-campus-korea-archive/07-project-detail.png",
+      "kind": "web",
+      "alt": {
+        "ko": "결과물 상세의 실행 창, 데스크톱 보기(화면 안은 학회원이 만든 서비스)",
+        "en": "Inline project runner in desktop view (the service inside was built by a member)"
+      }
+    },
+    {
+      "src": "/images/projects/thehack-campus-korea-archive/08-project-detail-mobile-view.png",
+      "kind": "web",
+      "alt": {
+        "ko": "같은 실행 창을 모바일 보기로 전환한 화면",
+        "en": "The same runner switched to mobile view"
+      }
+    },
+    {
+      "src": "/images/projects/thehack-campus-korea-archive/10-phone-home.png",
+      "kind": "mobile",
+      "alt": {
+        "ko": "휴대폰 세로 화면의 홈",
+        "en": "Home on a phone in portrait"
+      }
+    }
+  ],
+  "related": [],
+  "tags": ["web", "archive", "club"]
+}

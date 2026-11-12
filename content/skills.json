@@ -15,6 +15,9 @@
         },
         {
           "name": "Python"
+        },
+        {
+          "name": "CSS"
         }
       ]
     },
@@ -27,6 +30,9 @@
       "items": [
         {
           "name": "React"
+        },
+        {
+          "name": "Next.js"
         },
         {
           "name": "Vite"
