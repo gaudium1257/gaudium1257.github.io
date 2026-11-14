@@ -10,6 +10,8 @@ import { getContent } from "@/content/load";
 import { hasLocale, locales, t } from "@/i18n/config";
 import { verificationMeta } from "@/config/verification";
 import { getDictionary } from "@/i18n/dictionaries";
+import { fill } from "@/lib/format";
+import { openGraph, SITE_URL } from "@/lib/og-meta";
 import "../globals.css";
 
 export const dynamicParams = false;
@@ -28,13 +30,24 @@ export async function generateMetadata({
   const dict = getDictionary(locale);
   const { profile } = getContent();
   const name = profile ? t(profile.name, locale) : dict.meta.title;
+  const title = `${name} | ${dict.meta.title}`;
+  const description = profile
+    ? t(profile.headline, locale)
+    : dict.meta.description;
   return {
-    title: {
-      default: `${name} | ${dict.meta.title}`,
-      template: `%s | ${name}`,
-    },
+    // absolute URLs for link previews (og:image, og:url)
+    metadataBase: new URL(SITE_URL),
+    title: { default: title, template: `%s | ${name}` },
     description: profile ? t(profile.intro, locale) : dict.meta.description,
     alternates: { languages: { ko: "/ko/", en: "/en/" } },
+    ...openGraph({
+      locale,
+      title,
+      description,
+      path: "",
+      image: "home",
+      alt: fill(dict.meta.ogAlt, { name }),
+    }),
     other: verificationMeta,
   };
 }

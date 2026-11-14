@@ -3,6 +3,9 @@ const ko = {
   meta: {
     title: "포트폴리오",
     description: "프로젝트, 활동, 수상, 학력과 경력을 모은 포트폴리오입니다.",
+    ogFooter: "{name} 포트폴리오",
+    ogAlt: "{name} 포트폴리오 미리보기",
+    ogProjectAlt: "{title} 미리보기",
   },
   nav: {
     about: "소개",
