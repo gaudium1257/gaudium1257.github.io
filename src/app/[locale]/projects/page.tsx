@@ -16,6 +16,7 @@ import {
 import { hasLocale, t } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { fill, formatYmd } from "@/lib/format";
+import { openGraph } from "@/lib/og-meta";
 import { snapshotDate } from "@/lib/github";
 import { techUsage } from "@/lib/tech";
 
@@ -24,7 +25,19 @@ export async function generateMetadata({
 }: PageProps<"/[locale]/projects">): Promise<Metadata> {
   const { locale } = await params;
   if (!hasLocale(locale)) return {};
-  return { title: getDictionary(locale).nav.projects };
+  const dict = getDictionary(locale);
+  const name = t(getContent().profile!.name, locale);
+  return {
+    title: dict.nav.projects,
+    ...openGraph({
+      locale,
+      title: `${dict.nav.projects} | ${name}`,
+      description: t(getContent().profile!.headline, locale),
+      path: "projects/",
+      image: "home",
+      alt: fill(dict.meta.ogAlt, { name }),
+    }),
+  };
 }
 
 export default async function ProjectsPage({

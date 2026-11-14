@@ -5,6 +5,9 @@ const en: Dictionary = {
     title: "Portfolio",
     description:
       "Projects, activities, awards, education, and experience in one place.",
+    ogFooter: "{name}’s portfolio",
+    ogAlt: "Preview of {name}’s portfolio",
+    ogProjectAlt: "Preview of {title}",
   },
   nav: {
     about: "About",

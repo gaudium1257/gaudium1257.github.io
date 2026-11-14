@@ -41,6 +41,7 @@ src/i18n/                   locales, t(), dictionaries
 src/config/sections.ts      section registry → drives nav order and home sections
 src/app/[locale]/…          pages (/ko/, /en/, /ko/projects/<id>/)
 src/app/(root)/             "/" → redirects to saved or browser language
+src/app/og/[locale]/[file]/  link-preview images (/og/<locale>/home.png, /og/<locale>/<id>.png), drawn by src/lib/og.tsx at build; pages point at them via openGraph() in src/lib/og-meta.ts
 docs/prompts/               project-fact-sheet.md (new project, run in that project's session), project-update.md (changes to a project already on the site), design.md (/design prompt), handoff.md (cloud → local session)
 ```
 

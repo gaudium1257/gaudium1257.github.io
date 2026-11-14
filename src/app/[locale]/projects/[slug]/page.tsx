@@ -32,6 +32,7 @@ import {
   formatYmd,
 } from "@/lib/format";
 import { repoOf, snapshotDate } from "@/lib/github";
+import { openGraph } from "@/lib/og-meta";
 import { itemHref } from "@/lib/href";
 import { galleryShots, heroShots } from "@/lib/media";
 import { groupedStack, techUsage } from "@/lib/tech";
@@ -60,9 +61,21 @@ export async function generateMetadata({
   const { locale, slug } = await params;
   const project = findProject(slug);
   if (!hasLocale(locale) || !project) return {};
+  const title = t(project.title, locale);
+  const description = t(project.tagline, locale);
+  const name = t(getContent().profile!.name, locale);
   return {
-    title: t(project.title, locale),
-    description: t(project.tagline, locale),
+    title,
+    description,
+    ...openGraph({
+      locale,
+      title: `${title} | ${name}`,
+      description,
+      path: `projects/${project.id}/`,
+      image: project.id,
+      alt: fill(getDictionary(locale).meta.ogProjectAlt, { title }),
+      type: "article",
+    }),
   };
 }
 
