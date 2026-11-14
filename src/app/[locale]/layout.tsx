@@ -20,7 +20,8 @@ export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }
 
-export const viewport: Viewport = { themeColor: "#ffffff" };
+// phone browser bar in the light lilac of the site (token primary-50; owner pick 2026.11)
+export const viewport: Viewport = { themeColor: "#f5f3ff" };
 
 export async function generateMetadata({
   params,

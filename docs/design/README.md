@@ -14,7 +14,7 @@
 - **첫 화면(시안 D)**: 흰 바탕 위 둥근 연보라 패널(`rounded-hero` 2rem, `bg-primary-50`, `ring-primary-100`). 이름(H1, 보라) → 한 줄 소개(가장 큼, `text-display-sm` 800) → 소개 글 → 버튼(프로젝트 보기 = `BUTTON_PRIMARY`, 연락하기·GitHub = `BUTTON`). 사진은 1024 이상에서만 오른쪽 작은 액자(224px, 흰 테두리) — 큰 사진은 부담스럽다는 주인 의견. 패널 아래쪽에 아이콘 알약 3개(소속 · 경력 → `#education` · 프로젝트 N개 → `#projects`).
 - **구간**: 흰색 / `surface` 띠가 번갈아(기술 스택 surface → 프로젝트 흰색 → 수상 surface → 학력 흰색 → 연락처 연보라). 띠 여백 `py-14 lg:py-20`, 구간 제목 `text-section`(36px) 굵게.
 - **기술 스택**: 분류표(주인 선택 2026.10, 시안 B) — 흰 패널 하나에 분류마다 한 줄(왼쪽 분류 이름 6.5rem, 오른쪽 기술), 1024 이상은 두 단(앞 절반 | 뒤 절반, 위에서 아래로 읽음). **접기 없음**, 분류 개수 숫자 없음. 기술 노드는 32px(`min-h-8`, `border-line`, 14px), 기술마다 Simple Icons 로고(CC0, 단색). 홈과 프로젝트 목록 필터, 상세의 기술 목록이 같은 노드를 씁니다. **핵심 기술만 보입니다(주인 결정 2026.10)**: React Router·React Hook Form·Axios·shadcn/ui·소셜 로그인 SDK·esbuild 같은 보조 라이브러리(`skills.json`의 `home: false`)는 홈·목록 필터·카드에서 빠지고, 상세 머리에 "라이브러리" 한 줄(텍스트)과 "기술 스택" 절의 "함께 쓴 라이브러리·도구" 표(쓴 곳 포함)로만 나옵니다.
-- **움직임 (주인 결정 2026.11, Motion 12)**: GIF 시안 비교 후 고른 세 가지만 — ① 기술 필터를 바꾸면 빠지는 카드는 흐려지며 사라지고 남은 카드는 새 자리로 미끄러지고(FLIP, 스프링) 새 카드는 살짝 올라옴(`project-filter.tsx`) ② 상단 메뉴 밑줄이 현재 섹션으로 미끄러짐(링크마다의 `::after` 대신 목록당 막대 하나, `motion-effects.tsx`) ③ 버튼·기술 노드(`.press`)를 누르면 살짝 눌렸다 튕겨 돌아옴. 첫 화면 순차 등장은 JS가 준비될 때까지 패널이 비어 보여서 뺐습니다. 모두 `prefers-reduced-motion: reduce`면 꺼집니다.
+- **움직임 (주인 결정 2026.11, Motion 12)**: GIF 시안 비교 후 고른 세 가지만 — ① 기술 필터를 바꾸면 빠지는 카드는 흐려지며 사라지고 남은 카드는 새 자리로 미끄러지고(FLIP, 스프링) 새 카드는 살짝 올라옴(`project-filter.tsx`) ② 상단 메뉴 밑줄이 현재 섹션으로 미끄러짐(링크마다의 `::after` 대신 목록당 막대 하나, `motion-effects.tsx`) ③ 버튼·기술 노드(`.press`)를 누르면 살짝 눌렸다 튕겨 돌아옴 ④ **페이지 전환(2026.11 추가)**: 프로젝트 카드를 누르면 카드의 캡처와 제목이 상세 머리의 대표 캡처·H1 자리로 이어지듯 옮겨 감(뒤로 가기는 반대로). CSS view transitions(`@view-transition { navigation: auto }`, 이름 `shot-<id>`·`title-<id>`), 지원 안 하는 브라우저는 그냥 넘어감. 첫 화면 순차 등장은 JS가 준비될 때까지 패널이 비어 보여서 뺐습니다. 모두 `prefers-reduced-motion: reduce`면 꺼집니다.
 - **머리 왼쪽**: 이름 앞에 탭 아이콘과 같은 TH 마크(`public/brand/th-mark.svg`, 28/32px). 이름과 한 링크.
 - **프로젝트 카드**: 3열, 테두리 없는 편집형, 캡처 `rounded-card`, 올리거나 누르면 캡처만 살짝 떠오름(`shadow-lift`, reduced-motion이면 이동 없음).
 - **연락처**: 연보라 띠(`bg-primary-50`) 위 채널별 흰 타일(이메일 먼저, 복사 버튼). 꼬리말은 흰색.
@@ -35,7 +35,7 @@
 
 ## 토큰 (`src/app/globals.css`)
 
-`mockup/proto/sys-theme.css`가 그대로 `globals.css`가 됩니다(맨 위에 `@import "tailwindcss";`, 글꼴은 `layout.tsx`에서). 다크 모드는 없습니다(추가하려면 먼저 주인에게 묻습니다).
+`mockup/proto/sys-theme.css`가 그대로 `globals.css`가 됩니다(맨 위에 `@import "tailwindcss";`, 글꼴은 `layout.tsx`에서). 다크 모드는 없습니다(추가하려면 먼저 주인에게 묻습니다). 휴대폰 브라우저 주소창 색(`theme-color`)은 연한 라일락 `primary-50`입니다(주인 결정 2026.11).
 
 | 토큰 (Tailwind 이름) | 값                                      | 용도                                                                    |
 | -------------------- | --------------------------------------- | ----------------------------------------------------------------------- |

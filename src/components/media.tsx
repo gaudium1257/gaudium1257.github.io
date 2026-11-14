@@ -80,6 +80,7 @@ export function Capture({
   load,
   radius = "rounded-node",
   className,
+  transitionName,
 }: {
   src: string;
   alt: string;
@@ -90,9 +91,14 @@ export function Capture({
   /** corner radius of the box (one radius utility per element, so callers pick it here) */
   radius?: "rounded-node" | "rounded-card";
   className?: string;
+  /** page-to-page morph: the same name on a card and its detail header (CSS view transitions) */
+  transitionName?: string;
 }) {
   const img = (
     <span
+      style={
+        transitionName ? { viewTransitionName: transitionName } : undefined
+      }
       className={cx(
         "relative block overflow-hidden bg-surface ring-1 ring-line ring-inset",
         radius,
