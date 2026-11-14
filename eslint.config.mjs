@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // git worktrees that tools create inside the repo folder (their builds would be linted too)
+    ".claude/worktrees/**",
   ]),
 ]);
 

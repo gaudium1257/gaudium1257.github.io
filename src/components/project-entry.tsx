@@ -11,7 +11,6 @@ import { itemHref } from "@/lib/href";
 import { heroShots } from "@/lib/media";
 import { groupedStack, projectTechSlugs } from "@/lib/tech";
 import { Capture, ProjectMark } from "./media";
-import { RepoLine } from "./repo";
 import { TechChip } from "./tech";
 import { cx, ENTRY_FOCUS, LINK, STRETCH } from "./ui";
 
@@ -96,17 +95,21 @@ export function ProjectMeta({
   );
 }
 
-/** Opening a card lifts its picture (pointer hover, or press on touch); no motion under reduced-motion. */
+/**
+ * Opening a card lifts its picture and zooms the image inside a little (pointer hover, or press on
+ * touch); no motion under reduced-motion.
+ */
 const LIFT =
-  "transition-[translate] duration-300 group-hover/p:shadow-lift group-has-[[data-stretch]:active]/p:shadow-lift motion-safe:group-hover/p:-translate-y-1";
+  "transition-[translate] duration-300 group-hover/p:shadow-lift group-has-[[data-stretch]:active]/p:shadow-lift motion-safe:group-hover/p:-translate-y-1 [&_img]:transition-transform [&_img]:duration-500 motion-safe:group-hover/p:[&_img]:scale-[1.04]";
 
 /** Chips shown on a card before "+N"; the full stack lives on the detail page. */
-const CARD_CHIPS = 6;
+const CARD_CHIPS = 3;
 
 /**
- * One project card (home, project list): lead capture → identity (title, one-liner, meta) →
- * evidence (role, highlights, relations) → tech chips and repo pinned to the bottom so cards in a
- * row line up.
+ * One project card (home, project list), kept short so the grid reads as a gallery (owner's pick
+ * 2026.11, option B): lead capture → identity (title, one-liner, meta) → the first highlight →
+ * a few tech chips pinned to the bottom so cards in a row line up. Role, the other highlights,
+ * relations and the repository live on the detail page.
  * Order comes from content/project-order.json (applied by the loader); every card has the same shape.
  */
 export function ProjectEntry({
@@ -114,14 +117,12 @@ export function ProjectEntry({
   dict,
   locale,
   heading: Heading = "h3",
-  onHome,
   eager,
 }: {
   project: Project;
   dict: Dictionary;
   locale: Locale;
   heading?: "h2" | "h3";
-  onHome: boolean;
   /** first row of a page that opens on the list: load the capture now ("high" = the LCP candidate) */
   eager?: "eager" | "high";
 }) {
@@ -200,38 +201,19 @@ export function ProjectEntry({
           </p>
           <ProjectMeta project={project} dict={dict} className="mt-2" />
         </div>
-        {/* evidence: the owner’s role first, then highlights and relations */}
-        <div className="grid gap-2.5">
-          {/* label/value grid: a long role wraps beside "Role", never under it */}
-          <p className="grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-4 text-sm leading-copy">
-            <span className="text-muted">{dict.project.facts.role}</span>
-            <span className="min-w-0 font-medium text-ink-2">
-              {t(project.team.role, locale)}
+        {/* evidence: the first highlight only (the strongest, by the owner's order) */}
+        {project.highlights[0] && (
+          <p className="flex gap-2 text-ui leading-copy text-ink-2">
+            <span
+              aria-hidden="true"
+              className="mt-2.5 size-1.5 shrink-0 rounded-full bg-edge"
+            />
+            <span className="min-w-0">
+              <span className="sr-only">{dict.projects.highlights}: </span>
+              {t(project.highlights[0], locale)}
             </span>
           </p>
-          {project.highlights.length > 0 && (
-            <ul
-              aria-label={dict.projects.highlights}
-              className="grid gap-1.5 text-ui leading-copy text-ink-2"
-            >
-              {project.highlights.map((h, i) => (
-                <li key={i} className="flex gap-2">
-                  <span
-                    aria-hidden="true"
-                    className="mt-2.5 size-1.5 shrink-0 rounded-full bg-edge"
-                  />
-                  <span className="min-w-0">{t(h, locale)}</span>
-                </li>
-              ))}
-            </ul>
-          )}
-          <RelatedLinks
-            id={project.id}
-            dict={dict}
-            locale={locale}
-            onHome={onHome}
-          />
-        </div>
+        )}
         <div className="mt-auto flex min-w-0 flex-col gap-2.5 pt-1">
           <ul
             aria-label={dict.skills.label}
@@ -250,12 +232,6 @@ export function ProjectEntry({
               </li>
             )}
           </ul>
-          <RepoLine
-            project={project}
-            dict={dict}
-            locale={locale}
-            newTab={dict.common.newTab}
-          />
         </div>
       </article>
     </li>
