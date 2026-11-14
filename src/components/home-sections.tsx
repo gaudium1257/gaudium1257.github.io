@@ -257,6 +257,7 @@ export function ProjectsSection({ content, dict, locale }: Props) {
                 project={p}
                 dict={dict}
                 locale={locale}
+                onHome
               />
             ))}
           </ol>
