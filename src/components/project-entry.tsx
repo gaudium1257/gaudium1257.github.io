@@ -156,7 +156,6 @@ export function ProjectEntry({
             alt={t(wide.alt, locale)}
             kind={wide.kind}
             radius="rounded-card"
-            transitionName={`shot-${project.id}`}
             className={cx("shrink-0", LIFT)}
             load={eager}
           />
@@ -172,7 +171,6 @@ export function ProjectEntry({
                 src={phone.src}
                 alt={t(phone.alt, locale)}
                 kind="mobile"
-                transitionName={`shot-${project.id}`}
                 className="h-full w-auto"
                 load={eager}
               />
@@ -191,7 +189,6 @@ export function ProjectEntry({
               <a
                 href={`/${locale}/projects/${project.id}/`}
                 data-stretch
-                style={{ viewTransitionName: `title-${project.id}` }}
                 className={cx(STRETCH, "group-hover/p:text-primary")}
               >
                 {t(project.title, locale)}
