@@ -257,7 +257,6 @@ export function ProjectsSection({ content, dict, locale }: Props) {
                 project={p}
                 dict={dict}
                 locale={locale}
-                onHome
               />
             ))}
           </ol>
@@ -281,62 +280,6 @@ export function ProjectsSection({ content, dict, locale }: Props) {
 const ROW_DATE =
   "mt-0.5 text-sm text-muted tabular-nums sm:col-start-2 sm:row-start-1 sm:mt-0 sm:whitespace-nowrap";
 
-function PlainRow({
-  id,
-  title,
-  prize,
-  sub,
-  date,
-  logo,
-  dict,
-  locale,
-}: {
-  id: string;
-  title: string;
-  prize?: string;
-  sub: string[];
-  date: string;
-  /** the event's square logo; without one a medal icon holds the same spot */
-  logo?: string;
-  dict: Dictionary;
-  locale: Locale;
-}) {
-  return (
-    <li id={id} className="flex gap-4 py-4">
-      {logo ? (
-        <ProjectLogo src={logo} className="size-14 rounded-panel" />
-      ) : (
-        <span
-          aria-hidden="true"
-          className="flex size-14 shrink-0 items-center justify-center rounded-panel bg-primary-50 text-primary ring-1 ring-primary-100"
-        >
-          <Icon name="award" className="size-6" />
-        </span>
-      )}
-      {/* below 640px the date goes under the title; above it sits on the title baseline */}
-      <div className="grid min-w-0 flex-1 gap-x-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-baseline">
-        <h3 className="min-w-0 text-base font-semibold text-ink sm:col-start-1">
-          {title}
-          {prize && <span className="font-semibold text-award"> {prize}</span>}
-        </h3>
-        <p className={ROW_DATE}>{date}</p>
-        <p className="mt-1 flex min-w-0 flex-wrap gap-x-3 text-sm text-muted sm:col-start-1">
-          {sub.map((x) => (
-            <span key={x}>{x}</span>
-          ))}
-        </p>
-        <RelatedLinks
-          id={id}
-          dict={dict}
-          locale={locale}
-          onHome
-          className="mt-1.5 sm:col-start-1"
-        />
-      </div>
-    </li>
-  );
-}
-
 const byStartDesc = (a: string, b: string) => b.localeCompare(a);
 
 export function AwardsSection({ content, dict, locale }: Props) {
@@ -350,19 +293,50 @@ export function AwardsSection({ content, dict, locale }: Props) {
         countLabel={dict.common.count}
       />
       {items.length ? (
-        <ul className="mt-6 divide-y divide-line border-t border-line">
+        <ul className="mt-6 grid gap-4 sm:grid-cols-2">
           {items.map((a) => (
-            <PlainRow
+            <li
               key={a.id}
               id={a.id}
-              title={t(a.title, locale)}
-              prize={t(a.prize, locale)}
-              sub={[t(a.organizer, locale)]}
-              date={formatYm(a.date)}
-              logo={a.logo}
-              dict={dict}
-              locale={locale}
-            />
+              className="flex gap-4 rounded-panel bg-white p-5 ring-1 ring-line sm:gap-5 sm:p-6"
+            >
+              {/* the event's square logo; without one a medal icon holds the same spot */}
+              {a.logo ? (
+                <ProjectLogo
+                  src={a.logo}
+                  className="size-20 rounded-panel sm:size-24"
+                />
+              ) : (
+                <span
+                  aria-hidden="true"
+                  className="flex size-20 shrink-0 items-center justify-center rounded-panel bg-primary-50 text-primary ring-1 ring-primary-100 sm:size-24"
+                >
+                  <Icon name="award" className="size-8" />
+                </span>
+              )}
+              {/* the prize leads; the event, organizer and date follow */}
+              <div className="min-w-0">
+                <h3 className="flex flex-col">
+                  <span className="text-h3 font-bold text-award">
+                    {t(a.prize, locale)}
+                  </span>
+                  <span className="mt-1 text-base font-semibold text-ink">
+                    {t(a.title, locale)}
+                  </span>
+                </h3>
+                <p className="mt-1 text-sm text-muted">
+                  {t(a.organizer, locale)} ·{" "}
+                  <span className="tabular-nums">{formatYm(a.date)}</span>
+                </p>
+                <RelatedLinks
+                  id={a.id}
+                  dict={dict}
+                  locale={locale}
+                  onHome
+                  className="mt-2"
+                />
+              </div>
+            </li>
           ))}
         </ul>
       ) : (
