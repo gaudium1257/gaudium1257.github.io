@@ -551,12 +551,7 @@ export default async function ProjectPage({
                   letterClass="text-h3 sm:text-h2"
                 />
                 <h1 className="min-w-0 text-title-sm font-extrabold text-ink sm:text-display-sm">
-                  <span
-                    className="inline-block"
-                    style={{ viewTransitionName: `title-${p.id}` }}
-                  >
-                    {t(p.title, locale)}
-                  </span>
+                  {t(p.title, locale)}
                 </h1>
               </div>
               <p className="mt-3 max-w-160 text-lead leading-copy text-ink-2">
@@ -695,7 +690,6 @@ export default async function ProjectPage({
                       alt={t(wide.alt, locale)}
                       kind={wide.kind}
                       load="high"
-                      transitionName={`shot-${p.id}`}
                       fullSize={fullSize}
                     />
                   )}
@@ -707,7 +701,6 @@ export default async function ProjectPage({
                         alt={t(phone.alt, locale)}
                         kind="mobile"
                         load={wide ? undefined : "high"}
-                        transitionName={wide ? undefined : `shot-${p.id}`}
                         fullSize={fullSize}
                       />
                     </div>
