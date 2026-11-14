@@ -144,3 +144,21 @@
     }
   }
 }
+
+/*
+ * Page-to-page morph (owner's pick 2026.11): a project card's capture and title glide into the
+ * detail header and back. Names are set inline on both pages (shot-<id>, title-<id>). Same-origin
+ * navigations only; browsers without view transitions, and reduced motion, just switch pages.
+ */
+@view-transition {
+  navigation: auto;
+}
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
+}
+::view-transition-group(*) {
+  animation-duration: 0.45s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
