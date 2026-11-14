@@ -154,6 +154,7 @@ export default async function ProjectsPage({
                   locale={locale}
                   eager={i < 3 ? (i === 0 ? "high" : "eager") : undefined}
                   heading="h2"
+                  onHome={false}
                 />
               ))}
             </ol>

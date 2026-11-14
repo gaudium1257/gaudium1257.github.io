@@ -34,6 +34,53 @@ export function ExternalLink({
   );
 }
 
+/** One line per project entry. Only the link sits above the card's stretched link. */
+export function RepoLine({
+  project,
+  dict,
+  locale,
+  newTab,
+}: {
+  project: Project;
+  dict: Dictionary;
+  locale: Locale;
+  newTab: string;
+}) {
+  const repo = repoOf(project);
+  if (!repo) return null;
+  const d = repo.data;
+  return (
+    <p className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted">
+      <ExternalLink
+        href={repo.url}
+        newTab={newTab}
+        className={cx(
+          "relative z-10 inline-flex min-h-6 items-center gap-1.5 font-medium wrap-anywhere",
+          LINK,
+        )}
+      >
+        <GitHubMark />
+        <span translate="no">{repo.slug}</span>
+      </ExternalLink>
+      {d?.stars !== undefined && (
+        <span className="tabular-nums">
+          <span aria-hidden="true">★</span>
+          <span className="sr-only">
+            <BrandText text={dict.projects.starsSr} />
+          </span>{" "}
+          {formatNumber(d.stars, locale)}
+        </span>
+      )}
+      {d?.lastCommit && (
+        <span className="tabular-nums">
+          {dict.projects.lastCommit} {formatYm(d.lastCommit)}
+        </span>
+      )}
+      {d?.archived && <span>{dict.project.archived}</span>}
+    </p>
+  );
+}
+
 export function RepoCard({
   project,
   dict,
