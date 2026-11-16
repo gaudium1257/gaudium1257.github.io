@@ -2,7 +2,7 @@
   "id": "thehack-campus-korea-archive",
   "title": {
     "ko": "THE해커톤 : CAMPUS 고려대 아카이브",
-    "en": "THE해커톤 : CAMPUS Korea University Archive"
+    "en": "THEHACK : CAMPUS Korea University Archive"
   },
   "tagline": {
     "ko": "학회 세션 기록과 학회원 결과물을 모은 아카이브 사이트",
@@ -10,7 +10,7 @@
   },
   "summary": {
     "ko": "THE해커톤 : CAMPUS 고려대학교 지부의 정규 세션 기록과 학회원이 세션에서 만들고 배포한 결과물을 모은 웹사이트입니다. 세션마다 다룬 내용, 실습, 슬라이드를 정리하고, 결과물 상세 페이지에서는 학회원이 배포한 서비스를 페이지 안에서 바로 실행해 볼 수 있습니다. 운영진으로서 기획, 디자인, 개발, Vercel 배포를 혼자 맡았습니다.",
-    "en": "A website that collects the regular session records of the Korea University chapter of THE해커톤 : CAMPUS and the projects members built and deployed in those sessions. Each session page covers the topics, practice, and slides, and each project page runs the member's deployed service inline. As a staff member, I handled planning, design, development, and deployment to Vercel on my own."
+    "en": "A website that collects the regular session records of the Korea University chapter of THEHACK : CAMPUS and the projects members built and deployed in those sessions. Each session page covers the topics, practice, and slides, and each project page runs the member's deployed service inline. As a staff member, I handled planning, design, development, and deployment to Vercel on my own."
   },
   "category": "club",
   "status": "in-progress",
