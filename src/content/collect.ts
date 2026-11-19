@@ -140,6 +140,7 @@ export function collectContent(): CollectResult {
     education: parseSingle(Education, "education.json", errors, {
       items: [],
       career: [],
+      certifications: [],
     }),
     projects: parseCollection(Project, "projects", errors),
     activities: parseCollection(Activity, "activities", errors),

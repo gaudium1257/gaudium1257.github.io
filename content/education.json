@@ -50,5 +50,19 @@
       },
       "activity": "kweb"
     }
+  ],
+  "certifications": [
+    {
+      "id": "computer-specialist-level-1",
+      "name": {
+        "ko": "컴퓨터활용능력 1급",
+        "en": "Computer Specialist in Spreadsheet & Database, Level 1"
+      },
+      "issuer": {
+        "ko": "대한상공회의소",
+        "en": "Korea Chamber of Commerce and Industry"
+      },
+      "date": "2026-09"
+    }
   ]
 }

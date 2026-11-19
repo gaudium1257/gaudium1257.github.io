@@ -105,6 +105,7 @@ const en: Dictionary = {
   education: {
     school: "Education",
     career: "Experience",
+    certifications: "Certifications",
     careerLine: "{role}, {organization}",
     careerProjects: "See All {n} Projects",
     status: {

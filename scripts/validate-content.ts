@@ -49,6 +49,7 @@ const counts = [
   `${content.skills.groups.length} skill groups`,
   `${content.education.items.length} education items`,
   `${content.education.career.length} career items`,
+  `${content.education.certifications.length} certifications`,
 ].join(", ");
 
 for (const w of warnings) console.warn(`warn  ${w}`);

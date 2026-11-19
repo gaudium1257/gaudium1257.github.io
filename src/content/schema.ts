@@ -348,5 +348,16 @@ export const Education = z.object({
       }),
     )
     .default([]),
+  /** 자격증: certificates the owner holds (name, issuer, the month it was obtained). */
+  certifications: z
+    .array(
+      z.object({
+        id: Id,
+        name: Localized,
+        issuer: Localized,
+        date: z.string().regex(/^\d{4}-\d{2}$/, "YYYY-MM"),
+      }),
+    )
+    .default([]),
 });
 export type Education = z.infer<typeof Education>;
