@@ -9,14 +9,14 @@ Content is the owner's public record. **Nothing goes in that the owner or a fact
 
 ## Where things go
 
-| Kind               | File                                                                              | Schema      |
-| ------------------ | --------------------------------------------------------------------------------- | ----------- |
-| Project            | `content/projects/<id>.json` (+ fact sheet in `content/sources/projects/<id>.md`) | `Project`   |
-| 활동               | `content/activities/<id>.json`                                                    | `Activity`  |
-| 수상               | `content/awards/<id>.json`                                                        | `Award`     |
-| 개발 역량          | `content/skills.json`                                                             | `Skills`    |
-| 학력 및 경력사항   | `content/education.json` (`items` = 학력, `career` = 경력)                        | `Education` |
-| 자기소개 / connect | `content/profile.json`                                                            | `Profile`   |
+| Kind               | File                                                                                  | Schema      |
+| ------------------ | ------------------------------------------------------------------------------------- | ----------- |
+| Project            | `content/projects/<id>.json` (+ fact sheet in `content/sources/projects/<id>.md`)     | `Project`   |
+| 활동               | `content/activities/<id>.json`                                                        | `Activity`  |
+| 수상               | `content/awards/<id>.json`                                                            | `Award`     |
+| 개발 역량          | `content/skills.json`                                                                 | `Skills`    |
+| 학력 및 경력사항   | `content/education.json` (`items` = 학력, `career` = 경력, `certifications` = 자격증) | `Education` |
+| 자기소개 / connect | `content/profile.json`                                                                | `Profile`   |
 
 Schemas: `src/content/schema.ts` — read it before writing JSON. Ids are global kebab-case and must equal the file name.
 
@@ -51,6 +51,7 @@ Interview with short, concrete questions — only the fields the schema needs, b
 - 활동: 활동명, 기관, 유형, 기간, 역할, 한 일, 관련 프로젝트 (필수 — 활동은 홈 섹션이 없고(주인 결정 2026.10) 관련 프로젝트 상세 머리에 "…에서 만든 프로젝트" 표지로만 보입니다. 관련 프로젝트가 없으면 어디에도 안 보이고 검사기가 경고합니다)
 - 학력: 학교, 전공, 학위, 재학 상태, 기간 (모르는 항목은 비워 둠)
 - 경력: 기관·단체, 역할, 기간 (모르는 항목은 비워 둠)
+- 자격증: 이름, 발급 기관, 취득 연월(YYYY-MM). 자격 번호는 넣지 않습니다
 
 Numbers (participants, users, ranks) only when the owner states them.
 

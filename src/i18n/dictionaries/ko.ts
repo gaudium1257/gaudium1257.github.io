@@ -102,6 +102,7 @@ const ko = {
   education: {
     school: "학력",
     career: "경력",
+    certifications: "자격증",
     careerLine: "{organization} {role}",
     careerProjects: "프로젝트 {n}개 모두 보기",
     status: {

@@ -32,7 +32,7 @@ content/                    ← all portfolio data (JSON), validated by src/cont
   activities/<id>.json      활동(대회·프로그램·학회) — 섹션 없음. 관련 프로젝트 상세에 "…에서 만든 프로젝트" 표지, 프로젝트 2개 이상이면 목록 페이지 "활동으로 거르기"(?activity=<id>, 칩 이름 = shortTitle ?? title)
   awards/<id>.json          수상경력
   skills.json               기술 스택 (names must match projects' techStack; `home: false` = 보조 라이브러리, 홈·카드에선 숨기고 상세에만)
-  education.json            학력 및 경력사항 (items = 학력, career = 경력; career[].activity = 그 경력의 활동 id → 행 아래 관련 프로젝트 링크)
+  education.json            학력 및 경력사항 (items = 학력, career = 경력; career[].activity = 그 경력의 활동 id → 행 아래 관련 프로젝트 링크; certifications = 자격증, 학력 아래)
   project-order.json        프로젝트 순서 (홈·목록 공통, 소유자가 직접 지정; 빠진 건 최신순으로 뒤에)
 src/content/schema.ts       zod schemas (single source of truth)
 src/content/collect.ts      reads + validates content, builds the global id index and relation graph

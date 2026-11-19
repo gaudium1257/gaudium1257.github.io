@@ -431,7 +431,7 @@ function CareerProjects({
 }
 
 export function EducationSection({ content, dict, locale }: Props) {
-  const { items, career } = content.education;
+  const { items, career, certifications } = content.education;
   const eduDate = (e: (typeof items)[number]) => {
     const status = e.status && dict.education.status[e.status];
     if (e.period) return formatPeriod(e.period, status ?? dict.common.present);
@@ -444,25 +444,45 @@ export function EducationSection({ content, dict, locale }: Props) {
       className="min-w-0"
     >
       <SectionHead id="education" title={dict.nav.education} />
-      {items.length || career.length ? (
+      {items.length || career.length || certifications.length ? (
         <div className="mt-8 grid gap-10 lg:grid-cols-2 lg:gap-12">
-          {items.length > 0 && (
-            <TimelineGroup title={dict.education.school}>
-              {items.map((e) => (
-                <TimelineRow
-                  key={e.id}
-                  id={e.id}
-                  title={t(e.school, locale)}
-                  sub={
-                    [e.major, e.degree]
-                      .filter((x) => !!x)
-                      .map((x) => t(x!, locale))
-                      .join(" ") || undefined
-                  }
-                  date={eduDate(e)}
-                />
-              ))}
-            </TimelineGroup>
+          {/* left column: 학력, then 자격증 under it (both short lists) */}
+          {(items.length > 0 || certifications.length > 0) && (
+            <div className="grid content-start gap-10">
+              {items.length > 0 && (
+                <TimelineGroup title={dict.education.school}>
+                  {items.map((e) => (
+                    <TimelineRow
+                      key={e.id}
+                      id={e.id}
+                      title={t(e.school, locale)}
+                      sub={
+                        [e.major, e.degree]
+                          .filter((x) => !!x)
+                          .map((x) => t(x!, locale))
+                          .join(" ") || undefined
+                      }
+                      date={eduDate(e)}
+                    />
+                  ))}
+                </TimelineGroup>
+              )}
+              {certifications.length > 0 && (
+                <TimelineGroup title={dict.education.certifications}>
+                  {[...certifications]
+                    .sort((a, b) => b.date.localeCompare(a.date))
+                    .map((c) => (
+                      <TimelineRow
+                        key={c.id}
+                        id={c.id}
+                        title={t(c.name, locale)}
+                        sub={t(c.issuer, locale)}
+                        date={formatYm(c.date)}
+                      />
+                    ))}
+                </TimelineGroup>
+              )}
+            </div>
           )}
           {career.length > 0 && (
             <TimelineGroup title={dict.education.career}>
