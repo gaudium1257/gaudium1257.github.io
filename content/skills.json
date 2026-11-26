@@ -18,6 +18,15 @@
         },
         {
           "name": "CSS"
+        },
+        {
+          "name": "JavaScript"
+        },
+        {
+          "name": "SQL"
+        },
+        {
+          "name": "HTML"
         }
       ]
     },
@@ -118,6 +127,9 @@
         },
         {
           "name": "oRPC"
+        },
+        {
+          "name": "Vercel Functions"
         }
       ]
     },
@@ -164,6 +176,12 @@
         },
         {
           "name": "Drizzle ORM"
+        },
+        {
+          "name": "Supabase"
+        },
+        {
+          "name": "PostgreSQL"
         }
       ]
     },
