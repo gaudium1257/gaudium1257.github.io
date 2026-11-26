@@ -27,6 +27,10 @@
         },
         {
           "name": "HTML"
+        },
+        {
+          "name": "PowerShell",
+          "home": false
         }
       ]
     },
@@ -76,6 +80,13 @@
         },
         {
           "name": "Radix UI",
+          "home": false
+        },
+        {
+          "name": "Chrome Extensions"
+        },
+        {
+          "name": "CodeMirror",
           "home": false
         }
       ]
@@ -130,6 +141,9 @@
         },
         {
           "name": "Vercel Functions"
+        },
+        {
+          "name": "Wandbox API"
         }
       ]
     },
@@ -216,8 +230,7 @@
           "home": false
         },
         {
-          "name": "GitHub Actions",
-          "home": false
+          "name": "GitHub Actions"
         }
       ]
     },
@@ -246,6 +259,9 @@
         {
           "name": "ESLint",
           "home": false
+        },
+        {
+          "name": "Puppeteer"
         }
       ]
     },
@@ -265,6 +281,9 @@
         {
           "name": "Zod",
           "home": false
+        },
+        {
+          "name": "Chrome Native Messaging"
         }
       ]
     }
