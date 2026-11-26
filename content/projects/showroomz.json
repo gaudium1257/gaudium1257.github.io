@@ -77,6 +77,30 @@
     {
       "ko": "소비자 앱의 iOS Apple 로그인 구현",
       "en": "Implemented Sign in with Apple on iOS in the consumer app"
+    },
+    {
+      "ko": "소비자 앱의 FCM 푸시 알림 구현(기기 토큰 등록, 알림을 눌러 해당 화면으로 이동, 기기 알림 꺼짐 안내)",
+      "en": "Implemented FCM push notifications in the consumer app, covering device token registration, opening the related screen from a notification and a notice when device notifications are off"
+    },
+    {
+      "ko": "소비자 앱의 쇼룸 차단과 애플 회원 탈퇴 시 애플 토큰 철회 구현",
+      "en": "Implemented showroom blocking and Apple token revocation on account deletion for Apple users in the consumer app"
+    },
+    {
+      "ko": "소비자 앱·파트너센터·스튜디오·운영자 콘솔의 약관을 서버 문서로 연동하고, 랜딩에 공개 약관 페이지와 계정 삭제 안내 페이지 추가",
+      "en": "Connected the terms in the consumer app, partner center, studio and admin console to server-managed documents, and added public terms pages and an account-deletion information page to the landing site"
+    },
+    {
+      "ko": "웹 콘솔 3종의 버튼·입력 등 공용 규격을 웹 디자인 시스템 v1.2와 세 앱 공통값으로 통일(일부는 시안 값 유지)",
+      "en": "Aligned shared components such as buttons and inputs across the three web consoles with web design system v1.2 and shared values, keeping the mockup values in a few places"
+    },
+    {
+      "ko": "소비자 앱 iOS EAS 빌드 실패 수정(react-native-reanimated 4.1과 Expo 54 권장 버전으로 정렬)",
+      "en": "Fixed the failing iOS EAS build of the consumer app by moving to react-native-reanimated 4.1 and the versions recommended for Expo 54"
+    },
+    {
+      "ko": "소비자 앱을 같은 저장소에서 Expo 웹으로 빌드해 브라우저용 웹 앱 구성(웹 소셜 로그인, PWA, Vercel 배포)",
+      "en": "Built a browser web app from the same consumer app repository with Expo for web, including web social login, PWA support and Vercel deployment"
     }
   ],
   "features": [
@@ -169,6 +193,26 @@
         "ko": "소비자 앱의 공구 게시물에서 공구 상품과 공구가, 마감까지 남은 일수를 확인합니다.",
         "en": "In the consumer app, group-buy posts show the group-buy products, group-buy prices and days left until closing."
       }
+    },
+    {
+      "title": {
+        "ko": "푸시 알림",
+        "en": "Push notifications"
+      },
+      "description": {
+        "ko": "소비자 앱이 기기 토큰을 서버에 등록해 푸시 알림을 받고, 알림을 누르면 관련 화면으로 이동합니다.",
+        "en": "The consumer app registers its device token with the server to receive push notifications, and tapping a notification opens the related screen."
+      }
+    },
+    {
+      "title": {
+        "ko": "소비자 웹 앱",
+        "en": "Consumer web app"
+      },
+      "description": {
+        "ko": "소비자 앱과 같은 화면을 브라우저에서 쓰며, 소셜 로그인은 팝업으로 진행합니다.",
+        "en": "Consumers use the same screens as the mobile app in a browser, with social login handled in a popup."
+      }
     }
   ],
   "techStack": [
@@ -253,8 +297,8 @@
       "en": "Runtime and config plugins for the consumer app"
     },
     "Vercel": {
-      "ko": "웹 콘솔 3종의 개발·검수 배포와 랜딩 페이지 배포(파트너센터·운영자 콘솔은 이후 S3·CloudFront로 이전)",
-      "en": "Dev/QA deployments of the three web consoles and the landing page deployment (the partner center and admin console later moved to S3 and CloudFront)"
+      "ko": "웹 콘솔 3종의 개발·검수 배포와 랜딩 페이지·소비자 웹 배포(파트너센터·운영자 콘솔은 이후 S3·CloudFront로 이전)",
+      "en": "Dev/QA deployments of the three web consoles and deployments of the landing page and the consumer web app (the partner center and admin console later moved to S3 and CloudFront)"
     },
     "AWS S3": {
       "ko": "파트너센터·운영자 콘솔의 정적 파일 호스팅",
@@ -273,8 +317,8 @@
       "en": "Payment modal in the consumer app"
     },
     "Firebase Cloud Messaging": {
-      "ko": "스튜디오의 웹 푸시 알림",
-      "en": "Web push notifications in the studio"
+      "ko": "스튜디오의 웹 푸시 알림과 소비자 앱의 푸시 알림",
+      "en": "Web push notifications in the studio and push notifications in the consumer app"
     }
   },
   "aiTools": ["Claude Code"],
@@ -365,6 +409,14 @@
     {
       "ko": "API 응답 형태를 짐작해 타입을 썼다가 화면에 잘못된 값이 나온 뒤로, 백엔드 DTO와 컨트롤러를 먼저 읽고 프론트엔드 타입을 작성하게 됐습니다.",
       "en": "After guessing an API response shape once put wrong values on screen, I started reading the backend DTOs and controllers before writing front-end types."
+    },
+    {
+      "ko": "디자인 시스템과 화면 시안이 어긋날 때 기준을 먼저 정하지 않아 버튼과 표 간격을 여러 번 고쳤고, 그 뒤로는 기준과 예외를 먼저 정해 세 웹 앱에 같은 값으로 적용하게 됐습니다.",
+      "en": "When the design system and the screen mockups disagreed, I changed buttons and table spacing several times before settling the rule, so I now decide the baseline and its exceptions first and apply the same values across the three web apps."
+    },
+    {
+      "ko": "구글 플레이의 계정 삭제 URL이나 App Store 심사의 애플 토큰 철회처럼 스토어가 요구하는 항목도 기능과 함께 준비해야 한다는 것을 알게 됐습니다.",
+      "en": "I learned that store requirements, such as Google Play's account-deletion URL and Apple token revocation for App Store review, have to be prepared alongside the features."
     }
   ],
   "highlights": [
@@ -404,6 +456,14 @@
       "label": {
         "ko": "랜딩 페이지",
         "en": "Landing page"
+      }
+    },
+    {
+      "type": "demo",
+      "url": "https://m.showroomz.co.kr",
+      "label": {
+        "ko": "소비자 웹 (개발 중)",
+        "en": "Consumer web app (in development)"
       }
     }
   ],
@@ -466,6 +526,14 @@
       "alt": {
         "ko": "브랜드용 랜딩 페이지 첫 화면",
         "en": "Landing page for brands, first screen"
+      }
+    },
+    {
+      "src": "/images/projects/showroomz/consumer-web-login.png",
+      "kind": "mobile",
+      "alt": {
+        "ko": "소비자 웹 로그인 화면: 카카오·네이버·Apple·Google로 계속하기",
+        "en": "Consumer web app sign-in: continue with Kakao, Naver, Apple or Google"
       }
     }
   ]
