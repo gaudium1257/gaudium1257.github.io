@@ -1,0 +1,353 @@
+{
+  "id": "convenient-boj",
+  "title": {
+    "ko": "Convenient BOJ",
+    "en": "Convenient BOJ"
+  },
+  "tagline": {
+    "ko": "백준 문제 화면에서 코드 작성·실행·제출까지 하는 크롬 확장",
+    "en": "A Chrome extension to write, run, and submit code right on BOJ problem pages"
+  },
+  "summary": {
+    "ko": "백준(acmicpc.net) 문제 페이지에 분할 화면을 띄워 코드 작성, 예제 실행과 출력 비교, 제출, 채점 결과 확인을 한 화면에서 하는 비공식 크롬 확장 프로그램입니다. 코드는 온라인 컴파일러 Wandbox나 선택해서 설치하는 Windows 로컬 실행 도우미에서 백준과 맞춘 컴파일 옵션으로 실행합니다. 제출은 백준 이용 규칙에 따라 공식 제출 페이지에 코드를 채워 두고 사용자가 직접 제출 버튼을 누르는 방식입니다. 직접 쓰려고 만든 첫 크롬 확장 프로그램입니다.",
+    "en": "An unofficial Chrome extension that opens a split view on Baekjoon Online Judge (acmicpc.net) problem pages, so you can write code, run it against the examples and compare output, submit, and see the judge result on one screen. Code runs on the Wandbox online compiler or on an optional local Windows helper, with compiler options matched to BOJ. Following BOJ's rules, submission fills in the official submit page and the user presses the submit button. It is my first Chrome extension, built for my own use."
+  },
+  "category": "personal",
+  "status": "maintained",
+  "period": {
+    "start": "2026-11-24",
+    "end": null
+  },
+  "team": {
+    "size": 1,
+    "role": {
+      "ko": "1인 개발 (기획·개발)",
+      "en": "Solo developer (planning & development)"
+    }
+  },
+  "contributions": [
+    {
+      "ko": "분할 화면 에디터·실행 터미널·채점 결과 표시를 담은 콘텐츠 스크립트 구현",
+      "en": "Built the content script for the split-view editor, run terminal, and judge result panel"
+    },
+    {
+      "ko": "Wandbox API 실행과 제출 탭 관리를 맡는 서비스 워커 구현",
+      "en": "Built the service worker that runs code on the Wandbox API and manages the submit tab"
+    },
+    {
+      "ko": "Python Native Messaging 로컬 실행 도우미와 Windows 설치 스크립트 구현",
+      "en": "Built a Python Native Messaging helper for local runs and its Windows installer scripts"
+    },
+    {
+      "ko": "실제 크롬과 실제 백준 페이지에서 도는 Puppeteer E2E 테스트 작성",
+      "en": "Wrote Puppeteer E2E tests that drive real Chrome on live BOJ pages"
+    },
+    {
+      "ko": "태그를 올리면 배포 ZIP 3종을 만드는 GitHub Actions 릴리스 파이프라인 구성",
+      "en": "Set up a GitHub Actions release pipeline that builds three ZIP packages on each tag"
+    },
+    {
+      "ko": "크롬 웹 스토어 등록 자료와 개인정보처리방침 작성",
+      "en": "Prepared the Chrome Web Store listing assets and the privacy policy"
+    }
+  ],
+  "features": [
+    {
+      "title": {
+        "ko": "문제 옆 분할 화면",
+        "en": "Split view beside the problem"
+      },
+      "description": {
+        "ko": "문제 제목 옆 버튼이나 Alt+C로 열고, 작성한 코드는 문제·언어별로 자동 저장됩니다.",
+        "en": "Opens from a button next to the problem title or Alt+C, and code is saved automatically per problem and language."
+      }
+    },
+    {
+      "title": {
+        "ko": "6개 언어 실행과 출력 비교",
+        "en": "Runs in six languages with output diff"
+      },
+      "description": {
+        "ko": "C, C++, Java, Rust, Python 3, PyPy3 코드를 예제와 나만의 테스트케이스로 돌리고, 틀리면 몇 번째 줄부터 다른지 강조합니다.",
+        "en": "Runs C, C++, Java, Rust, Python 3, and PyPy3 against the examples and custom test cases; on a wrong answer it shows the line where the output starts to differ and highlights the differing lines."
+      }
+    },
+    {
+      "title": {
+        "ko": "백준에 맞춘 컴파일 설정",
+        "en": "BOJ-matched compiler settings"
+      },
+      "description": {
+        "ko": "백준과 같거나 가장 가까운 컴파일러 버전을 쓰고, Java는 --release 11, C/C++은 -O2 -DONLINE_JUDGE로 컴파일합니다.",
+        "en": "Uses the same or closest compiler versions to BOJ's, compiling Java with --release 11 and C/C++ with -O2 -DONLINE_JUDGE."
+      }
+    },
+    {
+      "title": {
+        "ko": "로컬 실행 터미널 (선택)",
+        "en": "Local run terminal (optional)"
+      },
+      "description": {
+        "ko": "Windows 도우미를 설치하면 내 PC에서 컴파일·실행하고, 실행 중에 입력을 주고받습니다.",
+        "en": "With the Windows helper installed, code compiles and runs on the user's PC with live input while it runs."
+      }
+    },
+    {
+      "title": {
+        "ko": "제출과 실시간 채점 결과",
+        "en": "Submit and live judge result"
+      },
+      "description": {
+        "ko": "공식 제출 페이지를 옆 탭에 열어 코드를 채우고, 사용자가 제출하면 채점 결과를 분할 화면에 실시간으로 보여 준 뒤 제출 탭을 닫습니다.",
+        "en": "Opens the official submit page in the next tab with the code filled in; after the user submits, the judge result appears live in the split view and the submit tab closes."
+      }
+    },
+    {
+      "title": {
+        "ko": "편집 보조 기능",
+        "en": "Editing aids"
+      },
+      "description": {
+        "ko": "자동완성, VS Code 규칙의 엔터 자동 들여쓰기, 언어별 기본 코드, 풀이 타이머를 제공합니다.",
+        "en": "Provides autocomplete, VS Code-style auto-indent on Enter, per-language templates, and a solve timer."
+      }
+    }
+  ],
+  "techStack": [
+    {
+      "category": "language",
+      "items": ["JavaScript", "Python", "PowerShell"]
+    },
+    {
+      "category": "frontend",
+      "items": ["Chrome Extensions", "CodeMirror"]
+    },
+    {
+      "category": "backend",
+      "items": ["Wandbox API"]
+    },
+    {
+      "category": "infra",
+      "items": ["GitHub Actions"]
+    },
+    {
+      "category": "tooling",
+      "items": ["Puppeteer", "Node.js"]
+    },
+    {
+      "category": "other",
+      "items": ["Chrome Native Messaging"]
+    }
+  ],
+  "techNotes": {
+    "JavaScript": {
+      "ko": "확장 프로그램 전체(서비스 워커·콘텐츠 스크립트·팝업)",
+      "en": "The whole extension (service worker, content scripts, popup)"
+    },
+    "Python": {
+      "ko": "로컬 컴파일·실행 도우미",
+      "en": "The local compile-and-run helper"
+    },
+    "PowerShell": {
+      "ko": "도우미와 컴파일러(선택)를 winget으로 설치하는 Windows 설치 스크립트",
+      "en": "Windows installer that sets up the helper and, optionally, compilers via winget"
+    },
+    "Chrome Extensions": {
+      "ko": "Manifest V3 서비스 워커와 콘텐츠 스크립트 구성",
+      "en": "Manifest V3 service worker and content scripts"
+    },
+    "CodeMirror": {
+      "ko": "분할 화면의 코드 에디터와 자동완성",
+      "en": "The split view's code editor and autocomplete"
+    },
+    "Wandbox API": {
+      "ko": "도우미가 없을 때 코드를 실행하는 온라인 컴파일러",
+      "en": "Online compiler used when the helper is not installed"
+    },
+    "GitHub Actions": {
+      "ko": "태그를 올리면 릴리스 ZIP 3종을 만들어 GitHub Releases에 올림",
+      "en": "Builds the three release ZIPs on each tag and publishes them to GitHub Releases"
+    },
+    "Puppeteer": {
+      "ko": "실제 크롬으로 백준 페이지를 조작하는 E2E 테스트",
+      "en": "E2E tests that drive real Chrome on BOJ pages"
+    },
+    "Node.js": {
+      "ko": "E2E 테스트 실행 환경",
+      "en": "Runtime for the E2E tests"
+    },
+    "Chrome Native Messaging": {
+      "ko": "확장과 로컬 Python 도우미 사이의 통신",
+      "en": "Messaging between the extension and the local Python helper"
+    }
+  },
+  "aiTools": ["Claude Code"],
+  "deployment": {
+    "status": "released",
+    "platform": "GitHub Releases",
+    "url": "https://github.com/gaudium1257/Convenient_BOJ/releases/latest",
+    "checkedAt": "2026-11-27"
+  },
+  "architecture": {
+    "ko": "콘텐츠 스크립트가 서비스 워커에 실행을 요청하면, 서비스 워커가 Wandbox API로 보내거나 Native Messaging으로 로컬 Python 도우미에 중계합니다. 작성한 코드와 설정은 chrome.storage에만 저장하고 별도 서버는 없습니다.",
+    "en": "The content script asks the service worker to run code; the service worker sends it to the Wandbox API or relays it to the local Python helper over Native Messaging. Code and settings are stored only in chrome.storage, with no separate server."
+  },
+  "outcomes": [
+    {
+      "ko": "GitHub Releases로 v1.0.0부터 v1.6.2까지 20개 버전 배포",
+      "en": "Shipped 20 versions, v1.0.0 through v1.6.2, on GitHub Releases"
+    },
+    {
+      "ko": "실제 크롬·백준 페이지 E2E 테스트 55개 항목 통과",
+      "en": "Passed 55 E2E checks on real Chrome and live BOJ pages"
+    }
+  ],
+  "challenges": [
+    {
+      "problem": {
+        "ko": "최신 컴파일러로 실행하면 백준에 없는 문법·API가 여기서만 통과함",
+        "en": "Newer compilers accepted syntax and APIs that BOJ rejects"
+      },
+      "solution": {
+        "ko": "Wandbox에서 백준과 같거나 가장 가까운 컴파일러 버전을 고르고, Java는 --release 11로 컴파일하도록 변경",
+        "en": "Picked the Wandbox compiler version equal or closest to BOJ's, and compiled Java with --release 11"
+      }
+    },
+    {
+      "problem": {
+        "ko": "Wandbox는 Java 파일 이름이 prog.java라 public class Main을 컴파일하지 못함",
+        "en": "Wandbox names Java sources prog.java, so public class Main failed to compile"
+      },
+      "solution": {
+        "ko": "줄 번호가 바뀌지 않게 public 키워드만 지워서 전송",
+        "en": "Stripped only the public keyword so line numbers stay the same"
+      }
+    },
+    {
+      "problem": {
+        "ko": "Windows 기본 스택(1MB)이 작아 깊은 재귀가 백준과 다르게 실패함",
+        "en": "Windows' 1 MB default stack made deep recursion fail unlike on BOJ"
+      },
+      "solution": {
+        "ko": "로컬 C/C++·Rust 빌드에 256MB 스택 링크 옵션 추가",
+        "en": "Added a 256 MB stack linker flag to local C/C++ and Rust builds"
+      }
+    },
+    {
+      "problem": {
+        "ko": "크롬 137 이상이 --load-extension을 막아 E2E 테스트에서 확장을 설치할 수 없음",
+        "en": "Chrome 137+ blocks --load-extension, so E2E tests could not install the extension"
+      },
+      "solution": {
+        "ko": "Puppeteer의 CDP 확장 설치 기능으로 설치하도록 변경",
+        "en": "Installed it through Puppeteer's CDP extension install instead"
+      }
+    },
+    {
+      "problem": {
+        "ko": "크롬 웹 스토어가 언어 이름을 나열한 설명을 키워드 스팸으로 보고 거절함",
+        "en": "The Chrome Web Store rejected a version for keyword spam over listed language names"
+      },
+      "solution": {
+        "ko": "언어 목록을 자연스러운 문장으로 바꾸고 스토어 이미지를 다시 제작",
+        "en": "Rewrote the language list as plain sentences and remade the store images"
+      }
+    }
+  ],
+  "learnings": [
+    {
+      "ko": "처음 만든 크롬 확장 프로그램을 내게 필요한 도구로 완성해 성능에 만족하며 사용 중",
+      "en": "Finished my first Chrome extension as a tool I needed, and I use it and am satisfied with its performance"
+    }
+  ],
+  "highlights": [
+    {
+      "ko": "백준과 맞춘 컴파일 옵션·버전으로 6개 언어 실행",
+      "en": "Runs six languages with BOJ-matched compiler options and versions"
+    },
+    {
+      "ko": "Native Messaging 로컬 도우미로 실행 중 입력을 받는 터미널",
+      "en": "Live-input terminal through a Native Messaging local helper"
+    },
+    {
+      "ko": "실제 백준 페이지 E2E 테스트 55개 항목 통과",
+      "en": "Passed 55 E2E checks on live BOJ pages"
+    }
+  ],
+  "links": [
+    {
+      "type": "github",
+      "url": "https://github.com/gaudium1257/Convenient_BOJ"
+    },
+    {
+      "type": "other",
+      "url": "https://github.com/gaudium1257/Convenient_BOJ/releases/latest",
+      "label": {
+        "ko": "릴리스 다운로드",
+        "en": "Release downloads"
+      }
+    }
+  ],
+  "related": [],
+  "tags": ["chrome-extension", "developer-tools", "competitive-programming"],
+  "logo": "/images/projects/convenient-boj/logo.svg",
+  "thumbnail": "/images/projects/convenient-boj/thumbnail.png",
+  "screenshots": [
+    {
+      "src": "/images/projects/convenient-boj/01-split-run.png",
+      "kind": "web",
+      "alt": {
+        "ko": "A+B 문제 옆 분할 화면에서 C++ 예제를 실행해 통과한 모습",
+        "en": "The split view beside the A+B problem, passing the example in C++"
+      }
+    },
+    {
+      "src": "/images/projects/convenient-boj/02-wrong-diff.png",
+      "kind": "web",
+      "alt": {
+        "ko": "Python 오답: 기대 출력과 내 출력을 비교해 4번째 줄부터 강조",
+        "en": "A wrong Python answer: expected and actual output compared, highlighted from line 4"
+      }
+    },
+    {
+      "src": "/images/projects/convenient-boj/03-terminal.png",
+      "kind": "web",
+      "alt": {
+        "ko": "로컬 도우미 터미널에서 실행 중에 입력을 주고받는 모습",
+        "en": "The local helper's terminal taking input while the program runs"
+      }
+    },
+    {
+      "src": "/images/projects/convenient-boj/04-autocomplete.png",
+      "kind": "web",
+      "alt": {
+        "ko": "v. 뒤에 push_back부터 뜨는 자동완성 목록",
+        "en": "Autocomplete after v., with push_back first"
+      }
+    },
+    {
+      "src": "/images/projects/convenient-boj/05-popup-rust.png",
+      "kind": "web",
+      "alt": {
+        "ko": "설정 팝업과 Rust 예제 실행 결과",
+        "en": "The settings popup and a Rust example run"
+      }
+    },
+    {
+      "src": "/images/projects/convenient-boj/06-submit-filled.jpg",
+      "kind": "web",
+      "alt": {
+        "ko": "코드와 언어가 채워진 백준 공식 제출 페이지",
+        "en": "BOJ's official submit page with the code and language filled in"
+      }
+    },
+    {
+      "src": "/images/projects/convenient-boj/07-judge-ac.jpg",
+      "kind": "web",
+      "alt": {
+        "ko": "분할 화면에 표시된 \"맞았습니다!!\" 채점 결과 (예전 화면)",
+        "en": "The \"Accepted\" judge result shown in the split view (earlier version)"
+      }
+    }
+  ]
+}
